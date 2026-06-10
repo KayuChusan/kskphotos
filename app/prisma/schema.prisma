@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// 認証（NextAuth.js v5 — 管理者のみ）
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(ADMIN)
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ============================================
+// 写真（EXIF 全フィールド + GPS + ビフォーアフター）
+// ============================================
+
+model Photo {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  slug        String?  @unique
+
+  // 画像URL
+  imageUrl    String
+  beforeUrl   String?
+  thumbnailUrl String?
+
+  // カテゴリ・タグ
+  category    PhotoCategory
+  tags        String[]
+
+  // 撮影場所
+  location    String?
+  latitude    Float?
+  longitude   Float?
+
+  // EXIF（アップロード時に exifr で自動抽出）
+  cameraModel  String?
+  lensMake     String?
+  lensModel    String?
+  focalLength  Float?
+  aperture     Float?
+  shutterSpeed String?
+  iso          Int?
+  dateTaken    DateTime?
+  whiteBalance String?
+  meteringMode String?
+  imageWidth   Int?
+  imageHeight  Int?
+
+  // 表示制御
+  isPortfolio Boolean @default(false)
+  isPublished Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([isPortfolio])
+  @@index([dateTaken])
+}
+
+enum PhotoCategory {
+  PORTRAIT
+  LANDSCAPE
+  EVENT
+  STREET
+  ARCHITECTURE
+  FOOD
+  OTHER
+}
+
+// ============================================
+// 撮影サービス（メニュー・料金）
+// ============================================
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Int
+  duration    String?
+  category    ServiceCategory
+  imageUrl    String?
+  features    String[]
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  bookings    Booking[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum ServiceCategory {
+  PORTRAIT
+  FAMILY
+  EVENT
+  COMMERCIAL
+  LOCATION
+}
+
+// ============================================
+// 撮影依頼
+// ============================================
+
+model Booking {
+  id            String        @id @default(cuid())
+  name          String
+  email         String
+  phone         String?
+  serviceId     String?
+  service       Service?      @relation(fields: [serviceId], references: [id])
+  preferredDate DateTime?
+  location      String?
+  message       String
+  status        BookingStatus @default(PENDING)
+  adminNote     String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// ブログ
+// ============================================
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String
+  excerpt     String?
+  coverImage  String?
+  categories  String[]
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished, publishedAt])
+}
+
+// ============================================
+// お問い合わせ
+// ============================================
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([isRead])
+  @@index([createdAt])
+}
