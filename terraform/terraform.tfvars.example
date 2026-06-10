@@ -1,0 +1,12 @@
+gcp_project_id = "your-gcp-project-id"
+gcp_region     = "asia-northeast1"
+environment    = "production"
+
+# Cloud Run
+cloud_run_cpu           = "1"
+cloud_run_memory        = "512Mi"
+cloud_run_max_instances = 2
+cloud_run_min_instances = 0
+
+# Domain (optional)
+# domain = "your-domain.com"

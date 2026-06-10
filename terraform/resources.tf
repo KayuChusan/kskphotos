@@ -1,0 +1,55 @@
+# =============================================================================
+# モジュール呼び出し — GCP コスト最適化版 (~$10-22/月)
+# Cloud SQL は kokumin-pedia 側が所有。接続情報は Secret Manager 経由。
+# =============================================================================
+
+# --- IAM (サービスアカウント + Workload Identity Federation) ---
+module "iam" {
+  source = "./modules/iam"
+
+  project_id   = var.gcp_project_id
+  project_name = var.project_name
+  github_repo  = "KayuChusan/kskphotos"
+}
+
+# --- Artifact Registry ---
+module "artifact_registry" {
+  source = "./modules/artifact-registry"
+
+  project_name = var.project_name
+  region       = var.gcp_region
+}
+
+# --- Cloud Storage + CDN ---
+module "storage" {
+  source = "./modules/storage"
+
+  project_name = var.project_name
+  region       = var.gcp_region
+  cloud_run_sa = module.iam.cloud_run_sa_email
+}
+
+# --- Cloud Run ---
+module "cloud_run" {
+  source = "./modules/cloud-run"
+
+  project_id     = var.gcp_project_id
+  project_name   = var.project_name
+  region         = var.gcp_region
+  image          = "${module.artifact_registry.repository_url}/${var.project_name}:latest"
+  service_account = module.iam.cloud_run_sa_email
+  cpu            = var.cloud_run_cpu
+  memory         = var.cloud_run_memory
+  max_instances  = var.cloud_run_max_instances
+  min_instances  = var.cloud_run_min_instances
+  container_port = var.container_port
+
+  env_vars = {
+    NODE_ENV        = "production"
+    GCS_BUCKET_NAME = module.storage.bucket_name
+  }
+
+  secret_env_vars = {
+    DATABASE_URL = var.database_url_secret_id
+  }
+}
