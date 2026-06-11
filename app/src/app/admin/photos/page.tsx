@@ -1,17 +1,32 @@
 import type { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
+import { PhotoUploadForm } from "./photo-upload-form";
+import { PhotoTable } from "./photo-table";
 
 export const metadata: Metadata = {
-  title: "Photos - Admin | kskphotos",
-  description: "写真管理 - 写真のアップロード・編集・削除を行います。",
+  title: "Photos - Admin",
 };
 
-export default function AdminPhotosPage() {
+export default async function AdminPhotosPage() {
+  const [photos, collections] = await Promise.all([
+    prisma.photo.findMany({ orderBy: { createdAt: "desc" } }),
+    prisma.collection.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+    }),
+  ]);
+
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">写真管理</h1>
-      <p className="text-muted-foreground">
-        写真のアップロード、メタデータの編集、公開・非公開の切り替えなどを行います。
-      </p>
-    </main>
+    <div>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Photos</h1>
+          <p className="text-sm text-muted-foreground">
+            {photos.length} photos total
+          </p>
+        </div>
+        <PhotoUploadForm collections={collections} />
+      </div>
+      <PhotoTable photos={photos} collections={collections} />
+    </div>
   );
 }
