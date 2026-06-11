@@ -26,11 +26,11 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: {
-    default: "kskphotos",
-    template: "%s | kskphotos",
+    default: "KSK Works — 出張撮影・ポートレート",
+    template: "%s | KSK Works",
   },
   description:
-    "Photography portfolio — portraits, landscapes, events. Book a shoot today.",
+    "KSK Works — 出張撮影・ポートレート。家族写真・七五三からプロフィール・イベント撮影まで、神奈川・東京を中心に承ります。",
 };
 
 export default function RootLayout({

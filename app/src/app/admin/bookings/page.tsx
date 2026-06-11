@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bookings - Admin | kskphotos",
+  title: "Bookings - Admin | KSK Works",
   description: "依頼管理 - 撮影依頼の確認・ステータス管理を行います。",
 };
 

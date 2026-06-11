@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog - Admin | kskphotos",
+  title: "Blog - Admin | KSK Works",
   description: "ブログ記事管理 - 記事の作成・編集・公開管理を行います。",
 };
 

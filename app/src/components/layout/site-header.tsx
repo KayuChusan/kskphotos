@@ -44,7 +44,7 @@ export function SiteHeader() {
           href="/"
           className="font-heading text-2xl font-medium tracking-wide"
         >
-          kskphotos
+          KSK Works
         </Link>
 
         {/* Desktop nav */}
@@ -87,7 +87,7 @@ export function SiteHeader() {
           </SheetTrigger>
           <SheetContent side="right">
             <SheetTitle className="text-left font-heading text-2xl font-medium">
-              kskphotos
+              KSK Works
             </SheetTitle>
             <nav className="mt-10 flex flex-col gap-5">
               {[...mainNav, ...secondaryNav].map((item) => (

@@ -154,7 +154,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          kskphotos
+          KSK Works
         </motion.h1>
         <motion.p
           className="mt-5 font-heading text-xl italic text-white/70 md:text-2xl"

@@ -8,7 +8,7 @@ export function SiteFooter() {
         <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
           <div>
             <p className="font-heading text-3xl font-medium tracking-wide">
-              kskphotos
+              KSK Works
             </p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Capturing moments, telling stories.
@@ -36,7 +36,7 @@ export function SiteFooter() {
 
         <div className="mt-14 flex flex-col items-center justify-between gap-3 border-t pt-6 sm:flex-row">
           <p className="exif-text text-muted-foreground">
-            &copy; {new Date().getFullYear()} kskphotos. All rights reserved.
+            &copy; {new Date().getFullYear()} KSK Works. All rights reserved.
           </p>
           <Link
             href="/privacy"

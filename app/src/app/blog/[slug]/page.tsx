@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog | kskphotos",
+  title: "Blog | KSK Works",
   description: "ブログ記事詳細 - 記事の本文を表示します。",
 };
 
