@@ -56,3 +56,9 @@ variable "secret_env_vars" {
   type        = map(string)
   default     = {}
 }
+
+variable "cloudsql_connection_name" {
+  description = "Cloud SQL connection name (project:region:instance). Empty = no Cloud SQL mount"
+  type        = string
+  default     = ""
+}

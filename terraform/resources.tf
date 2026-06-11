@@ -7,9 +7,10 @@
 module "iam" {
   source = "./modules/iam"
 
-  project_id   = var.gcp_project_id
-  project_name = var.project_name
-  github_repo  = "KayuChusan/kskphotos"
+  project_id             = var.gcp_project_id
+  project_name           = var.project_name
+  github_repo            = "KayuChusan/kskphotos"
+  database_url_secret_id = var.database_url_secret_id
 }
 
 # --- Artifact Registry ---
@@ -44,12 +45,20 @@ module "cloud_run" {
   min_instances  = var.cloud_run_min_instances
   container_port = var.container_port
 
+  cloudsql_connection_name = var.cloudsql_connection_name
+
   env_vars = {
     NODE_ENV        = "production"
     GCS_BUCKET_NAME = module.storage.bucket_name
+    AUTH_TRUST_HOST = "true"
+    ADMIN_EMAIL     = var.admin_email
   }
 
+  # シークレット本体は Terraform 管理外 — デプロイ前に gcloud で作成すること
   secret_env_vars = {
-    DATABASE_URL = var.database_url_secret_id
+    DATABASE_URL       = var.database_url_secret_id
+    AUTH_SECRET        = "kskphotos-auth-secret"
+    AUTH_GOOGLE_ID     = "kskphotos-google-client-id"
+    AUTH_GOOGLE_SECRET = "kskphotos-google-client-secret"
   }
 }

@@ -59,6 +59,18 @@ variable "database_url_secret_id" {
   default     = "kskphotos-database-url"
 }
 
+variable "cloudsql_connection_name" {
+  description = "Shared Cloud SQL connection name (kokumin-pedia 側 Terraform が所有)"
+  type        = string
+  default     = "kskphotos-prod:asia-northeast1:kokumin-pedia-db"
+}
+
+# --- Auth ---
+variable "admin_email" {
+  description = "Admin email allowed to sign in to /admin"
+  type        = string
+}
+
 # --- Domain ---
 variable "domain" {
   description = "Custom domain (optional)"

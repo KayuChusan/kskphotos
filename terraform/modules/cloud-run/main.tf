@@ -58,6 +58,24 @@ resource "google_cloud_run_v2_service" "app" {
         period_seconds        = 10
         failure_threshold     = 3
       }
+
+      dynamic "volume_mounts" {
+        for_each = var.cloudsql_connection_name != "" ? [1] : []
+        content {
+          name       = "cloudsql"
+          mount_path = "/cloudsql"
+        }
+      }
+    }
+
+    dynamic "volumes" {
+      for_each = var.cloudsql_connection_name != "" ? [1] : []
+      content {
+        name = "cloudsql"
+        cloud_sql_instance {
+          instances = [var.cloudsql_connection_name]
+        }
+      }
     }
   }
 

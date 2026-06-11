@@ -48,6 +48,19 @@ resource "google_service_account_iam_member" "cicd_act_as_cloud_run" {
   member             = "serviceAccount:${google_service_account.cicd.email}"
 }
 
+# ビルド時に ISR ページが DB を参照するため、CI から Cloud SQL Auth Proxy で接続する
+resource "google_project_iam_member" "cicd_sql_client" {
+  project = var.project_id
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.cicd.email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "cicd_database_url" {
+  secret_id = var.database_url_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.cicd.email}"
+}
+
 # =============================================================================
 # Workload Identity Federation (GitHub Actions → GCP キーレス認証)
 # =============================================================================
