@@ -38,9 +38,23 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
 
+      # ISR ページが generateStaticParams でビルド時に DB を参照するため、
+      # Auth Proxy を TCP で立てて --network=host のビルドから接続する
+      - name: Start Cloud SQL Auth Proxy
+        run: |
+          curl -sLo /tmp/cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.15.2/cloud-sql-proxy.linux.amd64
+          chmod +x /tmp/cloud-sql-proxy
+          CONNECTION_NAME=$(gcloud secrets versions access latest --secret=kskphotos-database-url | sed -n 's|.*host=/cloudsql/||p')
+          /tmp/cloud-sql-proxy --port 5432 "$CONNECTION_NAME" &
+          sleep 3
+
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          BUILD_DATABASE_URL=$(gcloud secrets versions access latest --secret=kskphotos-database-url \
+            | sed -e 's|@localhost/|@localhost:5432/|' -e 's|?host=/cloudsql/.*||')
+          docker build --network=host \
+            --build-arg DATABASE_URL="$BUILD_DATABASE_URL" \
+            -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
           docker tag ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
                      ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}/${{ env.IMAGE_NAME }}:latest
 
