@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 export function revalidatePhotoPages(photoId?: string) {
   revalidatePath("/");
   revalidatePath("/gallery");
+  revalidatePath("/works");
   revalidatePath("/dashboard");
   revalidateCollectionPages();
   if (photoId) {
