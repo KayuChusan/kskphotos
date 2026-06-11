@@ -1,65 +1,120 @@
-import Image from "next/image";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
+import { HeroSection } from "@/components/home/hero-section";
+import { PhotoCard } from "@/components/gallery/photo-grid";
+import { CountUp } from "@/components/count-up";
 
-export default function Home() {
+// 静的生成 + 管理画面の更新時にオンデマンド再検証（revalidatePhotoPages）
+export const revalidate = 3600;
+
+export default async function HomePage() {
+  const [featured, totalPhotos, lenses, locations] = await Promise.all([
+    prisma.photo.findMany({
+      where: { isPublished: true, isPortfolio: true },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    }),
+    prisma.photo.count({ where: { isPublished: true } }),
+    prisma.photo.findMany({
+      where: { isPublished: true, lensModel: { not: null } },
+      select: { lensModel: true },
+      distinct: ["lensModel"],
+    }),
+    prisma.photo.findMany({
+      where: { isPublished: true, location: { not: null } },
+      select: { location: true },
+      distinct: ["location"],
+    }),
+  ]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <HeroSection photos={featured} />
+
+      {/* Featured work */}
+      <section className="container mx-auto px-4 py-24">
+        <div className="mb-14 flex items-end justify-between border-b pb-5">
+          <div>
+            <p className="eyebrow">
+              <span className="text-safelight">01</span> / Selected Works
+            </p>
+            <h2 className="mt-3 font-heading text-4xl font-medium md:text-5xl">
+              Featured Work
+            </h2>
+          </div>
+          <Link
+            href="/gallery"
+            className="exif-text hidden text-muted-foreground transition-colors hover:text-foreground sm:block"
+          >
+            View All →
+          </Link>
+        </div>
+
+        {featured.length > 0 ? (
+          <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+            {featured.map((photo, i) => (
+              <PhotoCard key={photo.id} photo={photo} index={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="aspect-[3/2] animate-pulse bg-muted" />
+            ))}
+          </div>
+        )}
+
+        <div className="mt-14 text-center sm:hidden">
+          <Link
+            href="/gallery"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "border-foreground/30 font-mono text-[11px] uppercase tracking-[0.2em] hover:bg-foreground hover:text-background"
+            )}
+          >
+            View All Photos
+          </Link>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="border-t py-20">
+        <div className="container mx-auto px-4">
+          <p className="eyebrow mb-12">
+            <span className="text-safelight">02</span> / By the Numbers
           </p>
+          <div className="grid gap-12 text-center sm:grid-cols-3">
+            <div>
+              <p className="font-heading text-7xl font-medium">
+                {totalPhotos ? <CountUp value={totalPhotos} /> : "—"}
+              </p>
+              <p className="eyebrow mt-3">Photos in Gallery</p>
+            </div>
+            <div>
+              <p className="font-heading text-7xl font-medium">
+                {lenses.length ? <CountUp value={lenses.length} /> : "—"}
+              </p>
+              <p className="eyebrow mt-3">Lenses Used</p>
+            </div>
+            <div>
+              <p className="font-heading text-7xl font-medium">
+                {locations.length ? <CountUp value={locations.length} /> : "—"}
+              </p>
+              <p className="eyebrow mt-3">Locations Captured</p>
+            </div>
+          </div>
+          <div className="mt-14 text-center">
+            <Link
+              href="/dashboard"
+              className="exif-text text-muted-foreground underline-offset-8 transition-colors hover:text-foreground hover:underline"
+            >
+              Explore EXIF Dashboard →
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }

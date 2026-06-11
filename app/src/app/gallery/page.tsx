@@ -1,17 +1,32 @@
 import type { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
+import { PhotoGallery } from "@/components/gallery/photo-grid";
 
 export const metadata: Metadata = {
-  title: "Gallery | kskphotos",
-  description: "フォトギャラリー - 撮影した写真の一覧をご覧いただけます。",
+  title: "Gallery",
+  description:
+    "フォトギャラリー — ポートレート、風景、イベント、ストリートスナップ。GPS地図ビューでも閲覧可能。",
 };
 
-export default function GalleryPage() {
+export const revalidate = 3600;
+
+export default async function GalleryPage() {
+  const photos = await prisma.photo.findMany({
+    where: { isPublished: true },
+    orderBy: { createdAt: "desc" },
+  });
+
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">フォトギャラリー</h1>
-      <p className="text-muted-foreground">
-        撮影した写真の一覧です。カテゴリやタグで絞り込みができます。
-      </p>
-    </main>
+    <div className="container mx-auto px-4 py-12">
+      <div className="mb-10">
+        <p className="eyebrow">Portfolio</p>
+        <h1 className="mt-2 font-heading text-5xl font-medium">Gallery</h1>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Browse photos by category, or switch to map view to explore by
+          location.
+        </p>
+      </div>
+      <PhotoGallery photos={photos} />
+    </div>
   );
 }

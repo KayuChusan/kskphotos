@@ -1,17 +1,97 @@
 import type { Metadata } from "next";
+import { Mail, MapPin } from "lucide-react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Contact | kskphotos",
-  description: "お問い合わせ - ご質問やご相談はこちらからお気軽にどうぞ。",
+  title: "Contact",
+  description: "お問い合わせ — ご質問やご相談はお気軽にどうぞ。",
 };
 
 export default function ContactPage() {
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">お問い合わせ</h1>
-      <p className="text-muted-foreground">
-        ご質問やご相談がございましたら、こちらのフォームからお気軽にお問い合わせください。
-      </p>
-    </main>
+    <div className="container mx-auto max-w-4xl px-4 py-12">
+      <div className="mb-10 text-center">
+        <p className="eyebrow">Get in Touch</p>
+        <h1 className="mt-3 font-heading text-5xl font-medium">Contact</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          お気軽にお問い合わせください。
+        </p>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+        <Card>
+          <CardHeader>
+            <CardTitle>Send a Message</CardTitle>
+            <CardDescription>
+              通常2営業日以内にご返信いたします。
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="name">お名前 *</Label>
+                  <Input id="name" placeholder="山田 太郎" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">メールアドレス *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="email@example.com"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="subject">件名 *</Label>
+                <Input id="subject" placeholder="お問い合わせの件名" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="message">メッセージ *</Label>
+                <Textarea
+                  id="message"
+                  placeholder="お問い合わせ内容をご記入ください"
+                  rows={6}
+                  required
+                />
+              </div>
+              <Button type="submit" size="lg" className="w-full">
+                Send Message
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <div className="space-y-6">
+          <div className="flex items-start gap-3">
+            <Mail className="mt-1 size-5 text-muted-foreground" />
+            <div>
+              <p className="text-sm font-medium">Email</p>
+              <p className="text-sm text-muted-foreground">
+                contact@kskphotos.com
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <MapPin className="mt-1 size-5 text-muted-foreground" />
+            <div>
+              <p className="text-sm font-medium">Location</p>
+              <p className="text-sm text-muted-foreground">Tokyo, Japan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

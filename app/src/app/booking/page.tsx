@@ -1,17 +1,110 @@
 import type { Metadata } from "next";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 export const metadata: Metadata = {
-  title: "Booking | kskphotos",
-  description: "撮影依頼フォーム - 撮影のご依頼はこちらからお申し込みください。",
+  title: "Book a Shoot",
+  description:
+    "撮影依頼フォーム — ご要望をお聞かせください。2営業日以内にご連絡いたします。",
 };
 
 export default function BookingPage() {
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">撮影依頼フォーム</h1>
-      <p className="text-muted-foreground">
-        撮影のご依頼はこちらのフォームからお申し込みください。内容を確認後、折り返しご連絡いたします。
-      </p>
-    </main>
+    <div className="container mx-auto max-w-2xl px-4 py-12">
+      <div className="mb-10 text-center">
+        <p className="eyebrow">Reservation</p>
+        <h1 className="mt-3 font-heading text-5xl font-medium">Book a Shoot</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          撮影のご依頼はこちらから。2営業日以内にご連絡いたします。
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Booking Form</CardTitle>
+          <CardDescription>* は必須項目です</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="name">お名前 *</Label>
+                <Input id="name" placeholder="山田 太郎" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">メールアドレス *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="email@example.com"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="phone">電話番号</Label>
+                <Input id="phone" type="tel" placeholder="090-1234-5678" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="service">撮影プラン *</Label>
+                <Select>
+                  <SelectTrigger id="service">
+                    <SelectValue placeholder="プランを選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="portrait">Portrait</SelectItem>
+                    <SelectItem value="family">Family / Couple</SelectItem>
+                    <SelectItem value="event">Event</SelectItem>
+                    <SelectItem value="commercial">Commercial</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="date">撮影希望日</Label>
+                <Input id="date" type="date" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">撮影場所</Label>
+                <Input id="location" placeholder="東京都渋谷区..." />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="message">ご要望・備考</Label>
+              <Textarea
+                id="message"
+                placeholder="撮影イメージや人数、衣装の相談など"
+                rows={5}
+              />
+            </div>
+
+            <Button type="submit" size="lg" className="w-full">
+              Send Booking Request
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
