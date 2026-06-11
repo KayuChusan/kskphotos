@@ -58,20 +58,44 @@ model Session {
 // 写真（EXIF 全フィールド + GPS + ビフォーアフター）
 // ============================================
 
+// ============================================
+// コレクション（シリーズ単位の見せ方）
+// ============================================
+
+model Collection {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  photos      Photo[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model Photo {
   id          String   @id @default(cuid())
   title       String
   description String?
   slug        String?  @unique
 
+  // 所属コレクション（シリーズ）
+  collectionId String?
+  collection   Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+
   // 画像URL
   imageUrl    String
   beforeUrl   String?
   thumbnailUrl String?
+  blurDataUrl String?
 
   // カテゴリ・タグ
   category    PhotoCategory
   tags        String[]
+
+  // 現像レシピ（Lightroom での調整内容）
+  developNotes String?
 
   // 撮影場所
   location    String?
