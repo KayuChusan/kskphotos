@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { auth, emailSignInEnabled } from "@/lib/auth";
 import { SignInForm } from "./signin-form";
 
 export const metadata: Metadata = {
@@ -26,7 +26,10 @@ export default async function SignInPage({ searchParams }: Props) {
             管理画面にアクセスするにはサインインが必要です
           </p>
         </div>
-        <SignInForm callbackUrl={callbackUrl} />
+        <SignInForm
+          callbackUrl={callbackUrl}
+          emailSignInEnabled={emailSignInEnabled}
+        />
       </div>
     </div>
   );

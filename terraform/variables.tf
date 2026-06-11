@@ -71,6 +71,12 @@ variable "admin_email" {
   type        = string
 }
 
+variable "auth_url" {
+  description = "NextAuth canonical URL (OAuth リダイレクト URI と一致させること)"
+  type        = string
+  default     = "https://kskphotos-jfiomxgszq-an.a.run.app"
+}
+
 # --- Domain ---
 variable "domain" {
   description = "Custom domain (optional)"

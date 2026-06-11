@@ -13,9 +13,14 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-export function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
+export function SignInForm({
+  callbackUrl,
+  emailSignInEnabled = false,
+}: {
+  callbackUrl?: string;
+  emailSignInEnabled?: boolean;
+}) {
   const [email, setEmail] = useState("");
-  const isDev = process.env.NODE_ENV === "development";
 
   return (
     <Card>
@@ -30,11 +35,13 @@ export function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
           Sign in with Google
         </Button>
 
-        {isDev && (
+        {emailSignInEnabled && (
           <>
             <div className="flex items-center gap-2">
               <Separator className="flex-1" />
-              <span className="text-xs text-muted-foreground">DEV ONLY</span>
+              <span className="text-xs text-muted-foreground">
+                OR ADMIN EMAIL
+              </span>
               <Separator className="flex-1" />
             </div>
             <form
@@ -48,9 +55,9 @@ export function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
               className="space-y-3"
             >
               <div className="space-y-2">
-                <Label htmlFor="dev-email">Email</Label>
+                <Label htmlFor="admin-email">Email</Label>
                 <Input
-                  id="dev-email"
+                  id="admin-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -59,7 +66,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl?: string }) {
                 />
               </div>
               <Button type="submit" variant="outline" className="w-full">
-                Dev Sign In
+                Sign in with Email
               </Button>
             </form>
           </>

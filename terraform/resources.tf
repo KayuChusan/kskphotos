@@ -51,7 +51,10 @@ module "cloud_run" {
     NODE_ENV        = "production"
     GCS_BUCKET_NAME = module.storage.bucket_name
     AUTH_TRUST_HOST = "true"
+    AUTH_URL        = var.auth_url
     ADMIN_EMAIL     = var.admin_email
+    # Google ログインの一時的な代替。不要になったら "false" に戻す
+    ALLOW_EMAIL_SIGNIN = "true"
   }
 
   # シークレット本体は Terraform 管理外 — デプロイ前に gcloud で作成すること
