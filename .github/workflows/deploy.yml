@@ -34,6 +34,13 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
+      # public/uploads は gitignore のため、写真ファイルは GCS から取得して
+      # イメージに焼き込む（マスターは gs://kskphotos-photos/uploads）
+      - name: Sync photo assets from GCS
+        run: |
+          mkdir -p public/uploads
+          gcloud storage rsync gs://kskphotos-photos/uploads public/uploads --recursive
+
       # --- Artifact Registry に Docker イメージを push ---
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
