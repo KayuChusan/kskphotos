@@ -51,6 +51,7 @@ export default async function HomePage() {
                 議員・候補者のプロフィールやポスター撮影、街頭演説の記録といった政治の現場から、
                 七五三・お宮参り・家族写真まで。
                 その人らしさが伝わる瞬間を逃さず、一枚ずつ丁寧に仕上げてお届けします。
+                現役インフラエンジニアとして、Web サイト制作や IT サポートのご相談にも応じます。
               </p>
               <dl className="mt-10 space-y-3 border-t pt-6">
                 <div className="flex items-baseline justify-between gap-6">

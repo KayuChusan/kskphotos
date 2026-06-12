@@ -39,6 +39,11 @@ const FIELDS = [
     description:
       "講演会・セミナー・パーティーの記録撮影、Web サイトや SNS 用の素材撮影。広報担当の方からのご依頼も承ります。",
   },
+  {
+    title: "Web 制作・IT サポート",
+    description:
+      "現役インフラエンジニアとして、サイト制作や配信環境の構築、保守・運用まで対応。撮影とセットでの一括依頼も可能です。",
+  },
 ];
 
 export default async function WorksPage() {
@@ -119,7 +124,7 @@ export default async function WorksPage() {
           <p className="eyebrow">Fields</p>
           <h2 className="mt-3 font-heading text-3xl font-medium">対応領域</h2>
         </div>
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2">
           {FIELDS.map((field) => (
             <Card key={field.title}>
               <CardHeader>

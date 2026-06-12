@@ -58,6 +58,45 @@ const POLITICS_MENU = [
   },
 ];
 
+const WEB_MENU = [
+  {
+    title: "サイト制作",
+    price: "¥110,000〜",
+    duration: "LP・ポートフォリオ・予約サイト",
+    features: [
+      "構成・デザイン・実装・公開まで一括",
+      "スマホ対応・高速表示",
+      "独自ドメイン・SSL 設定込み",
+      "予約フォーム・ギャラリー組み込み対応",
+      "公開後の更新方法もレクチャー",
+    ],
+  },
+  {
+    title: "政治・選挙の IT サポート",
+    price: "要相談",
+    duration: "サイト・配信・SNS 環境",
+    features: [
+      "公式サイト・後援会サイトの構築",
+      "街宣・集会のライブ配信環境づくり",
+      "SNS 運用環境の整備・素材供給",
+      "撮影とセットでの一括支援が可能",
+      "事務所スタッフ向けレクチャー対応",
+    ],
+  },
+  {
+    title: "保守・運用サポート",
+    price: "月額 ¥11,000〜",
+    duration: "継続契約",
+    features: [
+      "サイトの更新作業・軽微な修正",
+      "ドメイン・サーバー・SSL の管理",
+      "障害時の一次対応",
+      "アクセス状況の簡易レポート",
+      "メール・ツールの困りごと相談",
+    ],
+  },
+];
+
 const PLANS = [
   {
     title: "Portrait",
@@ -235,6 +274,54 @@ export default function ServicesPage() {
           </Card>
         ))}
       </div>
+
+      {/* Web 制作・IT サポート */}
+      <section className="mt-20">
+        <div className="mb-8 text-center">
+          <p className="eyebrow">Web &amp; IT</p>
+          <h2 className="mt-3 font-heading text-3xl font-medium">
+            サイト制作・IT サポート
+          </h2>
+          <p className="mt-3 text-sm text-muted-foreground">
+            現役インフラエンジニアとして、撮影だけでなく Web まわりも一括で支援します。
+          </p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          {WEB_MENU.map((item) => (
+            <Card key={item.title}>
+              <CardHeader>
+                <CardTitle className="font-heading text-xl font-medium">
+                  {item.title}
+                </CardTitle>
+                <CardDescription className="exif-text">
+                  {item.duration}
+                </CardDescription>
+                <p className="mt-1 font-heading text-3xl font-medium">
+                  {item.price}
+                </p>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {item.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-sm">
+                      <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Link
+                  href="/contact"
+                  className={cn(buttonVariants({ variant: "outline" }), "w-full")}
+                >
+                  相談する
+                </Link>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
