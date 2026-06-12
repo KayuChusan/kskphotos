@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Fraunces,
+  Zen_Maru_Gothic,
+  Zen_Kaku_Gothic_New,
+} from "next/font/google";
 import { ViewTransitions } from "next-view-transitions";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -17,11 +23,28 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const cormorant = Cormorant_Garamond({
+// 欧文見出し — 丸みのあるソフトなセリフ
+const fraunces = Fraunces({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
+});
+
+// 和文見出し — 丸ゴシックでとっつきやすく
+const zenMaru = Zen_Maru_Gothic({
+  variable: "--font-jp-heading",
+  weight: ["500", "700"],
+  subsets: ["latin"],
+  preload: false,
+});
+
+// 和文本文 — やわらかい角ゴで読みやすさと信頼感を両立
+const zenKaku = Zen_Kaku_Gothic_New({
+  variable: "--font-jp",
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -42,7 +65,7 @@ export default function RootLayout({
     <ViewTransitions>
       <html
         lang="ja"
-        className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} h-full antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${zenMaru.variable} ${zenKaku.variable} h-full antialiased`}
       >
         <body className="flex min-h-full flex-col">
           <div aria-hidden className="bg-aurora" />
