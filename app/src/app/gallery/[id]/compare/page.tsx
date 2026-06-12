@@ -64,21 +64,9 @@ export default async function ComparePage({ params }: Props) {
 
       <Separator className="my-8" />
 
-      <div className="grid gap-10 md:grid-cols-2">
-        {photo.developNotes && (
-          <div>
-            <h2 className="eyebrow mb-4">
-              <span className="text-safelight">●</span> Develop Notes
-            </h2>
-            <p className="whitespace-pre-line font-mono text-sm leading-relaxed text-muted-foreground">
-              {photo.developNotes}
-            </p>
-          </div>
-        )}
-        <div className="max-w-md">
-          <h2 className="eyebrow mb-4">Shooting Data</h2>
-          <ExifTable photo={photo} />
-        </div>
+      <div className="max-w-md">
+        <h2 className="eyebrow mb-4">Shooting Data</h2>
+        <ExifTable photo={photo} />
       </div>
     </div>
   );

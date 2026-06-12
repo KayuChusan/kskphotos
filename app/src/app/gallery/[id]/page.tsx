@@ -126,20 +126,6 @@ export default async function PhotoDetailPage({ params }: Props) {
             <ExifTable photo={photo} />
           </div>
 
-          {photo.developNotes && (
-            <>
-              <Separator />
-              <div>
-                <h2 className="eyebrow mb-4">
-                  <span className="text-safelight">●</span> Develop Notes
-                </h2>
-                <p className="whitespace-pre-line font-mono text-xs leading-relaxed text-muted-foreground">
-                  {photo.developNotes}
-                </p>
-              </div>
-            </>
-          )}
-
           <Separator />
 
           {/* 撮影来歴 — 生成AI不使用の表明 */}
