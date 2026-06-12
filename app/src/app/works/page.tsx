@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Works",
   description:
-    "撮影実績 — 国民民主党 議員・候補者のポートレートをはじめ、政治・選挙写真からファミリーフォトまで。",
+    "撮影実績 — 議員・候補者のポートレートをはじめ、政治・選挙写真からファミリーフォトまで。",
 };
 
 // 静的生成 + 管理画面の更新時にオンデマンド再検証（revalidatePhotoPages）
@@ -78,7 +78,7 @@ export default async function WorksPage() {
             Politics
           </Badge>
           <h2 className="font-heading text-3xl font-medium">
-            国民民主党 議員・候補者ポートレート
+            議員・候補者ポートレート
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             政治活動の現場で撮り続けてきた、議員・候補者のポートレート。
