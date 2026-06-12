@@ -146,16 +146,35 @@ export function HeroSection({ photos }: HeroSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Photography Portfolio
+          <span className="mr-2 inline-block animate-pulse text-[oklch(0.80_0.13_70)]">
+            ●
+          </span>
+          REC — Photography / Web / IT
         </motion.p>
-        <motion.h1
-          className="mt-5 font-heading text-6xl font-medium tracking-wide md:text-8xl lg:text-9xl"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          KSK Works
-        </motion.h1>
+
+        {/* タイトル: ファインダー枠の中で、印画紙に像が浮かぶように現像される */}
+        <div className="relative mt-5 inline-block px-8 py-6 md:px-14 md:py-9">
+          <motion.div
+            className="pointer-events-none absolute inset-0"
+            initial={{ opacity: 0, scale: 1.08 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.9, delay: 1.2 }}
+            aria-hidden
+          >
+            <span className="absolute left-0 top-0 h-5 w-5 border-l-[1.5px] border-t-[1.5px] border-[oklch(0.80_0.13_70/0.85)]" />
+            <span className="absolute right-0 top-0 h-5 w-5 border-r-[1.5px] border-t-[1.5px] border-[oklch(0.80_0.13_70/0.85)]" />
+            <span className="absolute bottom-0 left-0 h-5 w-5 border-b-[1.5px] border-l-[1.5px] border-[oklch(0.80_0.13_70/0.85)]" />
+            <span className="absolute bottom-0 right-0 h-5 w-5 border-b-[1.5px] border-r-[1.5px] border-[oklch(0.80_0.13_70/0.85)]" />
+          </motion.div>
+          <motion.h1
+            className="bg-gradient-to-br from-white via-white to-[oklch(0.82_0.13_70)] bg-clip-text font-heading text-6xl font-medium tracking-wide text-transparent md:text-8xl lg:text-9xl"
+            initial={{ opacity: 0, y: 30, filter: "blur(16px) brightness(0.3)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px) brightness(1)" }}
+            transition={{ duration: 1.8, delay: 0.4, ease: "easeOut" }}
+          >
+            KSK Works
+          </motion.h1>
+        </div>
         <motion.p
           className="mt-5 font-heading text-xl italic text-white/70 md:text-2xl"
           initial={{ opacity: 0, y: 20 }}
