@@ -183,7 +183,8 @@ export function HeroSection({ photos }: HeroSectionProps) {
             href="/booking"
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),
-              "border-white/50 font-mono text-[11px] uppercase tracking-[0.2em] text-white hover:bg-white/10"
+              // 写真の上に置くため、ライトテーマの bg-background を透過で上書き
+              "border-white/50 bg-transparent font-mono text-[11px] uppercase tracking-[0.2em] text-white hover:bg-white/10 hover:text-white"
             )}
           >
             Book a Shoot
