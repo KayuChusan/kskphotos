@@ -81,8 +81,9 @@ export default async function WorksPage() {
             国民民主党 議員・候補者ポートレート
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            プロフィール・広報用のポートレートを撮影。SNS
-            やポスター、公式サイトで実際に使われる「政治家の顔」をつくります。
+            政治活動の現場で撮り続けてきた、議員・候補者のポートレート。
+            この経験をもとに、プロフィール写真やポスター・SNS
+            用の撮影をお引き受けします。
           </p>
         </div>
 
@@ -110,7 +111,7 @@ export default async function WorksPage() {
                   {photo.title}
                 </p>
                 <p className="exif-text mt-1 text-muted-foreground">
-                  プロフィール・広報用ポートレート
+                  Portrait
                 </p>
               </div>
             </Link>
