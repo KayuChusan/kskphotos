@@ -42,9 +42,10 @@ export default function RootLayout({
     <ViewTransitions>
       <html
         lang="ja"
-        className={`dark ${geistSans.variable} ${geistMono.variable} ${cormorant.variable} h-full antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} h-full antialiased`}
       >
         <body className="flex min-h-full flex-col">
+          <div aria-hidden className="bg-aurora" />
           <SpeculationRules />
           <MotionProvider>
             <SiteHeader />
