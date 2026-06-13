@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 const POLITICS_MENU = [
   {
     title: "プロフィール撮影",
-    price: "¥33,000",
-    duration: "60 min / 税込",
+    price: "¥22,000〜",
+    duration: "60分 / 税込",
     features: [
       "公式サイト・SNS・広報物用",
       "屋内外ロケーション対応",
@@ -34,8 +34,8 @@ const POLITICS_MENU = [
   },
   {
     title: "ポスター用撮影一式",
-    price: "¥55,000〜",
-    duration: "120 min / 税込",
+    price: "¥38,500〜",
+    duration: "120分 / 税込",
     features: [
       "選挙ポスター・リーフレット用",
       "衣装・表情パターン複数撮影",
@@ -46,7 +46,7 @@ const POLITICS_MENU = [
   },
   {
     title: "街宣・イベント記録",
-    price: "¥44,000〜",
+    price: "¥33,000〜",
     duration: "半日 / 税込",
     features: [
       "街頭演説・集会・パーティー",
@@ -61,7 +61,7 @@ const POLITICS_MENU = [
 const WEB_MENU = [
   {
     title: "サイト制作",
-    price: "¥110,000〜",
+    price: "¥88,000〜",
     duration: "LP・ポートフォリオ・予約サイト",
     features: [
       "構成・デザイン・実装・公開まで一括",
@@ -100,8 +100,8 @@ const WEB_MENU = [
 const PLANS = [
   {
     title: "ポートレート",
-    price: "¥15,000",
-    duration: "60分",
+    price: "¥11,000",
+    duration: "60分 / 税込",
     popular: false,
     features: [
       "ロケーション1箇所",
@@ -113,8 +113,8 @@ const PLANS = [
   },
   {
     title: "ファミリー / カップル",
-    price: "¥25,000",
-    duration: "90分",
+    price: "¥16,500",
+    duration: "90分 / 税込",
     popular: true,
     features: [
       "ロケーション2箇所まで",
@@ -127,8 +127,8 @@ const PLANS = [
   },
   {
     title: "イベント",
-    price: "¥40,000〜",
-    duration: "3時間〜",
+    price: "¥33,000〜",
+    duration: "3時間〜 / 税込",
     popular: false,
     features: [
       "イベント全体をカバー",
@@ -142,7 +142,7 @@ const PLANS = [
   {
     title: "商用・法人",
     price: "要相談",
-    duration: "要相談",
+    duration: "内容に応じて",
     popular: false,
     features: [
       "商用利用権込み",
@@ -163,6 +163,19 @@ export default function ServicesPage() {
         <h1 className="mt-3 font-heading text-5xl font-medium">料金・メニュー</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           Sony α7R IV で撮影、Lightroom で丁寧にレタッチ。
+        </p>
+      </div>
+
+      {/* 実績づくり特別価格の案内 */}
+      <div className="mx-auto mb-14 max-w-2xl border border-safelight/40 bg-safelight/5 px-6 py-5 text-center">
+        <p className="exif-text text-safelight">
+          <span className="mr-1.5">●</span> 開業準備期間 特別価格
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          現在は実績づくりの期間として、相場より抑えた特別価格でご案内しています。
+          掲載作例への使用にご協力いただける場合は、さらにご相談に応じます。
+          <br className="hidden sm:block" />
+          ※ 価格は予告なく改定する場合があります。早めのご依頼がお得です。
         </p>
       </div>
 
