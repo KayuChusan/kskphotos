@@ -14,7 +14,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Services",
+  title: "料金・メニュー",
   description:
     "撮影メニュー・料金 — ポートレート、ファミリー、イベント、商用撮影プラン。",
 };
@@ -99,9 +99,9 @@ const WEB_MENU = [
 
 const PLANS = [
   {
-    title: "Portrait",
+    title: "ポートレート",
     price: "¥15,000",
-    duration: "60 min",
+    duration: "60分",
     popular: false,
     features: [
       "ロケーション1箇所",
@@ -112,9 +112,9 @@ const PLANS = [
     ],
   },
   {
-    title: "Family / Couple",
+    title: "ファミリー / カップル",
     price: "¥25,000",
-    duration: "90 min",
+    duration: "90分",
     popular: true,
     features: [
       "ロケーション2箇所まで",
@@ -126,9 +126,9 @@ const PLANS = [
     ],
   },
   {
-    title: "Event",
+    title: "イベント",
     price: "¥40,000〜",
-    duration: "3 hours〜",
+    duration: "3時間〜",
     popular: false,
     features: [
       "イベント全体をカバー",
@@ -140,7 +140,7 @@ const PLANS = [
     ],
   },
   {
-    title: "Commercial",
+    title: "商用・法人",
     price: "要相談",
     duration: "要相談",
     popular: false,
@@ -160,7 +160,7 @@ export default function ServicesPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="mb-14 text-center">
         <p className="eyebrow">Menu &amp; Pricing</p>
-        <h1 className="mt-3 font-heading text-5xl font-medium">Services</h1>
+        <h1 className="mt-3 font-heading text-5xl font-medium">料金・メニュー</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           Sony α7R IV で撮影、Lightroom で丁寧にレタッチ。
         </p>
@@ -268,7 +268,7 @@ export default function ServicesPage() {
                   "w-full"
                 )}
               >
-                Book Now
+                このプランで相談
               </Link>
             </CardFooter>
           </Card>

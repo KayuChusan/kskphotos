@@ -4,7 +4,7 @@ import { Link } from "next-view-transitions";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Collections",
+  title: "コレクション",
   description:
     "シリーズ単位のフォトコレクション — 撮影テーマごとにまとめた作品集。",
 };
@@ -31,7 +31,7 @@ export default async function CollectionsPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="mb-10">
         <p className="eyebrow">Series</p>
-        <h1 className="mt-2 font-heading text-5xl font-medium">Collections</h1>
+        <h1 className="mt-2 font-heading text-5xl font-medium">コレクション</h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
           撮影テーマごとにまとめた作品集。
         </p>
@@ -39,7 +39,7 @@ export default async function CollectionsPage() {
 
       {withPhotos.length === 0 ? (
         <p className="py-12 text-center text-muted-foreground">
-          No collections yet.
+コレクションはまだありません。
         </p>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2">
@@ -74,7 +74,7 @@ export default async function CollectionsPage() {
                       <span className="text-safelight">
                         {collection._count.photos}
                       </span>{" "}
-                      photos
+                      枚
                     </span>
                     {collection.description && (
                       <span className="truncate text-xs text-white/60">

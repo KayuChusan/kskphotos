@@ -4,7 +4,7 @@ import { Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "ブログ",
   description: "ブログ — 撮影日記、カメラ・レンズレビュー、撮影テクニック。",
 };
 
@@ -40,7 +40,7 @@ export default function BlogPage() {
     <div className="container mx-auto max-w-3xl px-4 py-8">
       <div className="mb-10">
         <p className="eyebrow">Journal</p>
-        <h1 className="mt-2 font-heading text-5xl font-medium">Blog</h1>
+        <h1 className="mt-2 font-heading text-5xl font-medium">ブログ</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           撮影日記、機材レビュー、撮影テクニックを発信しています。
         </p>

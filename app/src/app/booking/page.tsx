@@ -17,9 +17,10 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { BookingFlow } from "@/components/home/booking-flow";
 
 export const metadata: Metadata = {
-  title: "Book a Shoot",
+  title: "撮影のご依頼",
   description:
     "撮影依頼フォーム — ご要望をお聞かせください。2営業日以内にご連絡いたします。",
 };
@@ -29,15 +30,23 @@ export default function BookingPage() {
     <div className="container mx-auto max-w-2xl px-4 py-12">
       <div className="mb-10 text-center">
         <p className="eyebrow">Reservation</p>
-        <h1 className="mt-3 font-heading text-5xl font-medium">Book a Shoot</h1>
+        <h1 className="mt-3 font-heading text-5xl font-medium">撮影のご依頼</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           撮影のご依頼はこちらから。2営業日以内にご連絡いたします。
         </p>
       </div>
 
+      {/* ご依頼の流れ */}
+      <section className="mb-14">
+        <p className="eyebrow mb-6">
+          <span className="text-safelight">●</span> ご依頼の流れ
+        </p>
+        <BookingFlow />
+      </section>
+
       <Card>
         <CardHeader>
-          <CardTitle>Booking Form</CardTitle>
+          <CardTitle>ご依頼フォーム</CardTitle>
           <CardDescription>* は必須項目です</CardDescription>
         </CardHeader>
         <CardContent>
@@ -70,10 +79,14 @@ export default function BookingPage() {
                     <SelectValue placeholder="プランを選択" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="portrait">Portrait</SelectItem>
-                    <SelectItem value="family">Family / Couple</SelectItem>
-                    <SelectItem value="event">Event</SelectItem>
-                    <SelectItem value="commercial">Commercial</SelectItem>
+                    <SelectItem value="profile">
+                      政治・選挙(プロフィール / ポスター / 記録)
+                    </SelectItem>
+                    <SelectItem value="portrait">ポートレート</SelectItem>
+                    <SelectItem value="family">ファミリー / カップル</SelectItem>
+                    <SelectItem value="event">イベント</SelectItem>
+                    <SelectItem value="commercial">商用・法人</SelectItem>
+                    <SelectItem value="web">サイト制作・IT サポート</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -100,7 +113,7 @@ export default function BookingPage() {
             </div>
 
             <Button type="submit" size="lg" className="w-full">
-              Send Booking Request
+              この内容で依頼する
             </Button>
           </form>
         </CardContent>

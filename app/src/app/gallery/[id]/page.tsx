@@ -64,7 +64,7 @@ export default async function PhotoDetailPage({ params }: Props) {
         className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
-        Back to Gallery
+        ギャラリーに戻る
       </Link>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
@@ -81,7 +81,7 @@ export default async function PhotoDetailPage({ params }: Props) {
                 )}
               >
                 <span className="text-safelight">RAW</span>
-                &nbsp;View Before / After
+                &nbsp;ビフォーアフターを見る
               </Link>
             </div>
           )}

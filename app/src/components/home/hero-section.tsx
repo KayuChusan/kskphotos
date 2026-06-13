@@ -196,7 +196,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
               "bg-white font-mono text-[11px] uppercase tracking-[0.2em] text-black hover:bg-white/90"
             )}
           >
-            View Gallery
+            ギャラリーを見る
           </Link>
           <Link
             href="/booking"
@@ -206,7 +206,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
               "border-white/50 bg-transparent font-mono text-[11px] uppercase tracking-[0.2em] text-white hover:bg-white/10 hover:text-white"
             )}
           >
-            Book a Shoot
+            撮影を依頼する
           </Link>
         </motion.div>
       </motion.div>

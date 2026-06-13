@@ -34,13 +34,13 @@ const COLORS = [
 ];
 
 const CATEGORY_LABELS: Record<string, string> = {
-  PORTRAIT: "Portrait",
-  LANDSCAPE: "Landscape",
-  EVENT: "Event",
-  STREET: "Street",
-  ARCHITECTURE: "Architecture",
-  FOOD: "Food",
-  OTHER: "Other",
+  PORTRAIT: "ポートレート",
+  LANDSCAPE: "風景",
+  EVENT: "イベント",
+  STREET: "スナップ",
+  ARCHITECTURE: "建築",
+  FOOD: "フード",
+  OTHER: "その他",
 };
 
 function countBy<T>(items: T[], key: (item: T) => string | null) {
@@ -60,8 +60,8 @@ function LensDistribution({ photos }: { photos: Photo[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Lens Usage</CardTitle>
-        <CardDescription>Most used lenses by shot count</CardDescription>
+        <CardTitle>レンズ使用率</CardTitle>
+        <CardDescription>撮影枚数の多いレンズ順</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>
@@ -89,8 +89,8 @@ function CategoryBreakdown({ photos }: { photos: Photo[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Categories</CardTitle>
-        <CardDescription>Photo distribution by category</CardDescription>
+        <CardTitle>カテゴリー比率</CardTitle>
+        <CardDescription>被写体ジャンルごとの割合</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>
@@ -132,8 +132,8 @@ function FocalLengthVsAperture({ photos }: { photos: Photo[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Focal Length vs Aperture</CardTitle>
-        <CardDescription>Scatter plot of shooting parameters</CardDescription>
+        <CardTitle>焦点距離 × 絞り</CardTitle>
+        <CardDescription>1枚ごとの撮影設定の分布</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>
@@ -178,8 +178,8 @@ function IsoDistribution({ photos }: { photos: Photo[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>ISO Range</CardTitle>
-        <CardDescription>How often each ISO range is used</CardDescription>
+        <CardTitle>ISO感度の分布</CardTitle>
+        <CardDescription>感度帯ごとの撮影枚数</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>
@@ -212,7 +212,7 @@ export function ExifDashboard({ photos }: { photos: Photo[] }) {
             <p className="font-heading text-5xl font-medium">
               <CountUp value={photos.length} />
             </p>
-            <p className="eyebrow mt-2">Total Photos</p>
+            <p className="eyebrow mt-2">総撮影枚数</p>
           </CardContent>
         </Card>
         <Card>
@@ -220,7 +220,7 @@ export function ExifDashboard({ photos }: { photos: Photo[] }) {
             <p className="font-heading text-5xl font-medium">
               <CountUp value={uniqueLenses} />
             </p>
-            <p className="eyebrow mt-2">Lenses Used</p>
+            <p className="eyebrow mt-2">使用レンズ数</p>
           </CardContent>
         </Card>
         <Card>
@@ -228,7 +228,7 @@ export function ExifDashboard({ photos }: { photos: Photo[] }) {
             <p className="font-heading text-5xl font-medium">
               <CountUp value={uniqueLocations} />
             </p>
-            <p className="eyebrow mt-2">Locations</p>
+            <p className="eyebrow mt-2">撮影場所数</p>
           </CardContent>
         </Card>
       </div>

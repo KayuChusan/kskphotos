@@ -1,19 +1,21 @@
 export interface NavItem {
+  /** 日本語の主ラベル(来訪者が読む) */
   title: string;
+  /** 英語の装飾サブラベル(デザイン上のアクセント) */
+  en: string;
   href: string;
 }
 
+// 来訪者の動線順: 見る → 実績 → 料金 → 読む → 知る
 export const mainNav: NavItem[] = [
-  { title: "Gallery", href: "/gallery" },
-  { title: "Works", href: "/works" },
-  { title: "Collections", href: "/collections" },
-  { title: "Dashboard", href: "/dashboard" },
-  { title: "Services", href: "/services" },
-  { title: "Blog", href: "/blog" },
-  { title: "About", href: "/about" },
+  { title: "ギャラリー", en: "Gallery", href: "/gallery" },
+  { title: "実績", en: "Works", href: "/works" },
+  { title: "料金", en: "Price", href: "/services" },
+  { title: "ブログ", en: "Journal", href: "/blog" },
+  { title: "プロフィール", en: "About", href: "/about" },
 ];
 
 export const secondaryNav: NavItem[] = [
-  { title: "Booking", href: "/booking" },
-  { title: "Contact", href: "/contact" },
+  { title: "ご依頼", en: "Booking", href: "/booking" },
+  { title: "お問い合わせ", en: "Contact", href: "/contact" },
 ];

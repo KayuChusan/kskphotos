@@ -9,7 +9,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "プロフィール",
   description:
     "フォトグラファープロフィール — 使用機材、撮影スタイル、経歴について。",
 };
@@ -35,9 +35,9 @@ export default function AboutPage() {
     <div className="container mx-auto max-w-3xl px-4 py-8">
       <div className="mb-10">
         <p className="eyebrow">Profile</p>
-        <h1 className="mt-2 font-heading text-5xl font-medium">About</h1>
+        <h1 className="mt-2 font-heading text-5xl font-medium">プロフィール</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Photographer profile and gear
+          撮影者のプロフィールと使用機材について。
         </p>
       </div>
 
@@ -60,13 +60,13 @@ export default function AboutPage() {
 
       {/* Gear */}
       <section>
-        <h2 className="mb-6 font-heading text-3xl font-medium">Equipment</h2>
+        <h2 className="mb-6 font-heading text-3xl font-medium">撮影機材</h2>
         <div className="grid gap-6 sm:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Camera className="size-5" />
-                Camera Body
+                カメラ
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -87,7 +87,7 @@ export default function AboutPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Aperture className="size-5" />
-                Lenses
+                レンズ
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -108,7 +108,7 @@ export default function AboutPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Monitor className="size-5" />
-                Software
+                ソフトウェア
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -131,7 +131,7 @@ export default function AboutPage() {
 
       {/* 真正性ポリシー */}
       <section>
-        <h2 className="mb-6 font-heading text-3xl font-medium">Authenticity</h2>
+        <h2 className="mb-6 font-heading text-3xl font-medium">撮影ポリシー</h2>
         <div className="border border-border/60 p-6">
           <p className="eyebrow mb-4">
             <BadgeCheck className="mr-1.5 inline size-3.5 text-safelight" />

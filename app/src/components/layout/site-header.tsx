@@ -47,30 +47,41 @@ export function SiteHeader() {
           KSK Works
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — 日本語主 + 英字サブの二段 */}
         <nav className="hidden items-center gap-7 md:flex">
-          {mainNav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "exif-text relative transition-colors hover:text-foreground",
-                pathname === item.href
-                  ? "text-foreground after:absolute after:-bottom-1.5 after:left-1/2 after:size-[3px] after:-translate-x-1/2 after:rounded-full after:bg-safelight"
-                  : "text-muted-foreground"
-              )}
-            >
-              {item.title}
-            </Link>
-          ))}
+          {mainNav.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "group relative flex flex-col items-center leading-none transition-colors",
+                  active
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-muted-foreground/60">
+                  {item.en}
+                </span>
+                <span className="mt-1 text-[13px] tracking-wide">
+                  {item.title}
+                </span>
+                {active && (
+                  <span className="absolute -bottom-2 left-1/2 size-[3px] -translate-x-1/2 rounded-full bg-safelight" />
+                )}
+              </Link>
+            );
+          })}
           <Link
             href="/booking"
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
-              "border-foreground/30 font-mono text-[10px] uppercase tracking-[0.15em] hover:bg-foreground hover:text-background"
+              "border-foreground/30 text-xs tracking-wide hover:bg-foreground hover:text-background"
             )}
           >
-            Book a Shoot
+            ご依頼・ご相談
           </Link>
         </nav>
 
@@ -89,19 +100,22 @@ export function SiteHeader() {
             <SheetTitle className="text-left font-heading text-2xl font-medium">
               KSK Works
             </SheetTitle>
-            <nav className="mt-10 flex flex-col gap-5">
+            <nav className="mt-10 flex flex-col gap-6">
               {[...mainNav, ...secondaryNav].map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "font-mono text-xs uppercase tracking-[0.2em] transition-colors hover:text-foreground",
+                    "flex items-baseline gap-3 transition-colors hover:text-foreground",
                     pathname === item.href
                       ? "text-safelight"
                       : "text-muted-foreground"
                   )}
                 >
-                  {item.title}
+                  <span className="text-lg tracking-wide">{item.title}</span>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/50">
+                    {item.en}
+                  </span>
                 </Link>
               ))}
             </nav>

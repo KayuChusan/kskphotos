@@ -15,7 +15,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Works",
+  title: "撮影実績",
   description:
     "撮影実績 — 議員・候補者のポートレートをはじめ、政治・選挙写真からファミリーフォトまで。",
 };
@@ -65,7 +65,7 @@ export default async function WorksPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="mb-14 text-center">
         <p className="eyebrow">Selected Works</p>
-        <h1 className="mt-3 font-heading text-5xl font-medium">Works</h1>
+        <h1 className="mt-3 font-heading text-5xl font-medium">撮影実績</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           政治・選挙写真からファミリーフォトまで、KSK Works の撮影実績。
         </p>

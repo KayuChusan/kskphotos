@@ -11,9 +11,9 @@ export function SiteFooter() {
               KSK Works
             </p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Capturing moments, telling stories.
+              出張撮影・ポートレート。
               <br />
-              Photography portfolio &amp; booking.
+              撮る、つくる、ささえる。
             </p>
             <p className="exif-text mt-5 text-muted-foreground/50">
               <span className="text-safelight">●</span> Sony α7R IV · RAW ·
@@ -21,17 +21,33 @@ export function SiteFooter() {
             </p>
           </div>
 
-          <nav className="flex flex-wrap gap-x-7 gap-y-3">
-            {[...mainNav, ...secondaryNav].map((item) => (
+          <div className="flex flex-col gap-4">
+            <nav className="flex flex-wrap gap-x-7 gap-y-3 md:justify-end">
+              {[...mainNav, ...secondaryNav].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {item.title}
+                </Link>
+              ))}
+            </nav>
+            <nav className="flex flex-wrap gap-x-6 gap-y-2 md:justify-end">
               <Link
-                key={item.href}
-                href={item.href}
-                className="exif-text text-muted-foreground transition-colors hover:text-foreground"
+                href="/collections"
+                className="exif-text text-muted-foreground/70 transition-colors hover:text-foreground"
               >
-                {item.title}
+                コレクション
               </Link>
-            ))}
-          </nav>
+              <Link
+                href="/dashboard"
+                className="exif-text text-muted-foreground/70 transition-colors hover:text-foreground"
+              >
+                撮影データ
+              </Link>
+            </nav>
+          </div>
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-3 border-t pt-6 sm:flex-row">
@@ -40,9 +56,9 @@ export function SiteFooter() {
           </p>
           <Link
             href="/privacy"
-            className="exif-text text-muted-foreground transition-colors hover:text-foreground"
+            className="text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
-            Privacy Policy
+            プライバシーポリシー
           </Link>
         </div>
       </div>

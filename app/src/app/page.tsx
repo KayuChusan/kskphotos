@@ -92,7 +92,7 @@ export default async function HomePage() {
               href="/gallery"
               className="exif-text hidden shrink-0 text-muted-foreground transition-colors hover:text-foreground sm:block"
             >
-              View All →
+              すべて見る →
             </Link>
           </div>
         </div>
@@ -297,19 +297,19 @@ export default async function HomePage() {
               <p className="font-heading text-7xl font-medium">
                 {totalPhotos ? <CountUp value={totalPhotos} /> : "—"}
               </p>
-              <p className="eyebrow mt-3">Photos in Gallery</p>
+              <p className="eyebrow mt-3">掲載写真</p>
             </div>
             <div>
               <p className="font-heading text-7xl font-medium">
                 {lenses.length ? <CountUp value={lenses.length} /> : "—"}
               </p>
-              <p className="eyebrow mt-3">Lenses Used</p>
+              <p className="eyebrow mt-3">使用レンズ</p>
             </div>
             <div>
               <p className="font-heading text-7xl font-medium">
                 {locations.length ? <CountUp value={locations.length} /> : "—"}
               </p>
-              <p className="eyebrow mt-3">Locations Captured</p>
+              <p className="eyebrow mt-3">撮影場所</p>
             </div>
           </div>
           <div className="mt-14 text-center">
@@ -317,7 +317,7 @@ export default async function HomePage() {
               href="/dashboard"
               className="exif-text text-muted-foreground underline-offset-8 transition-colors hover:text-foreground hover:underline"
             >
-              Explore EXIF Dashboard →
+撮影データを見る →
             </Link>
           </div>
         </div>

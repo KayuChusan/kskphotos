@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy",
+  title: "プライバシーポリシー",
   description: "プライバシーポリシー — 個人情報の取り扱いについて。",
 };
 
@@ -10,7 +10,7 @@ export default function PrivacyPolicyPage() {
     <div className="container mx-auto max-w-3xl px-4 py-12">
       <p className="eyebrow">Legal</p>
       <h1 className="mb-10 mt-2 font-heading text-5xl font-medium">
-        Privacy Policy
+        プライバシーポリシー
       </h1>
 
       <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none space-y-6">
