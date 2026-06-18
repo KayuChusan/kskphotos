@@ -73,7 +73,7 @@ export default async function CollectionDetailPage({ params }: Props) {
           No photos in this collection yet.
         </p>
       ) : (
-        <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+        <div className="columns-1 gap-6 sm:columns-2 md:columns-3 xl:columns-4">
           {collection.photos.map((photo, i) => (
             <PhotoCard key={photo.id} photo={photo} index={i} />
           ))}
