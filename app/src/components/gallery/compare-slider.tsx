@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useRef,
+  type KeyboardEvent,
   type PointerEvent,
 } from "react";
 import Image from "next/image";
@@ -83,6 +84,36 @@ export function CompareSlider({
     isDragging.current = false;
   }, []);
 
+  // キーボード操作: ←→で±2、Shift+←→で±10、Home/Endで0/100
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
+    const step = e.shiftKey ? 10 : 2;
+    let absolute: number | null = null;
+    let delta = 0;
+    switch (e.key) {
+      case "ArrowLeft":
+      case "ArrowDown":
+        delta = -step;
+        break;
+      case "ArrowRight":
+      case "ArrowUp":
+        delta = step;
+        break;
+      case "Home":
+        absolute = 0;
+        break;
+      case "End":
+        absolute = 100;
+        break;
+      default:
+        return;
+    }
+    e.preventDefault();
+    sweepDone.current = true; // 自動スイープを中断
+    setPosition((prev) =>
+      Math.max(0, Math.min(100, absolute ?? prev + delta))
+    );
+  }, []);
+
   return (
     <div
       ref={containerRef}
@@ -124,7 +155,23 @@ export function CompareSlider({
         className="absolute top-0 bottom-0 z-10 w-0.5 bg-white shadow-[0_0_4px_rgba(0,0,0,0.5)]"
         style={{ left: `${position}%` }}
       >
-        <div className="absolute top-1/2 left-1/2 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-black/50 shadow-lg">
+        <button
+          type="button"
+          role="slider"
+          aria-label="ビフォーアフター比較スライダー（左右キーで調整）"
+          aria-orientation="horizontal"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(position)}
+          aria-valuetext={`現像前 ${Math.round(position)}%・現像後 ${
+            100 - Math.round(position)
+          }%`}
+          onKeyDown={onKeyDown}
+          onFocus={() => {
+            sweepDone.current = true;
+          }}
+          className="absolute top-1/2 left-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center rounded-full border-2 border-white bg-black/50 text-white shadow-lg outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/40"
+        >
           <svg
             width="20"
             height="20"
@@ -140,7 +187,7 @@ export function CompareSlider({
               strokeLinejoin="round"
             />
           </svg>
-        </div>
+        </button>
       </div>
 
       {/* Labels */}
