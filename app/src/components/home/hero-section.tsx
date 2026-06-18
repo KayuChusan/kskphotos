@@ -223,6 +223,13 @@ export function HeroSection({ photos }: HeroSectionProps) {
           <div className="h-8 w-px bg-gradient-to-b from-white/40 to-transparent" />
         </div>
       </motion.div>
+
+      {/* 暗室 → 印画紙の「現像」受け渡し — 下端を本文(生成り)背景へ溶かし、
+          スクロールで暗室から印画紙へ像が結ぶように継ぎ目をなくす */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-28 bg-gradient-to-b from-transparent to-background"
+      />
     </section>
   );
 }
