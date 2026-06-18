@@ -35,15 +35,15 @@
 
 ## デモ・スクリーンショット
 
-| 項目 | URL / 内容 |
-|------|-----------|
-| 本番サイト | _(デプロイ後に追記)_ |
-| トップ（ヒーロー） | _(スクリーンショットをデプロイ後に追記)_ |
-| 地図ギャラリー | _(スクリーンショットをデプロイ後に追記)_ |
-| EXIF ダッシュボード | _(スクリーンショットをデプロイ後に追記)_ |
-| ビフォーアフター | _(スクリーンショットをデプロイ後に追記)_ |
+**本番サイト**: https://kskphotos-jfiomxgszq-an.a.run.app  （GCP Cloud Run / `asia-northeast1`）
 
-> デプロイ先は GCP Cloud Run（リージョン: `asia-northeast1`）です。Cloud Run は「スケール to ゼロ」（アクセスがない間は台数 0 = 課金 0）で運用しているため、初回アクセス時のみ起動待ち（コールドスタート）が発生します。
+| トップ（ヒーロー） | ギャラリー |
+|:---:|:---:|
+| [![トップ](./docs/screenshots/home.png)](https://kskphotos-jfiomxgszq-an.a.run.app) | [![ギャラリー](./docs/screenshots/gallery.png)](https://kskphotos-jfiomxgszq-an.a.run.app/gallery) |
+| **EXIF ダッシュボード** | **撮影実績 (Works)** |
+| [![EXIFダッシュボード](./docs/screenshots/dashboard.png)](https://kskphotos-jfiomxgszq-an.a.run.app/dashboard) | [![実績](./docs/screenshots/works.png)](https://kskphotos-jfiomxgszq-an.a.run.app/works) |
+
+> デプロイ先は GCP Cloud Run（リージョン: `asia-northeast1`）です。Cloud Run は「スケール to ゼロ」（アクセスがない間は台数 0 = 課金 0）で運用しているため、初回アクセス時のみ起動待ち（コールドスタート）が発生します。スクリーンショットは現在の本番サイトのものです（ビフォーアフター比較は各写真の詳細ページ `/gallery/[id]/compare` で確認できます）。
 
 ---
 
