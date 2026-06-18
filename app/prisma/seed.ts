@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { seedServices } from "./services-data";
 
 /**
  * 開発・デモ用シードデータ。
@@ -119,20 +120,8 @@ async function main() {
     });
   }
 
-  // 撮影サービス（固定 id で冪等）
-  const services = [
-    { id: "seed-svc-portrait", title: "ポートレート撮影", description: "プロフィール・記念のポートレート。自然光ロケーション中心。", price: 22000, duration: "60分", category: "PORTRAIT" as const, features: ["データ20枚以上", "簡易レタッチ込み", "ロケ地相談可"], sortOrder: 1 },
-    { id: "seed-svc-family", title: "家族・七五三撮影", description: "家族の節目を残す出張撮影。お子さま連れも安心。", price: 33000, duration: "90分", category: "FAMILY" as const, features: ["データ40枚以上", "兄弟・祖父母も追加可", "衣装替え対応"], sortOrder: 2 },
-    { id: "seed-svc-event", title: "イベント記録撮影", description: "発表会・式典・社内イベントの記録撮影。", price: 44000, duration: "半日", category: "EVENT" as const, features: ["当日納品の速報あり", "全カット納品", "複数台対応相談可"], sortOrder: 3 },
-    { id: "seed-svc-location", title: "ロケーションフォト", description: "街・海・自然を背景にしたロケ撮影。", price: 38000, duration: "120分", category: "LOCATION" as const, features: ["ロケ地2箇所まで", "データ30枚以上", "時間帯相談可"], sortOrder: 4 },
-  ];
-  for (const s of services) {
-    await prisma.service.upsert({
-      where: { id: s.id },
-      update: { ...s, isActive: true },
-      create: { ...s, isActive: true },
-    });
-  }
+  // 撮影サービス（services-data.ts の共有データ。ローカルは overwrite で初期内容に揃える）
+  await seedServices(prisma, { overwrite: true });
 
   // ブログ（slug で冪等）
   const posts = [

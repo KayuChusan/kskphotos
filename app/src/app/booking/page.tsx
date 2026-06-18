@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
 import {
   Card,
   CardHeader,
@@ -15,7 +16,14 @@ export const metadata: Metadata = {
     "撮影依頼フォーム — ご要望をお聞かせください。2営業日以内にご連絡いたします。",
 };
 
-export default function BookingPage() {
+export const revalidate = 3600;
+
+export default async function BookingPage() {
+  const services = await prisma.service.findMany({
+    where: { isActive: true },
+    orderBy: { sortOrder: "asc" },
+    select: { id: true, title: true },
+  });
   return (
     <div className="container mx-auto max-w-2xl px-4 py-12">
       <div className="mb-10 text-center">
@@ -40,7 +48,7 @@ export default function BookingPage() {
           <CardDescription>* は必須項目です</CardDescription>
         </CardHeader>
         <CardContent>
-          <BookingForm />
+          <BookingForm services={services} />
         </CardContent>
       </Card>
     </div>

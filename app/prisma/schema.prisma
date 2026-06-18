@@ -148,11 +148,14 @@ model Service {
   title       String
   description String
   price       Int
+  // 価格の補足表記（"〜" / "要相談" / "月額〜" など。price=0 のときは単体で表示）
+  priceNote   String?
   duration    String?
   category    ServiceCategory
   imageUrl    String?
   features    String[]
   isActive    Boolean  @default(true)
+  isPopular   Boolean  @default(false)
   sortOrder   Int      @default(0)
   bookings    Booking[]
   createdAt   DateTime @default(now())
@@ -165,6 +168,9 @@ enum ServiceCategory {
   EVENT
   COMMERCIAL
   LOCATION
+  POLITICS
+  WEB_PRODUCTION
+  IT_SUPPORT
 }
 
 // ============================================
