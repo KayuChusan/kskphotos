@@ -297,19 +297,19 @@ export default async function HomePage() {
               <p className="font-heading text-7xl font-medium">
                 {totalPhotos ? <CountUp value={totalPhotos} /> : "—"}
               </p>
-              <p className="eyebrow mt-3">掲載写真</p>
+              <p className="eyebrow-jp mt-3">掲載写真</p>
             </div>
             <div>
               <p className="font-heading text-7xl font-medium">
                 {lenses.length ? <CountUp value={lenses.length} /> : "—"}
               </p>
-              <p className="eyebrow mt-3">使用レンズ</p>
+              <p className="eyebrow-jp mt-3">使用レンズ</p>
             </div>
             <div>
               <p className="font-heading text-7xl font-medium">
                 {locations.length ? <CountUp value={locations.length} /> : "—"}
               </p>
-              <p className="eyebrow mt-3">撮影場所</p>
+              <p className="eyebrow-jp mt-3">撮影場所</p>
             </div>
           </div>
           <div className="mt-14 text-center">
