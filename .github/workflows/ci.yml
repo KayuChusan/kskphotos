@@ -13,6 +13,25 @@ jobs:
     defaults:
       run:
         working-directory: app
+    env:
+      # next build は generateStaticParams でビルド時に DB へ接続するため、
+      # CI でも Postgres サービスを用意して DATABASE_URL を向ける。
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/kskphotos_ci?schema=public
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: kskphotos_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -29,11 +48,17 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
+      - name: Apply database schema
+        run: npx prisma db push
+
       - name: Lint
         run: npm run lint
 
       - name: Type check
         run: npx tsc --noEmit
+
+      - name: Test
+        run: npm run test:run
 
       - name: Build
         run: npm run build

@@ -18,6 +18,12 @@
 - 撮影: RAW → Lightroom 現像 → JPEG 書き出し
 - EXIF は Lightroom 書き出し後も完全保持
 
+## 開発ルール
+
+- **ドキュメント必須**: 設計判断・手順（セットアップ/ビルド/テスト/デプロイ/運用）を追加・変更したら、**同じコミットで** `docs/`（日本語・連番 `NN-*.md`・表中心、図は `docs/diagrams/`）を更新する。`docs/01-project-overview.md` のドキュメント一覧・進捗表も同期。機能/手順は doc 更新まで含めて「完了」とする。
+- **コミット前レビュー**: コード変更はコミット前に Codex レビュー（`/codex:review`）を通す。レビュー専用なので修正は別途 `/codex:rescue` 等で対応。
+- **テスト**: `app/` で Vitest。実行は `npm --prefix app run test:run`。
+
 ## Skills
 
 | コマンド | 用途 |

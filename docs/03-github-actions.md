@@ -9,7 +9,7 @@ GCP への認証は **Workload Identity Federation (WIF)** を使い、サービ
 
 | ファイル | トリガー | 内容 |
 |---------|---------|------|
-| `ci.yml` | PR → main | lint → type-check → build |
+| `ci.yml` | PR → main | Postgres 起動 → lint → type-check → test → build |
 | `deploy.yml` | push → main | WIF認証 → Docker build → Artifact Registry push → Cloud Run デプロイ |
 
 ## CI パイプライン (`ci.yml`)
@@ -18,19 +18,29 @@ GCP への認証は **Workload Identity Federation (WIF)** を使い、サービ
 PR 作成/更新
     │
     ▼
-┌─────────────────┐
-│  checkout        │
-│  setup-node 22   │
-│  npm ci          │
-│  prisma generate │
-│  npm run lint    │
-│  tsc --noEmit    │
-│  npm run build   │
-└─────────────────┘
+┌──────────────────────┐
+│  Postgres 16 service  │ ← ビルド時 DB 接続用
+│  checkout             │
+│  setup-node 22        │
+│  npm ci               │
+│  prisma generate      │
+│  prisma db push       │ ← テスト用DBにスキーマ適用
+│  npm run lint         │
+│  tsc --noEmit         │
+│  npm run test:run     │ ← Vitest ユニットテスト
+│  npm run build        │
+└──────────────────────┘
     │
     ▼
   ✅ or ❌ → PR にステータス表示
 ```
+
+### なぜ CI に Postgres が必要か
+
+`next build` は `generateStaticParams`（`/collections/[slug]`、`/gallery/[id]` など）で
+**ビルド時に DB へクエリ**するため、DB が無いと `ECONNREFUSED` でビルドが失敗する。
+そのため CI ジョブに `postgres:16` サービスコンテナを立て、`DATABASE_URL` をそこへ向け、
+`prisma db push` で空スキーマを適用してからビルドする（`deploy.yml` は Cloud SQL Auth Proxy で同等の役割）。
 
 ## Deploy パイプライン (`deploy.yml`)
 
