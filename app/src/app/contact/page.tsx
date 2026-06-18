@@ -7,10 +7,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
   title: "お問い合わせ",
@@ -32,44 +29,10 @@ export default function ContactPage() {
         <Card>
           <CardHeader>
             <CardTitle>メッセージを送る</CardTitle>
-            <CardDescription>
-              通常2営業日以内にご返信いたします。
-            </CardDescription>
+            <CardDescription>通常2営業日以内にご返信いたします。</CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">お名前 *</Label>
-                  <Input id="name" placeholder="山田 太郎" required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">メールアドレス *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="email@example.com"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="subject">件名 *</Label>
-                <Input id="subject" placeholder="お問い合わせの件名" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="message">メッセージ *</Label>
-                <Textarea
-                  id="message"
-                  placeholder="お問い合わせ内容をご記入ください"
-                  rows={6}
-                  required
-                />
-              </div>
-              <Button type="submit" size="lg" className="w-full">
-                送信する
-              </Button>
-            </form>
+            <ContactForm />
           </CardContent>
         </Card>
 
@@ -78,9 +41,7 @@ export default function ContactPage() {
             <Mail className="mt-1 size-5 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">メール</p>
-              <p className="text-sm text-muted-foreground">
-                info@kskworks.jp
-              </p>
+              <p className="text-sm text-muted-foreground">info@kskworks.jp</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
