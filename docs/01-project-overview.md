@@ -163,4 +163,7 @@ kskphotos/                     ← プロジェクトルート（git root）
 - [07. データモデル(Prisma)ガイド](./07-data-model.md)
 - [08. コスト最適化と訴求する強み](./08-cost-and-strengths.md)
 - [09. 面接想定 Q&A](./09-interview-qa.md)
+- [10. ローカル開発環境セットアップ手順](./10-local-development.md)
+- [11. データベース運用ガイド (Prisma)](./11-database-operations.md)
+- [12. ギャラリー3本柱 機能ディープダイブ](./12-gallery-features.md)
 - [ADR（アーキテクチャ意思決定記録）](./adr/README.md)
