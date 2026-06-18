@@ -10,7 +10,7 @@ GCP への認証は **Workload Identity Federation (WIF)** を使い、サービ
 | ファイル | トリガー | 内容 |
 |---------|---------|------|
 | `ci.yml` | PR → main | Postgres 起動 → lint → type-check → test → build |
-| `deploy.yml` | push → main | WIF認証 → Docker build → Artifact Registry push → Cloud Run デプロイ |
+| `deploy.yml` | push → main | WIF認証 → **DBスキーマ同期(`prisma db push`・追加のみ非破壊)** → Docker build → Artifact Registry push → Cloud Run デプロイ |
 
 ## CI パイプライン (`ci.yml`)
 
