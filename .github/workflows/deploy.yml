@@ -55,6 +55,28 @@ jobs:
           /tmp/cloud-sql-proxy --port 5432 "$CONNECTION_NAME" &
           sleep 3
 
+      # スキーマ変更を本番 DB へ反映してからビルド（generateStaticParams /
+      # ISR が新フィールドを参照するため、ビルド前に同期が必要）。
+      # 追加のみ(非破壊)の変更を db push で同期。--accept-data-loss は付けず、
+      # 破壊的変更は意図的に失敗させる（誤ってデータを落とさないガード）。
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies & generate client
+        run: |
+          npm ci
+          npx prisma generate
+
+      - name: Sync DB schema and service menu (additive, non-destructive)
+        run: |
+          DB_URL=$(gcloud secrets versions access latest --secret=kskphotos-database-url \
+            | sed -e 's|@localhost/|@localhost:5432/|' -e 's|?host=/cloudsql/.*||')
+          DATABASE_URL="$DB_URL" npx prisma db push
+          DATABASE_URL="$DB_URL" npx tsx prisma/seed-services.ts
+
       - name: Build Docker image
         run: |
           BUILD_DATABASE_URL=$(gcloud secrets versions access latest --secret=kskphotos-database-url \

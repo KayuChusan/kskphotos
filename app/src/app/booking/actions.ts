@@ -8,16 +8,6 @@ export type BookingState = {
   message?: string;
 };
 
-// 撮影プランの選択肢ラベル（PR-3 で Service.id 連動に置き換え予定）
-const PLAN_LABELS: Record<string, string> = {
-  profile: "政治・選挙（プロフィール / ポスター / 記録）",
-  portrait: "ポートレート",
-  family: "ファミリー / カップル",
-  event: "イベント",
-  commercial: "商用・法人",
-  web: "サイト制作・IT サポート",
-};
-
 const schema = z.object({
   name: z.string().trim().min(1, "お名前は必須です").max(100),
   email: z
@@ -26,14 +16,13 @@ const schema = z.object({
     .email("メールアドレスの形式が正しくありません")
     .max(200),
   phone: z.string().trim().max(40).optional(),
-  plan: z.string().trim().min(1, "撮影プランを選択してください"),
+  serviceId: z.string().trim().min(1, "撮影プランを選択してください"),
   date: z.string().trim().optional(),
   location: z.string().trim().max(200).optional(),
   message: z.string().trim().max(4000).optional(),
 });
 
 // 公開フォーム（認証なし）。Booking を作成する。
-// 現状 serviceId は実 Service.id と未連動のため、選択プランは message に集約して記録する。
 export async function submitBooking(
   _prev: BookingState,
   formData: FormData
@@ -42,7 +31,7 @@ export async function submitBooking(
     name: formData.get("name"),
     email: formData.get("email"),
     phone: formData.get("phone") || undefined,
-    plan: formData.get("plan") || undefined,
+    serviceId: formData.get("serviceId") || undefined,
     date: formData.get("date") || undefined,
     location: formData.get("location") || undefined,
     message: formData.get("message") || undefined,
@@ -51,9 +40,18 @@ export async function submitBooking(
     return { status: "error", message: parsed.error.issues[0].message };
   }
   const d = parsed.data;
-  const planLabel = PLAN_LABELS[d.plan] ?? d.plan;
+
+  // 選択プランを検証（有効なプランのみ受理）し、依頼内容に控える
+  const service = await prisma.service.findFirst({
+    where: { id: d.serviceId, isActive: true },
+    select: { id: true, title: true },
+  });
+  if (!service) {
+    return { status: "error", message: "選択された撮影プランが見つかりません" };
+  }
+
   const composedMessage =
-    `【ご希望プラン】${planLabel}` + (d.message ? `\n\n${d.message}` : "");
+    `【ご希望プラン】${service.title}` + (d.message ? `\n\n${d.message}` : "");
 
   let preferredDate: Date | undefined;
   if (d.date) {
@@ -67,6 +65,7 @@ export async function submitBooking(
         name: d.name,
         email: d.email,
         phone: d.phone || undefined,
+        serviceId: service.id,
         preferredDate,
         location: d.location || undefined,
         message: composedMessage,

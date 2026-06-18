@@ -9,12 +9,14 @@ import {
   LayoutDashboard,
   Layers,
   MessageSquare,
+  Tag,
 } from "lucide-react";
 
 const adminNav = [
   { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { title: "Photos", href: "/admin/photos", icon: ImageIcon },
   { title: "Collections", href: "/admin/collections", icon: Layers },
+  { title: "Services", href: "/admin/services", icon: Tag },
   { title: "Bookings", href: "/admin/bookings", icon: Calendar },
   { title: "Messages", href: "/admin/messages", icon: MessageSquare },
   { title: "Blog", href: "/admin/blog", icon: FileText },

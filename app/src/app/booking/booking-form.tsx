@@ -16,7 +16,9 @@ import { submitBooking, type BookingState } from "./actions";
 
 const initial: BookingState = { status: "idle" };
 
-export function BookingForm() {
+type ServiceOption = { id: string; title: string };
+
+export function BookingForm({ services }: { services: ServiceOption[] }) {
   const [state, formAction, pending] = useActionState(submitBooking, initial);
 
   if (state.status === "success") {
@@ -56,19 +58,16 @@ export function BookingForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="service">撮影プラン *</Label>
-          <Select name="plan">
+          <Select name="serviceId">
             <SelectTrigger id="service" className="w-full">
               <SelectValue placeholder="プランを選択" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="profile">
-                政治・選挙(プロフィール / ポスター / 記録)
-              </SelectItem>
-              <SelectItem value="portrait">ポートレート</SelectItem>
-              <SelectItem value="family">ファミリー / カップル</SelectItem>
-              <SelectItem value="event">イベント</SelectItem>
-              <SelectItem value="commercial">商用・法人</SelectItem>
-              <SelectItem value="web">サイト制作・IT サポート</SelectItem>
+              {services.map((s) => (
+                <SelectItem key={s.id} value={s.id}>
+                  {s.title}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
