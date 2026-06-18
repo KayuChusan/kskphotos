@@ -8,6 +8,7 @@ import {
   FileText,
   LayoutDashboard,
   Layers,
+  MessageSquare,
 } from "lucide-react";
 
 const adminNav = [
@@ -15,6 +16,7 @@ const adminNav = [
   { title: "Photos", href: "/admin/photos", icon: ImageIcon },
   { title: "Collections", href: "/admin/collections", icon: Layers },
   { title: "Bookings", href: "/admin/bookings", icon: Calendar },
+  { title: "Messages", href: "/admin/messages", icon: MessageSquare },
   { title: "Blog", href: "/admin/blog", icon: FileText },
 ];
 
