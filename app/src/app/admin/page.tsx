@@ -46,7 +46,7 @@ export default async function AdminDashboardPage() {
       title: "Unread Messages",
       count: messageCount,
       icon: MessageSquare,
-      href: "/admin",
+      href: "/admin/messages",
     },
   ];
 
