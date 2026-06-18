@@ -104,8 +104,9 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
             <button
               key={cat}
               onClick={() => setCategory(cat)}
+              aria-pressed={category === cat}
               className={cn(
-                "exif-text border-b pb-1 transition-colors",
+                "exif-text border-b pb-1 outline-none transition-colors focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ring",
                 category === cat
                   ? "border-safelight text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground"

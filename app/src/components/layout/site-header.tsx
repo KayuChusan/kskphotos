@@ -77,8 +77,8 @@ export function SiteHeader() {
           <Link
             href="/booking"
             className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "border-foreground/30 text-xs tracking-wide hover:bg-foreground hover:text-background"
+              buttonVariants({ variant: "default", size: "sm" }),
+              "text-xs tracking-wide"
             )}
           >
             ご依頼・ご相談
@@ -90,7 +90,7 @@ export function SiteHeader() {
           <SheetTrigger
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon" }),
-              "md:hidden"
+              "size-11 md:hidden"
             )}
           >
             <Menu className="h-5 w-5" />
@@ -106,7 +106,7 @@ export function SiteHeader() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-baseline gap-3 transition-colors hover:text-foreground",
+                    "flex items-baseline gap-3 py-2 transition-colors hover:text-foreground",
                     pathname === item.href
                       ? "text-safelight"
                       : "text-muted-foreground"
