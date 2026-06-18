@@ -10,18 +10,37 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "撮影実績",
   description:
-    "撮影実績 — 議員・候補者のポートレートをはじめ、政治・選挙写真からファミリーフォトまで。",
+    "撮影実績 — 議員・候補者のポートレートをはじめ、政治・選挙写真からファミリーフォトまで、ジャンル別にご覧いただけます。",
 };
 
 // 静的生成 + 管理画面の更新時にオンデマンド再検証（revalidatePhotoPages）
 export const revalidate = 3600;
+
+// カテゴリ（ジャンル）の日本語ラベルと表示順
+const CATEGORY_LABELS: Record<string, string> = {
+  PORTRAIT: "ポートレート",
+  EVENT: "イベント",
+  STREET: "スナップ",
+  LANDSCAPE: "風景",
+  ARCHITECTURE: "建築",
+  FOOD: "フード",
+  OTHER: "その他",
+};
+const CATEGORY_ORDER = [
+  "PORTRAIT",
+  "EVENT",
+  "STREET",
+  "LANDSCAPE",
+  "ARCHITECTURE",
+  "FOOD",
+  "OTHER",
+] as const;
 
 const FIELDS = [
   {
@@ -49,10 +68,11 @@ const FIELDS = [
 export default async function WorksPage() {
   const photos = await prisma.photo.findMany({
     where: { isPublished: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     select: {
       id: true,
       title: true,
+      category: true,
       imageUrl: true,
       thumbnailUrl: true,
       imageWidth: true,
@@ -61,63 +81,70 @@ export default async function WorksPage() {
     },
   });
 
+  // ジャンル（カテゴリ）別にまとめる。写真のある順序カテゴリのみ表示
+  const groups = CATEGORY_ORDER.map((cat) => ({
+    cat,
+    label: CATEGORY_LABELS[cat],
+    items: photos.filter((p) => p.category === cat),
+  })).filter((g) => g.items.length > 0);
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-14 text-center">
         <p className="eyebrow">Selected Works</p>
         <h1 className="mt-3 font-heading text-5xl font-medium">撮影実績</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          政治・選挙写真からファミリーフォトまで、KSK Works の撮影実績。
+          政治・選挙写真からファミリーフォトまで、ジャンル別にご覧いただけます。
         </p>
       </div>
 
-      {/* 政治・選挙ポートレート実績 */}
-      <section className="mb-20">
-        <div className="mb-8">
-          <Badge className="mb-3 bg-safelight font-mono text-[10px] uppercase tracking-[0.15em] text-black">
-            Politics
-          </Badge>
-          <h2 className="font-heading text-3xl font-medium">
-            議員・候補者ポートレート
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            政治活動の現場で撮り続けてきた、議員・候補者のポートレート。
-            この経験をもとに、プロフィール写真やポスター・SNS
-            用の撮影をお引き受けします。
-          </p>
-        </div>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {photos.map((photo) => (
-            <Link
-              key={photo.id}
-              href={`/gallery/${photo.id}`}
-              className="group block"
-            >
-              <div className="viewfinder relative overflow-hidden">
-                <Image
-                  src={photo.thumbnailUrl ?? photo.imageUrl}
-                  alt={photo.title}
-                  width={photo.imageWidth ?? 1200}
-                  height={photo.imageHeight ?? 800}
-                  placeholder={photo.blurDataUrl ? "blur" : "empty"}
-                  blurDataURL={photo.blurDataUrl ?? undefined}
-                  className="h-auto w-full transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-110"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-              </div>
-              <div className="mt-3">
-                <p className="font-heading text-lg font-medium">
-                  {photo.title}
-                </p>
-                <p className="exif-text mt-1 text-muted-foreground">
-                  Portrait
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* ジャンル（カテゴリ）別の実績 */}
+      {groups.length === 0 ? (
+        <p className="py-12 text-center text-muted-foreground">
+          実績はまだありません。
+        </p>
+      ) : (
+        groups.map((group) => (
+          <section key={group.cat} className="mb-20">
+            <div className="mb-8 flex items-baseline gap-3">
+              <h2 className="font-heading text-3xl font-medium">{group.label}</h2>
+              <span className="exif-text text-muted-foreground">
+                {group.items.length} 点
+              </span>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {group.items.map((photo) => (
+                <Link
+                  key={photo.id}
+                  href={`/gallery/${photo.id}`}
+                  className="group block"
+                >
+                  <div className="viewfinder relative overflow-hidden">
+                    <Image
+                      src={photo.thumbnailUrl ?? photo.imageUrl}
+                      alt={photo.title}
+                      width={photo.imageWidth ?? 1200}
+                      height={photo.imageHeight ?? 800}
+                      placeholder={photo.blurDataUrl ? "blur" : "empty"}
+                      blurDataURL={photo.blurDataUrl ?? undefined}
+                      className="h-auto w-full transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-110"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <p className="font-heading text-lg font-medium">
+                      {photo.title}
+                    </p>
+                    <p className="exif-text mt-1 text-muted-foreground">
+                      {group.label}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ))
+      )}
 
       {/* 対応領域 */}
       <section className="mb-20">
@@ -179,7 +206,10 @@ export default async function WorksPage() {
           料金の詳細とご依頼はこちらから
         </p>
         <div className="flex gap-3">
-          <Link href="/services" className={cn(buttonVariants({ variant: "outline" }))}>
+          <Link
+            href="/services"
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
             料金を見る
           </Link>
           <Link href="/booking" className={cn(buttonVariants())}>
