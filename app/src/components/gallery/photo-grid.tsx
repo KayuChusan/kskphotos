@@ -61,7 +61,7 @@ export function PhotoCard({
             placeholder={photo.blurDataUrl ? "blur" : "empty"}
             blurDataURL={photo.blurDataUrl ?? undefined}
             className="h-auto w-full transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-110"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
             style={{ viewTransitionName: `photo-${photo.id}` }}
           />
         </div>
@@ -145,7 +145,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="columns-1 gap-6 sm:columns-2 lg:columns-3"
+            className="columns-1 gap-6 sm:columns-2 md:columns-3 xl:columns-4"
           >
             {filtered.map((photo, i) => (
               <PhotoCard key={photo.id} photo={photo} index={i} />

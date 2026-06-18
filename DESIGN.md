@@ -149,7 +149,7 @@ p { text-wrap: pretty; }
 - タッチ最小 **44px**（ハンバーガー `size-11`、Sheet nav リンク `py-2`、主要 CTA）。
 - ヘッダーはモバイルで Sheet（右ドロワー）に集約。
 - コンテナ上限: `@utility container` で `max-width: 90rem`（1440px）。超ワイドでの写真列・行長の間延びを防止（1440px 以下の一般的な画面は従来どおり）。
-- **TODO（任意）**: `md`（768〜1023px）帯の密度の微調整。
+- 密度: 写真マソンリーは `sm:columns-2 md:columns-3 xl:columns-4`（md=768〜1023px の谷を解消し、最大幅 90rem 内で wide も密に）。コンテンツ系2カラム（画像+文・チャート）は窮屈化を避け据え置き。
 
 ---
 
