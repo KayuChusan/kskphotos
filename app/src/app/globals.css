@@ -48,6 +48,28 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* 影スケール — 黒ではなく前景色(暖色)を低不透明度で。印画紙のトーンに馴染ませる */
+@theme {
+  --shadow-2xs: 0 1px 2px 0 oklch(0.27 0.012 75 / 0.05);
+  --shadow-xs: 0 1px 3px 0 oklch(0.27 0.012 75 / 0.06);
+  --shadow-sm:
+    0 2px 4px -1px oklch(0.27 0.012 75 / 0.07),
+    0 1px 2px -1px oklch(0.27 0.012 75 / 0.06);
+  --shadow-md:
+    0 4px 10px -2px oklch(0.27 0.012 75 / 0.08),
+    0 2px 4px -2px oklch(0.27 0.012 75 / 0.06);
+  --shadow-lg:
+    0 12px 24px -6px oklch(0.27 0.012 75 / 0.1),
+    0 4px 8px -4px oklch(0.27 0.012 75 / 0.07);
+  --shadow-xl: 0 20px 40px -8px oklch(0.27 0.012 75 / 0.12);
+}
+
+/* コンテナ最大幅 — 超ワイドで写真列・本文行長が間延びするのを防ぐ */
+@utility container {
+  margin-inline: auto;
+  max-width: 90rem;
+}
+
 /* 印画紙(生成り)を基調にした、やわらかいウォームライト */
 :root {
   --background: oklch(0.975 0.008 85);

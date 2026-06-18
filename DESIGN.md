@@ -112,7 +112,7 @@ p { text-wrap: pretty; }
 
 ## 5. レイアウト原則
 
-- コンテナ: `container mx-auto px-4` を基本ラッパに統一。
+- コンテナ: `container mx-auto px-4` を基本ラッパに統一。最大幅は `@utility container` で `90rem`（1440px）。
 - 縦リズム: セクション `py-20`〜`py-24`、見出し直下 `mt-3`〜`mt-4`。
 - 本文計測幅: 和文の可読のため長文は `max-w-xl` 目安。
 - ギャラリー: マソンリー `columns-1 sm:columns-2 lg:columns-3`。2 カラムセクションは `lg:grid-cols-2`。
@@ -122,7 +122,7 @@ p { text-wrap: pretty; }
 ## 6. 深度 & エレベーション
 
 - `--radius`（`0.625rem`）基準に `sm(0.6x)`〜`4xl(2.6x)` のスケールを定義済み。
-- 影: 現状は各コンポーネント個別指定。**TODO（bigger bet）**: `--shadow-xs/sm/md/lg` をライト（暖色低彩度）/ダーク（黒+ボーダー）別にトークン化し、`card=resting`→`hover で 1 段` の昇降ルールへ統一。面の前後は カード < ポップオーバー < ダイアログ。
+- 影: Tailwind の `shadow-*` を **暖色トークン化済み**（`@theme` で `--shadow-2xs`〜`--shadow-xl` を黒ではなく前景色 `oklch(0.27 0.012 75)` の低不透明度に定義。印画紙トーンに馴染む）。`shadow-sm/md/lg` がそのまま暖色影に。面の前後は カード < ポップオーバー < ダイアログ。
 
 ---
 
@@ -148,7 +148,8 @@ p { text-wrap: pretty; }
 - モバイルファースト。ブレークポイント `sm / md / lg / 2xl`。
 - タッチ最小 **44px**（ハンバーガー `size-11`、Sheet nav リンク `py-2`、主要 CTA）。
 - ヘッダーはモバイルで Sheet（右ドロワー）に集約。
-- **TODO（bigger bet）**: `md`（768〜1023px）帯の密度の谷、超ワイドでのコンテナ上限（`max-w-screen-xl` 等）。
+- コンテナ上限: `@utility container` で `max-width: 90rem`（1440px）。超ワイドでの写真列・行長の間延びを防止（1440px 以下の一般的な画面は従来どおり）。
+- **TODO（任意）**: `md`（768〜1023px）帯の密度の微調整。
 
 ---
 
