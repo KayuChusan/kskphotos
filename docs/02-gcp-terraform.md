@@ -159,3 +159,13 @@ Cloud Run **ドメインマッピング**（追加課金なし・Google 自動SS
 6. **認証の切替（確認後）**: `terraform.tfvars` に `auth_url = "https://kskworks.jp"` を追加し、`resources.tf` の `ALLOW_EMAIL_SIGNIN` を `"false"` に変更して `terraform apply`（パスワードレス email-signin を封鎖。Google ログイン確認後に実施）。
 
 > マッピング作成・DNS・OAuth・ログイン確認は **`terraform apply` と外部操作**であり、PR マージでは反映されません（`deploy.yml` は terraform apply を実行しない）。
+
+## メール通知 (Resend)
+
+問い合わせ/予約は常に DB 保存され、加えて運営者へメール通知できます（`app/src/lib/mail.ts`）。**未設定なら通知は no-op**（保存は継続）。有効化手順：
+
+1. Resend でアカウント作成 → API キー取得 → 送信元ドメイン `kskworks.jp` の認証（SPF/DKIM の DNS レコードを追加）。
+2. Secret 作成: `gcloud secrets create kskphotos-resend-api-key`、`... versions add ... --data-file=-`（キーを投入）。
+3. `terraform.tfvars` に `notification_email = "info@kskworks.jp"`（通知先）と `enable_resend = true` を設定 → `terraform apply`。
+   - `enable_resend=false`（既定）の間は `RESEND_API_KEY` シークレットを参照しないため、未作成でも Cloud Run は起動する。
+4. 送信元アドレスを変えるなら env `NOTIFICATION_FROM`（既定 `KSK Works <noreply@kskworks.jp>`）。

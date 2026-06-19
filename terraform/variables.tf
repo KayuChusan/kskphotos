@@ -83,3 +83,16 @@ variable "domain" {
   type        = string
   default     = ""
 }
+
+# --- Notification (Resend) ---
+variable "notification_email" {
+  description = "問い合わせ/予約の通知先メール(空 = 通知なし)"
+  type        = string
+  default     = ""
+}
+
+variable "enable_resend" {
+  description = "Resend 通知を有効化(true の場合 Secret kskphotos-resend-api-key が必要)"
+  type        = bool
+  default     = false
+}

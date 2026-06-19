@@ -49,20 +49,22 @@ module "cloud_run" {
   cloudsql_connection_name = var.cloudsql_connection_name
 
   env_vars = {
-    NODE_ENV        = "production"
-    GCS_BUCKET_NAME = module.storage.bucket_name
-    AUTH_TRUST_HOST = "true"
-    AUTH_URL        = var.auth_url
-    ADMIN_EMAIL     = var.admin_email
+    NODE_ENV           = "production"
+    GCS_BUCKET_NAME    = module.storage.bucket_name
+    AUTH_TRUST_HOST    = "true"
+    AUTH_URL           = var.auth_url
+    ADMIN_EMAIL        = var.admin_email
+    NOTIFICATION_EMAIL = var.notification_email
     # Google ログインの一時的な代替。不要になったら "false" に戻す
     ALLOW_EMAIL_SIGNIN = "true"
   }
 
   # シークレット本体は Terraform 管理外 — デプロイ前に gcloud で作成すること
-  secret_env_vars = {
+  # RESEND_API_KEY は enable_resend=true のときのみ参照(未作成での起動失敗を防ぐ)
+  secret_env_vars = merge({
     DATABASE_URL       = var.database_url_secret_id
     AUTH_SECRET        = "kskphotos-auth-secret"
     AUTH_GOOGLE_ID     = "kskphotos-google-client-id"
     AUTH_GOOGLE_SECRET = "kskphotos-google-client-secret"
-  }
+  }, var.enable_resend ? { RESEND_API_KEY = "kskphotos-resend-api-key" } : {})
 }
