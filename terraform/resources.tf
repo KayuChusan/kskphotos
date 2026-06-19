@@ -55,8 +55,8 @@ module "cloud_run" {
     AUTH_URL           = var.auth_url
     ADMIN_EMAIL        = var.admin_email
     NOTIFICATION_EMAIL = var.notification_email
-    # Google ログインの一時的な代替。不要になったら "false" に戻す
-    ALLOW_EMAIL_SIGNIN = "true"
+    # Google ログイン確認済み(2026-06-19)につき封鎖。パスワードレス侵入の穴を塞ぐ。
+    ALLOW_EMAIL_SIGNIN = "false"
   }
 
   # シークレット本体は Terraform 管理外 — デプロイ前に gcloud で作成すること
