@@ -2,7 +2,14 @@ import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 
 export const authConfig = {
-  providers: [Google],
+  providers: [
+    // allowDangerousEmailAccountLinking: 同一メールの既存 User に Google を後付け連携する。
+    // 過去に email サインイン(Credentials)で作られた User 行は Google の Account を持たず、
+    // そのままだと OAuthAccountNotLinked で Google ログインが弾かれるため必要。
+    // 本サイトは管理者1名のみ + signIn コールバックで email === ADMIN_EMAIL に限定しており、
+    // 別プロバイダ経由の成りすまし連携リスクがないため安全。
+    Google({ allowDangerousEmailAccountLinking: true }),
+  ],
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/signin",
