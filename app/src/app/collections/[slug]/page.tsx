@@ -3,6 +3,7 @@ import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { pageSeo } from "@/lib/seo";
 import { PhotoCard } from "@/components/gallery/photo-grid";
 
 interface Props {
@@ -21,11 +22,26 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const collection = await prisma.collection.findUnique({ where: { slug } });
+  const collection = await prisma.collection.findUnique({
+    where: { slug },
+    include: {
+      photos: {
+        where: { isPublished: true },
+        orderBy: [{ sortOrder: "asc" }, { dateTaken: "desc" }],
+        take: 1,
+        select: { imageUrl: true },
+      },
+    },
+  });
   if (!collection) return { title: "Not Found" };
   return {
     title: collection.title,
     description: collection.description ?? `${collection.title} — フォトコレクション`,
+    ...pageSeo({
+      path: `/collections/${slug}`,
+      image: collection.photos[0]?.imageUrl,
+      type: "article",
+    }),
   };
 }
 

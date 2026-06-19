@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 
 export const metadata: Metadata = {
+  ...pageSeo({ path: "/privacy" }),
   title: "プライバシーポリシー",
   description: "プライバシーポリシー — 個人情報の取り扱いについて。",
 };

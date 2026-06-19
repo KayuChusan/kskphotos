@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import Image from "next/image";
 import { Link } from "next-view-transitions";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
+  ...pageSeo({ path: "/collections" }),
   title: "コレクション",
   description:
     "シリーズ単位のフォトコレクション — 撮影テーマごとにまとめた作品集。",

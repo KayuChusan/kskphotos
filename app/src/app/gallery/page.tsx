@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import { PhotoGallery } from "@/components/gallery/photo-grid";
 
 export const metadata: Metadata = {
+  ...pageSeo({ path: "/gallery" }),
   title: "ギャラリー",
   description:
     "フォトギャラリー — ポートレート、風景、イベント、ストリートスナップ。GPS地図ビューでも閲覧可能。",

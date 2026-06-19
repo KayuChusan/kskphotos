@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import { Mail, MapPin } from "lucide-react";
 import {
   Card,
@@ -10,6 +11,7 @@ import {
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
+  ...pageSeo({ path: "/contact" }),
   title: "お問い合わせ",
   description: "お問い合わせ — ご質問やご相談はお気軽にどうぞ。",
 };

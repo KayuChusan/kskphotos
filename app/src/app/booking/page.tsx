@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import {
   Card,
@@ -11,6 +12,7 @@ import { BookingFlow } from "@/components/home/booking-flow";
 import { BookingForm } from "./booking-form";
 
 export const metadata: Metadata = {
+  ...pageSeo({ path: "/booking" }),
   title: "撮影のご依頼",
   description:
     "撮影依頼フォーム — ご要望をお聞かせください。2営業日以内にご連絡いたします。",

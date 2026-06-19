@@ -6,6 +6,7 @@ import { CompareSlider } from "@/components/gallery/compare-slider";
 import { ExifTable } from "@/components/gallery/exif-table";
 import { Separator } from "@/components/ui/separator";
 import { prisma } from "@/lib/prisma";
+import { pageSeo } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -28,6 +29,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `Before & After — ${photo.title}`,
     description: `${photo.title} のレタッチ前後を比較。RAW現像の過程をご覧いただけます。`,
+    ...pageSeo({
+      path: `/gallery/${id}/compare`,
+      image: photo.imageUrl,
+      type: "article",
+    }),
   };
 }
 
