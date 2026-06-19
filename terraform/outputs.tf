@@ -32,3 +32,8 @@ output "github_wif_service_account" {
   description = "Service account for GitHub Actions CI/CD"
   value       = module.iam.cicd_sa_email
 }
+
+output "domain_mapping_records" {
+  description = "独自ドメインの DNS に設定するレコード(apex の A/AAAA)。apply 後に確認"
+  value       = module.cloud_run.domain_mapping_records
+}

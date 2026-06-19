@@ -92,3 +92,20 @@ resource "google_cloud_run_v2_service_iam_member" "public" {
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
+
+# 独自ドメインのマッピング(追加課金なし・Google 自動SSL)。var.domain 指定時のみ。
+# 前提: Search Console でドメイン所有権の確認を済ませること。apply 後、
+# `terraform output domain_mapping_records` で得た A/AAAA(apex は CNAME 不可)を DNS に設定。
+# SSL プロビジョニングは最大24時間。
+resource "google_cloud_run_domain_mapping" "app" {
+  count    = var.domain != "" ? 1 : 0
+  name     = var.domain
+  location = var.region
+
+  metadata {
+    namespace = var.project_id
+  }
+  spec {
+    route_name = google_cloud_run_v2_service.app.name
+  }
+}

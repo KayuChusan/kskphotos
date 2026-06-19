@@ -34,16 +34,17 @@ module "storage" {
 module "cloud_run" {
   source = "./modules/cloud-run"
 
-  project_id     = var.gcp_project_id
-  project_name   = var.project_name
-  region         = var.gcp_region
-  image          = "${module.artifact_registry.repository_url}/${var.project_name}:latest"
+  project_id      = var.gcp_project_id
+  project_name    = var.project_name
+  region          = var.gcp_region
+  image           = "${module.artifact_registry.repository_url}/${var.project_name}:latest"
   service_account = module.iam.cloud_run_sa_email
-  cpu            = var.cloud_run_cpu
-  memory         = var.cloud_run_memory
-  max_instances  = var.cloud_run_max_instances
-  min_instances  = var.cloud_run_min_instances
-  container_port = var.container_port
+  cpu             = var.cloud_run_cpu
+  memory          = var.cloud_run_memory
+  max_instances   = var.cloud_run_max_instances
+  min_instances   = var.cloud_run_min_instances
+  container_port  = var.container_port
+  domain          = var.domain
 
   cloudsql_connection_name = var.cloudsql_connection_name
 
