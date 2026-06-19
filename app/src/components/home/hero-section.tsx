@@ -211,16 +211,16 @@ export function HeroSection({ photos }: HeroSectionProps) {
         </motion.div>
       </motion.div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — 下端の現像グラデ(生成り)の上に置き、暗い写真上で読めるようにする */}
       <motion.div
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
+        className="absolute bottom-20 left-1/2 z-10 -translate-x-1/2"
         animate={{ y: [0, 8, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
         style={{ opacity: textOpacity }}
       >
-        <div className="flex flex-col items-center gap-2">
-          <span className="exif-text text-white/40">Scroll</span>
-          <div className="h-8 w-px bg-gradient-to-b from-white/40 to-transparent" />
+        <div className="flex flex-col items-center gap-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">
+          <span className="exif-text text-white/70">Scroll</span>
+          <div className="h-8 w-px bg-gradient-to-b from-white/70 to-transparent" />
         </div>
       </motion.div>
 
@@ -228,7 +228,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
           スクロールで暗室から印画紙へ像が結ぶように継ぎ目をなくす */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-28 bg-gradient-to-b from-transparent to-background"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-gradient-to-b from-transparent to-background"
       />
     </section>
   );
