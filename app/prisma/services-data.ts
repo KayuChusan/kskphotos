@@ -12,6 +12,7 @@ export const SERVICES = [
   { id: "seed-svc-web", title: "サイト制作", description: "構成からデザイン・実装・公開まで一括対応。", price: 88000, priceNote: "〜", duration: "LP・ポートフォリオ・予約サイト", category: "WEB_PRODUCTION" as const, isPopular: false, features: ["構成・デザイン・実装・公開まで一括", "スマホ対応・高速表示", "独自ドメイン・SSL 設定込み", "予約フォーム・ギャラリー組み込み対応", "公開後の更新方法もレクチャー"], sortOrder: 8 },
   { id: "seed-svc-it", title: "政治・選挙の IT サポート", description: "公式サイト・ライブ配信・SNS 運用の支援。", price: 0, priceNote: "要相談", duration: "サイト・配信・SNS 環境", category: "IT_SUPPORT" as const, isPopular: false, features: ["公式サイト・後援会サイトの構築", "街宣・集会のライブ配信環境づくり", "SNS 運用環境の整備・素材供給", "撮影とセットでの一括支援が可能", "事務所スタッフ向けレクチャー対応"], sortOrder: 9 },
   { id: "seed-svc-maint", title: "保守・運用サポート", description: "サイトの更新・管理・障害一次対応。", price: 11000, priceNote: "〜", duration: "月額・継続契約", category: "IT_SUPPORT" as const, isPopular: false, features: ["サイトの更新作業・軽微な修正", "ドメイン・サーバー・SSL の管理", "障害時の一次対応", "アクセス状況の簡易レポート", "メール・ツールの困りごと相談"], sortOrder: 10 },
+  { id: "seed-svc-web-renew", title: "サイトのリニューアル・引き継ぎ", description: "既存サイトのリニューアルや、他社・自作サイトの運用引き継ぎにも対応。", price: 0, priceNote: "要相談", duration: "現状確認のうえお見積り", category: "WEB_PRODUCTION" as const, isPopular: false, features: ["既存サイトのデザイン刷新・改修", "他社・自作サイトの運用引き継ぎ", "表示速度・スマホ対応・SEO の改善", "ドメイン・サーバーの移管サポート", "撮影とセットで素材から一新も可"], sortOrder: 11 },
 ];
 
 /**

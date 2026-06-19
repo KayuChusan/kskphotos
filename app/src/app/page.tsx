@@ -161,11 +161,17 @@ export default async function HomePage() {
               </h2>
               <p className="mt-6 text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
                 撮った写真が活きる Web サイトを、構成からデザイン・実装・公開まで一括で。
-                公開後の更新や運用代行もそのまま任せられます。
-                LP・ポートフォリオ・予約サイト・後援会サイトまで —
+                新規制作はもちろん、公開後の運用・保守、既存サイトの引き継ぎやリニューアルにも対応します。
+                撮影とまとめてご依頼いただくと、素材からサイトまで一貫＋セット価格でお得に。
                 ご覧いただいているこのサイト自体が制作例です。
               </p>
-              <div className="mt-8 flex gap-8">
+              <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+                <Link
+                  href="/guide"
+                  className="exif-text text-muted-foreground underline-offset-8 transition-colors hover:text-foreground hover:underline"
+                >
+                  ご利用案内（撮影×Web）→
+                </Link>
                 <Link
                   href="/services"
                   className="exif-text text-muted-foreground underline-offset-8 transition-colors hover:text-foreground hover:underline"
