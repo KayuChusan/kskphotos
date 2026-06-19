@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { sendNotification } from "@/lib/mail";
 
 export type ContactState = {
   status: "idle" | "success" | "error";
@@ -36,6 +37,11 @@ export async function submitContact(
 
   try {
     await prisma.contactMessage.create({ data: parsed.data });
+    await sendNotification({
+      subject: `【お問い合わせ】${parsed.data.subject}`,
+      text: `お名前: ${parsed.data.name}\nメール: ${parsed.data.email}\n件名: ${parsed.data.subject}\n\n${parsed.data.message}`,
+      replyTo: parsed.data.email,
+    });
     return {
       status: "success",
       message: "送信しました。ご連絡ありがとうございます。",

@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { sendNotification } from "@/lib/mail";
 
 export type BookingState = {
   status: "idle" | "success" | "error";
@@ -70,6 +71,11 @@ export async function submitBooking(
         location: d.location || undefined,
         message: composedMessage,
       },
+    });
+    await sendNotification({
+      subject: `【撮影依頼】${d.name} 様 / ${service.title}`,
+      text: `お名前: ${d.name}\nメール: ${d.email}\n電話: ${d.phone ?? "-"}\nプラン: ${service.title}\n希望日: ${d.date ?? "-"}\n場所: ${d.location ?? "-"}\n\n${composedMessage}`,
+      replyTo: d.email,
     });
     return {
       status: "success",
