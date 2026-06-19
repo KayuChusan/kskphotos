@@ -62,3 +62,9 @@ variable "cloudsql_connection_name" {
   type        = string
   default     = ""
 }
+
+variable "domain" {
+  description = "Custom domain to map to this service (empty = no mapping)"
+  type        = string
+  default     = ""
+}
