@@ -176,12 +176,20 @@ export function HeroSection({ photos }: HeroSectionProps) {
           </motion.h1>
         </div>
         <motion.p
-          className="mt-5 font-heading text-xl italic text-white/70 md:text-2xl"
+          className="mt-5 font-heading text-2xl font-medium text-white/85 md:text-3xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          Capturing moments, telling stories
+          撮る、つくる、ささえる。
+        </motion.p>
+        <motion.p
+          className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/65 md:text-base"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.72 }}
+        >
+          写真撮影から Web サイトの制作・運用まで、ひとつの窓口で。
         </motion.p>
         <motion.div
           className="mt-9 flex justify-center gap-4"
