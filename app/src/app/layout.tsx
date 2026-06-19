@@ -47,13 +47,69 @@ const zenKaku = Zen_Kaku_Gothic_New({
   preload: false,
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kskworks.jp";
+const siteDescription =
+  "KSK Works — 出張撮影・ポートレート。家族写真・七五三からプロフィール・イベント撮影、政治・選挙写真まで、神奈川・東京を中心に承ります。";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "KSK Works — 出張撮影・ポートレート",
     template: "%s | KSK Works",
   },
-  description:
-    "KSK Works — 出張撮影・ポートレート。家族写真・七五三からプロフィール・イベント撮影まで、神奈川・東京を中心に承ります。",
+  description: siteDescription,
+  applicationName: "KSK Works",
+  keywords: [
+    "出張撮影",
+    "ポートレート",
+    "家族写真",
+    "七五三",
+    "プロフィール写真",
+    "イベント撮影",
+    "選挙ポスター",
+    "政治 写真",
+    "神奈川",
+    "東京",
+    "フォトグラファー",
+  ],
+  authors: [{ name: "KSK Works" }],
+  creator: "KSK Works",
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    url: siteUrl,
+    siteName: "KSK Works",
+    title: "KSK Works — 出張撮影・ポートレート",
+    description: siteDescription,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KSK Works — 出張撮影・ポートレート",
+    description: siteDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+};
+
+// 出張撮影＝地域ビジネスのローカルSEO向け構造化データ
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  name: "KSK Works",
+  description: siteDescription,
+  url: siteUrl,
+  image: `${siteUrl}/opengraph-image`,
+  email: "info@kskworks.jp",
+  areaServed: ["神奈川県", "東京都"],
+  serviceType: [
+    "出張撮影",
+    "ポートレート撮影",
+    "イベント撮影",
+    "Web制作・IT サポート",
+  ],
 };
 
 export default function RootLayout({
@@ -68,6 +124,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${zenMaru.variable} ${zenKaku.variable} h-full antialiased`}
       >
         <body className="flex min-h-full flex-col">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
           <div aria-hidden className="bg-aurora" />
           <SpeculationRules />
           <MotionProvider>
