@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { pageSeo } from "@/lib/seo";
 import { Badge } from "@/components/ui/badge";
 
 export const revalidate = 3600;
@@ -26,6 +27,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt ?? `${post.title} — KSK Works`,
+    ...pageSeo({
+      path: `/blog/${slug}`,
+      image: post.coverImage,
+      type: "article",
+      publishedTime: post.publishedAt?.toISOString() ?? null,
+    }),
   };
 }
 

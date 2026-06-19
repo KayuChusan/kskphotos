@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import Link from "next/link";
 import Image from "next/image";
 import { FileCheck, MapPin, Clock } from "lucide-react";
@@ -14,6 +15,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
+  ...pageSeo({ path: "/works" }),
   title: "撮影実績",
   description:
     "撮影実績 — 議員・候補者のポートレートをはじめ、政治・選挙写真からファミリーフォトまで、ジャンル別にご覧いただけます。",

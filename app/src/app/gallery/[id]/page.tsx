@@ -9,6 +9,7 @@ import { ExifTable } from "@/components/gallery/exif-table";
 import { PhotoLightbox } from "@/components/gallery/photo-lightbox";
 import { cn } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
+import { pageSeo } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -28,9 +29,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const photo = await prisma.photo.findUnique({ where: { id } });
   if (!photo) return { title: "Not Found" };
+  // EXIF 部品を組み立て、欠損項目を除いてから連結（末尾ダッシュの破綻を防ぐ）
+  const exif = [
+    photo.lensModel,
+    photo.aperture ? `f/${photo.aperture}` : null,
+    photo.shutterSpeed ? `${photo.shutterSpeed}s` : null,
+    photo.iso ? `ISO ${photo.iso}` : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const description =
+    photo.description?.trim() ||
+    (exif ? `${photo.title} — ${exif}` : `${photo.title} — Sony α7R IV で撮影`);
   return {
     title: photo.title,
-    description: `${photo.title} — ${photo.lensModel ?? ""} ${photo.aperture ? `f/${photo.aperture}` : ""} ${photo.shutterSpeed ? `${photo.shutterSpeed}s` : ""} ${photo.iso ? `ISO ${photo.iso}` : ""}`.trim(),
+    description,
+    ...pageSeo({
+      path: `/gallery/${id}`,
+      image: photo.imageUrl,
+      type: "article",
+    }),
   };
 }
 

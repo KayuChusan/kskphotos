@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import { Camera, Aperture, BadgeCheck, Monitor } from "lucide-react";
 import {
   Card,
@@ -9,6 +10,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
+  ...pageSeo({ path: "/about" }),
   title: "プロフィール",
   description:
     "フォトグラファープロフィール — 使用機材、撮影スタイル、経歴について。",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { prisma } from "@/lib/prisma";
@@ -15,6 +16,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
+  ...pageSeo({ path: "/services" }),
   title: "料金・メニュー",
   description:
     "撮影メニュー・料金 — 政治・選挙、ポートレート、ファミリー、イベント、商用撮影、Web 制作・IT サポート。",

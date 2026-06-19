@@ -1,8 +1,12 @@
+import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { HeroSection } from "@/components/home/hero-section";
 import { CountUp } from "@/components/count-up";
+
+export const metadata: Metadata = pageSeo({ path: "/" });
 
 // 静的生成 + 管理画面の更新時にオンデマンド再検証（revalidatePhotoPages）
 export const revalidate = 3600;

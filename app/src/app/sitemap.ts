@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   const now = new Date();
-  const staticRoutes: MetadataRoute.Sitemap = [
+  const staticPaths = [
     "",
     "/gallery",
     "/works",
@@ -29,10 +29,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/services",
     "/booking",
     "/about",
-    "/blog",
+    ...(posts.length > 0 ? ["/blog"] : []),
     "/contact",
     "/privacy",
-  ].map((path) => ({
+  ];
+  const staticRoutes: MetadataRoute.Sitemap = staticPaths.map((path) => ({
     url: `${siteUrl}${path}`,
     lastModified: now,
   }));

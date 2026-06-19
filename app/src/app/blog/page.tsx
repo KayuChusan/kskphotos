@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { pageSeo } from "@/lib/seo";
 import Link from "next/link";
 import { Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
+  ...pageSeo({ path: "/blog" }),
   title: "ブログ",
   description: "ブログ — 撮影日記、カメラ・レンズレビュー、撮影テクニック。",
 };

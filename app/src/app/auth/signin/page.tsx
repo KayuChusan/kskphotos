@@ -6,6 +6,7 @@ import { SignInForm } from "./signin-form";
 export const metadata: Metadata = {
   title: "Sign In",
   description: "管理画面へのサインイン",
+  robots: { index: false, follow: false },
 };
 
 interface Props {
