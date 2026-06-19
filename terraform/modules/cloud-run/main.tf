@@ -83,6 +83,22 @@ resource "google_cloud_run_v2_service" "app" {
     type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
     percent = 100
   }
+
+  # CD(deploy.yml/gcloud)と terraform が同じフィールドを奪い合わないようにする。
+  # deploy.yml は image を :<github.sha>、revision labels(commit-sha 等)を、
+  # gcloud/API は client 情報や service-level scaling を更新する。これらを
+  # 管理対象から外すことで、terraform apply(ドメインマッピングの -target で
+  # 本 service が依存に入るケース含む)が image を :latest に差し替えたり
+  # commit-sha label を消す巻き添えを防ぐ。env/secret は引き続き terraform 管理。
+  lifecycle {
+    ignore_changes = [
+      client,
+      client_version,
+      scaling,
+      template[0].labels,
+      template[0].containers[0].image,
+    ]
+  }
 }
 
 resource "google_cloud_run_v2_service_iam_member" "public" {
