@@ -141,7 +141,7 @@ export default function AboutPage() {
           </p>
           <p className="text-sm leading-relaxed text-muted-foreground">
             当サイトに掲載するすべての写真は、実際のカメラ（Sony α7R
-            IV）で撮影したものです。現像は Adobe Lightroom での RAW
+            VI）で撮影したものです。現像は Adobe Lightroom での RAW
             現像（露出・色調整・トリミング）のみを行い、
             <span className="text-foreground">
               生成AIによる画像の生成・合成・要素の追加や削除は一切行っていません
