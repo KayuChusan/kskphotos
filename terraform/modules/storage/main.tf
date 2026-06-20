@@ -35,6 +35,37 @@ resource "google_storage_bucket_iam_member" "cloud_run_access" {
   member = "serviceAccount:${var.cloud_run_sa}"
 }
 
+# --- 高画素オリジナル用 非公開バケット（会員DL専用） ---
+# photos バケットは allUsers 読み取りが付いて全公開のため、解錠ゲートを
+# 効かせる原本はここに保存し、解錠後の署名 URL でのみ配信する（allUsers は付与しない）。
+resource "google_storage_bucket" "originals" {
+  name     = "${var.project_name}-originals"
+  location = var.region
+
+  uniform_bucket_level_access = true
+  force_destroy               = false
+
+  versioning {
+    enabled = false
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 365
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
+  }
+}
+
+resource "google_storage_bucket_iam_member" "originals_cloud_run_access" {
+  bucket = google_storage_bucket.originals.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${var.cloud_run_sa}"
+}
+
 # --- CDN 用にパブリック読み取り許可 ---
 resource "google_storage_bucket_iam_member" "public_read" {
   bucket = google_storage_bucket.photos.name

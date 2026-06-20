@@ -45,3 +45,5 @@ next-env.d.ts
 
 # user uploads (Cloud Storage in production)
 /public/uploads
+# 高画素オリジナルの開発フォールバック（public 外・非配信）
+/.local-originals

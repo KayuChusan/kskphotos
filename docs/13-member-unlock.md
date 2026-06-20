@@ -26,7 +26,7 @@ note 限定記事の /u/<token> リンク
 | `Collection.isLocked` | true で会員限定（解錠まで EXIF・現像レシピ・(将来)マスク・高画素を出さない） |
 | `UnlockToken` | 解錠トークン。`tokenHash` のみ保存（平文は発行時に一度だけ表示）。`collectionId` / `label` / `expiresAt` / `revoked` |
 | `Photo.isLocked` | 未解錠時にマスク（ぼかし）する写真。管理画面の写真テーブルでトグル |
-| `Photo.originalUrl` | （Phase 3）高画素ダウンロード用 |
+| `Photo.originalUrl` | 高画素オリジナル(4096px)の保存キー。**非公開バケット**に格納し公開 URL は持たない |
 
 ## 主要ファイル
 
@@ -36,6 +36,9 @@ note 限定記事の /u/<token> リンク
 | `src/lib/unlock-server.ts` | RSC から Cookie を読み、トークンID を DB と突き合わせて**失効・期限を毎回検証**（管理画面での失効が即時反映） |
 | `src/lib/photo-visibility.ts` | `redactPhotoMeta`（EXIF・現像・GPS を伏せる）／`maskPhotoImage`（本画像 URL も取り除き blur+寸法のみ残す）／`excludeLockedPhotos`（公開一覧からロック写真を除外する where 断片）。テスト: `photo-visibility.test.ts` |
 | `src/components/gallery/locked-tile.tsx` | マスク表示タイル。`blurDataUrl` だけを描画（本画像を参照しない）＋鍵アイコン＋「会員限定」ラベル |
+| `src/lib/storage.ts` | `saveOriginal`/`deleteOriginal`/`getOriginalSignedUrl`（本番=短期V4署名URL）/`readOriginal`（開発フォールバック）。非公開バケット `GCS_ORIGINALS_BUCKET` を使用 |
+| `src/lib/images.ts` | `processOriginal`（4096px・高品質JPEG 生成） |
+| `src/app/gallery/[id]/download/route.ts` | 高画素DL。会員限定×解錠済みのみ配信。本番は署名URLへリダイレクト、開発は直接ストリーム |
 | `src/app/u/[token]/route.ts` | 解錠リンク。Cookie 発行 → コレクションへリダイレクト |
 | `src/app/admin/collections/*` | 会員限定トグル＋解錠リンク発行/失効（管理画面） |
 
@@ -57,4 +60,27 @@ note 限定記事の /u/<token> リンク
 
 - **Phase 1（実装済み）**：解錠基盤＋ EXIF・現像レシピの会員限定表示＋公開一覧からの除外。
 - **Phase 2（実装済み）**：一部写真のマスク。`Photo.isLocked` 写真を未解錠時に `maskPhotoImage`＋`LockedTile` でぼかし、本画像を一切出さない（一覧・詳細・比較・OGP）。管理画面の写真テーブルにロックトグル追加。
-- **Phase 3**：高画素ダウンロード（`originalUrl` 保存＋解錠ゲート付き DL ルート）。GCS 容量・配信コストは [02-gcp-terraform.md](./02-gcp-terraform.md) のコスト方針を参照。
+- **Phase 3（実装済み）**：高画素ダウンロード。アップロード時に 4096px オリジナルを**非公開バケット**へ保存し、会員限定×解錠済みのときだけ `/gallery/[id]/download` が短期署名 URL を発行して配信。
+
+## 高画素ダウンロード（Phase 3）
+
+- **保存先は非公開バケット**：公開 `photos` バケットは `allUsers` 読み取りで全公開のため、原本は別の非公開バケット `${project}-originals`（allUsers 無し）に保存。`Photo.originalUrl` は公開 URL ではなく保存キー。
+- **配信は短期署名 URL**：解錠確認後、サーバーが V4 署名 URL（5分）を発行しリダイレクト。転送は GCS が直接負担し Cloud Run を経由しない。署名は秘密鍵を使わず IAM SignBlob（SA に `roles/iam.serviceAccountTokenCreator` を自己付与）。
+- **特典の範囲**：高画素 DL は会員限定（`isLocked`）コレクション×解錠済みのみ。公開コレクションや未解錠は 404/403 で原本を一切露出しない。
+- **解像度/コスト**：4096px・高品質 JPEG（1枚2〜4MB）。フル解像度オリジナルより容量・転送コストを約1/10に抑える。
+- **既存写真**：`originalUrl` が無い既存写真は DL ボタン非表示（再アップロードで付与）。
+
+### デプロイ手順（重要）
+
+新バケット・署名権限・env を本番へ反映するため、コードデプロイの前に Terraform を**ターゲット指定**で apply（全 apply は保留中の CDN を作るため不可）。
+
+```
+cd terraform
+terraform apply \
+  -target=module.storage.google_storage_bucket.originals \
+  -target=module.storage.google_storage_bucket_iam_member.originals_cloud_run_access \
+  -target=module.iam.google_service_account_iam_member.cloud_run_sign_blob \
+  -target=module.cloud_run
+```
+
+`module.cloud_run` の apply で `GCS_ORIGINALS_BUCKET` env が注入される。未設定のままだとアップロード原本がインスタンスの一時ディスク（非永続）に書かれるため、apply 後に運用開始すること。

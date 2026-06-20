@@ -5,9 +5,14 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { extractExif, isRawFile, extractPreviewJpeg } from "@/lib/exif";
-import { processImage, VARIANT_WIDTHS } from "@/lib/images";
+import { processImage, processOriginal, VARIANT_WIDTHS } from "@/lib/images";
 import { revalidatePhotoPages } from "@/lib/revalidate";
-import { saveFile, deleteFile } from "@/lib/storage";
+import {
+  saveFile,
+  deleteFile,
+  saveOriginal,
+  deleteOriginal,
+} from "@/lib/storage";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -135,6 +140,13 @@ export async function createPhoto(formData: FormData): Promise<ActionResult> {
       `${timestamp}-${slug}`
     );
 
+    // 会員向け高画素オリジナル(4096px)を非公開バケットへ保存
+    const original = await processOriginal(sourceBuffer);
+    const originalUrl = await saveOriginal(
+      original,
+      `${timestamp}-${slug}-original.jpg`
+    );
+
     let beforeUrl: string | undefined;
     const beforeFile = formData.get("beforeFile") as File | null;
     if (beforeFile && beforeFile.size > 0) {
@@ -167,6 +179,7 @@ export async function createPhoto(formData: FormData): Promise<ActionResult> {
         imageUrl,
         beforeUrl,
         thumbnailUrl,
+        originalUrl,
         blurDataUrl: processed.blurDataUrl,
         category: data.category,
         tags: data.tags,
@@ -225,6 +238,7 @@ export async function deletePhoto(id: string): Promise<ActionResult> {
     await deleteImageSet(photo.imageUrl);
     if (photo.beforeUrl) await deleteImageSet(photo.beforeUrl);
     if (photo.thumbnailUrl) await deleteFile(photo.thumbnailUrl);
+    if (photo.originalUrl) await deleteOriginal(photo.originalUrl);
 
     await prisma.photo.delete({ where: { id } });
 

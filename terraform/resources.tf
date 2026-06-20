@@ -49,12 +49,13 @@ module "cloud_run" {
   cloudsql_connection_name = var.cloudsql_connection_name
 
   env_vars = {
-    NODE_ENV           = "production"
-    GCS_BUCKET_NAME    = module.storage.bucket_name
-    AUTH_TRUST_HOST    = "true"
-    AUTH_URL           = var.auth_url
-    ADMIN_EMAIL        = var.admin_email
-    NOTIFICATION_EMAIL = var.notification_email
+    NODE_ENV             = "production"
+    GCS_BUCKET_NAME      = module.storage.bucket_name
+    GCS_ORIGINALS_BUCKET = module.storage.originals_bucket_name
+    AUTH_TRUST_HOST      = "true"
+    AUTH_URL             = var.auth_url
+    ADMIN_EMAIL          = var.admin_email
+    NOTIFICATION_EMAIL   = var.notification_email
     # Google ログイン確認済み(2026-06-19)につき封鎖。パスワードレス侵入の穴を塞ぐ。
     ALLOW_EMAIL_SIGNIN = "false"
   }

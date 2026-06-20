@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BadgeCheck, Calendar, Lock, Tag } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  Calendar,
+  Download,
+  Lock,
+  Tag,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
@@ -197,7 +204,7 @@ export default async function PhotoDetailPage({ params }: Props) {
               <p className="text-sm leading-relaxed text-muted-foreground">
                 このコレクションは会員限定です。
                 <br />
-                note メンバーシップの解錠リンクから、EXIF と現像レシピをご覧いただけます。
+                note メンバーシップの解錠リンクから、EXIF・現像レシピの閲覧と高画素ダウンロードができます。
               </p>
             </div>
           ) : (
@@ -214,6 +221,28 @@ export default async function PhotoDetailPage({ params }: Props) {
                     <h2 className="eyebrow mb-3">現像レシピ</h2>
                     <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
                       {photo.developNotes}
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {gated && photo.originalUrl && (
+                <>
+                  <Separator />
+                  <div>
+                    <h2 className="eyebrow mb-3">High-Res Download</h2>
+                    <a
+                      href={`/gallery/${photo.id}/download`}
+                      className={cn(
+                        buttonVariants({ variant: "outline", size: "sm" })
+                      )}
+                      download
+                    >
+                      <Download className="size-4" />
+                      高画素（4096px）をダウンロード
+                    </a>
+                    <p className="exif-text mt-2 text-muted-foreground/60">
+                      会員特典 — 個人利用の範囲でお使いください
                     </p>
                   </div>
                 </>

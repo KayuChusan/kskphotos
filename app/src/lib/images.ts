@@ -2,6 +2,8 @@ import sharp from "sharp";
 
 const FULL_MAX_WIDTH = 2560;
 const BLUR_WIDTH = 16;
+/** 会員向け高画素ダウンロード用の最大幅。公開配信(2560)より大きい。 */
+const ORIGINAL_MAX_WIDTH = 4096;
 
 /**
  * 配信用バリアント幅。next/image のカスタムローダー
@@ -61,4 +63,20 @@ export async function processImage(buffer: Buffer): Promise<ProcessedImage> {
   const blurDataUrl = `data:image/webp;base64,${blurBuffer.toString("base64")}`;
 
   return { full, variants, blurDataUrl, width, height };
+}
+
+/**
+ * 会員向け高画素ダウンロード用の JPEG を生成する（4096px・高品質）。
+ * 公開配信の 2560px より大きく、原寸より大きくはしない（withoutEnlargement）。
+ * 非公開バケットに保存し、解錠後の署名 URL でのみ配信する。
+ */
+export async function processOriginal(buffer: Buffer): Promise<Buffer> {
+  return sharp(buffer)
+    .rotate()
+    .resize(ORIGINAL_MAX_WIDTH, ORIGINAL_MAX_WIDTH, {
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .jpeg({ quality: 92, mozjpeg: true })
+    .toBuffer();
 }
