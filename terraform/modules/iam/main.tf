@@ -20,6 +20,14 @@ resource "google_project_iam_member" "cloud_run_sql_client" {
   member  = "serviceAccount:${google_service_account.cloud_run.email}"
 }
 
+# 高画素DLの V4 署名 URL 生成のため、SA が自分自身に signBlob できるようにする
+# （秘密鍵ファイルを使わず IAM SignBlob API で署名する）
+resource "google_service_account_iam_member" "cloud_run_sign_blob" {
+  service_account_id = google_service_account.cloud_run.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${google_service_account.cloud_run.email}"
+}
+
 # =============================================================================
 # CI/CD 用サービスアカウント
 # =============================================================================
