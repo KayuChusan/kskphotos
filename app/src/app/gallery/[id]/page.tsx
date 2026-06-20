@@ -11,7 +11,8 @@ import { cn } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { pageSeo } from "@/lib/seo";
 import { isCollectionUnlocked } from "@/lib/unlock-server";
-import { redactPhotoMeta } from "@/lib/photo-visibility";
+import { redactPhotoMeta, maskPhotoImage } from "@/lib/photo-visibility";
+import { LockedTile } from "@/components/gallery/locked-tile";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -44,7 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       robots: { index: false, follow: false },
       ...pageSeo({
         path: `/gallery/${id}`,
-        image: photo.imageUrl,
+        // マスク対象写真は OG にも本画像を出さない
+        image: photo.isLocked ? undefined : photo.imageUrl,
         type: "article",
       }),
     };
@@ -99,8 +101,13 @@ export default async function PhotoDetailPage({ params }: Props) {
       ? await isCollectionUnlocked(photo.collectionId)
       : false);
 
-  // 未解錠の会員限定写真は、ライトボックスのキャプション等からも EXIF を伏せる
-  const safe = gated && !unlocked ? redactPhotoMeta(photo) : photo;
+  // 未解錠の会員限定写真は EXIF を伏せ、ロック写真は本画像も出さずマスク
+  const masked = gated && !unlocked && photo.isLocked;
+  const safe = masked
+    ? maskPhotoImage(photo)
+    : gated && !unlocked
+      ? redactPhotoMeta(photo)
+      : photo;
 
   const dt = safe.dateTaken;
   const dateTaken = dt
@@ -123,9 +130,18 @@ export default async function PhotoDetailPage({ params }: Props) {
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <div>
-          <PhotoLightbox photo={safe} />
+          {masked ? (
+            <LockedTile
+              blurDataUrl={safe.blurDataUrl}
+              width={safe.imageWidth}
+              height={safe.imageHeight}
+              className="viewfinder mx-auto max-h-[75vh] w-full"
+            />
+          ) : (
+            <PhotoLightbox photo={safe} />
+          )}
 
-          {photo.beforeUrl && (
+          {safe.beforeUrl && (
             <div className="mt-5 text-center">
               <Link
                 href={`/gallery/${photo.id}/compare`}

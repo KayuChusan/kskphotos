@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Grid3X3, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhotoMap } from "@/components/gallery/photo-map";
+import { LockedTile } from "@/components/gallery/locked-tile";
 import { cn } from "@/lib/utils";
 import type { Photo, PhotoCategory } from "@/generated/prisma/client";
 
@@ -37,11 +38,13 @@ function formatExif(photo: Photo): string {
 export function PhotoCard({
   photo,
   index = 0,
+  masked = false,
 }: {
   photo: Photo;
   index?: number;
+  masked?: boolean;
 }) {
-  const exif = formatExif(photo);
+  const exif = masked ? "" : formatExif(photo);
 
   return (
     <motion.div
@@ -52,29 +55,49 @@ export function PhotoCard({
       className="mb-6 break-inside-avoid"
     >
       <Link href={`/gallery/${photo.id}`} className="group block">
-        <div className="viewfinder develop relative overflow-hidden">
-          <Image
-            src={photo.thumbnailUrl ?? photo.imageUrl}
-            alt={photo.title}
-            width={photo.imageWidth ?? 1200}
-            height={photo.imageHeight ?? 800}
-            placeholder={photo.blurDataUrl ? "blur" : "empty"}
-            blurDataURL={photo.blurDataUrl ?? undefined}
-            className="h-auto w-full transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-110"
-            sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
-            style={{ viewTransitionName: `photo-${photo.id}` }}
+        {masked ? (
+          <LockedTile
+            blurDataUrl={photo.blurDataUrl}
+            width={photo.imageWidth}
+            height={photo.imageHeight}
+            className="viewfinder"
           />
-        </div>
+        ) : (
+          <div className="viewfinder develop relative overflow-hidden">
+            <Image
+              src={photo.thumbnailUrl ?? photo.imageUrl}
+              alt={photo.title}
+              width={photo.imageWidth ?? 1200}
+              height={photo.imageHeight ?? 800}
+              placeholder={photo.blurDataUrl ? "blur" : "empty"}
+              blurDataURL={photo.blurDataUrl ?? undefined}
+              className="h-auto w-full transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-110"
+              sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+              style={{ viewTransitionName: `photo-${photo.id}` }}
+            />
+          </div>
+        )}
 
         {/* Caption strip — フィルムの縁コードのように */}
         <div className="mt-2 flex items-baseline justify-between gap-3">
           <p className="truncate font-heading text-base text-foreground/90">
             {photo.title}
           </p>
-          <p className="exif-text shrink-0 text-muted-foreground">
-            {CATEGORY_LABELS[photo.category]}
-            {photo.beforeUrl && (
-              <span className="text-safelight"> · RAW</span>
+          <p
+            className={cn(
+              "shrink-0 text-muted-foreground",
+              masked ? "text-xs" : "exif-text"
+            )}
+          >
+            {masked ? (
+              "会員限定"
+            ) : (
+              <>
+                {CATEGORY_LABELS[photo.category]}
+                {photo.beforeUrl && (
+                  <span className="text-safelight"> · RAW</span>
+                )}
+              </>
             )}
           </p>
         </div>

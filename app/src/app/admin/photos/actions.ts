@@ -51,6 +51,7 @@ const updatePhotoSchema = z
     collectionId: z.string().nullable(),
     isPublished: z.boolean(),
     isPortfolio: z.boolean(),
+    isLocked: z.boolean(),
     sortOrder: z.number().int(),
   })
   .partial();
