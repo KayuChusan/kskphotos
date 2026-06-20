@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Upload } from "lucide-react";
 import { createPhoto } from "./actions";
+import { formatDevelopSettings, mergeDevelopNotes } from "@/lib/xmp-develop";
 import type { Collection } from "@/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +47,27 @@ export function PhotoUploadForm({
   const [uploading, setUploading] = useState(false);
   const [isPublished, setIsPublished] = useState(true);
   const [isPortfolio, setIsPortfolio] = useState(false);
+  const [developNotes, setDevelopNotes] = useState("");
+  const [xmpStatus, setXmpStatus] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  async function handleXmpChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    try {
+      const extracted = formatDevelopSettings(await f.text());
+      if (!extracted) {
+        setXmpStatus("現像設定が見つかりませんでした（.xmp に crs 情報が無い可能性）");
+        return;
+      }
+      setDevelopNotes((prev) => mergeDevelopNotes(prev, extracted));
+      setXmpStatus("現像設定を取り込みました（下の欄で編集できます）");
+    } catch {
+      setXmpStatus(".xmp の読み込みに失敗しました");
+    } finally {
+      e.target.value = ""; // 同じファイルを再選択できるように
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -65,6 +86,8 @@ export function PhotoUploadForm({
       formRef.current?.reset();
       setIsPublished(true);
       setIsPortfolio(false);
+      setDevelopNotes("");
+      setXmpStatus(null);
       router.refresh();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Upload failed");
@@ -74,7 +97,17 @@ export function PhotoUploadForm({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        // キャンセルで閉じた場合も状態を持ち越さない
+        if (!o) {
+          setDevelopNotes("");
+          setXmpStatus(null);
+        }
+      }}
+    >
       <DialogTrigger
         className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
       >
@@ -174,14 +207,33 @@ export function PhotoUploadForm({
 
           <div className="space-y-2">
             <Label htmlFor="developNotes">Develop Notes（現像レシピ）</Label>
+            <div className="space-y-1 rounded-md border border-dashed p-2">
+              <Label htmlFor="xmpFile" className="text-xs font-normal">
+                .xmp から現像設定を取り込む
+              </Label>
+              <Input
+                id="xmpFile"
+                type="file"
+                accept=".xmp,application/rdf+xml,text/xml,application/xml"
+                onChange={handleXmpChange}
+                className="text-xs"
+              />
+              <p className="text-xs text-muted-foreground">
+                Lightroom の「メタデータをファイルに保存」/「元画像」書き出しで作った
+                .xmp を選ぶと、下の欄に現像設定が自動で入ります（既存テキストの後ろに追記）。
+              </p>
+              {xmpStatus && <p className="text-xs text-safelight">{xmpStatus}</p>}
+            </div>
             <Textarea
               id="developNotes"
               name="developNotes"
-              rows={3}
+              rows={5}
+              value={developNotes}
+              onChange={(e) => setDevelopNotes(e.target.value)}
               placeholder={"露光量 +0.3 / ハイライト -40 / シャドウ +25\nトーンカーブで青を持ち上げ"}
             />
             <p className="text-xs text-muted-foreground">
-              Lightroom での調整内容。比較ページに公開されます
+              Lightroom での調整内容（手入力＋.xmp 取込）。会員向け公開を予定。
             </p>
           </div>
 
