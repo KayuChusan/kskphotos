@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { prisma } from "@/lib/prisma";
 import { pageSeo } from "@/lib/seo";
 import { isCollectionUnlocked } from "@/lib/unlock-server";
+import { LockedTile } from "@/components/gallery/locked-tile";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -39,7 +40,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : {}),
     ...pageSeo({
       path: `/gallery/${id}/compare`,
-      image: photo.imageUrl,
+      // マスク対象写真は OG にも本画像を出さない
+      image:
+        photo.collection?.isLocked && photo.isLocked
+          ? undefined
+          : photo.imageUrl,
       type: "article",
     }),
   };
@@ -60,6 +65,7 @@ export default async function ComparePage({ params }: Props) {
     (photo.collectionId
       ? await isCollectionUnlocked(photo.collectionId)
       : false);
+  const masked = gated && !unlocked && photo.isLocked;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -81,10 +87,17 @@ export default async function ComparePage({ params }: Props) {
         {photo.title} — Drag the slider to compare RAW and edited versions.
       </p>
 
-      <CompareSlider
-        beforeUrl={photo.beforeUrl}
-        afterUrl={photo.imageUrl}
-      />
+      {masked ? (
+        <LockedTile
+          blurDataUrl={photo.blurDataUrl}
+          width={photo.imageWidth}
+          height={photo.imageHeight}
+          className="viewfinder mx-auto max-h-[70vh] w-full"
+          label="会員限定 — 解錠でビフォーアフターを表示"
+        />
+      ) : (
+        <CompareSlider beforeUrl={photo.beforeUrl} afterUrl={photo.imageUrl} />
+      )}
 
       <Separator className="my-8" />
 
