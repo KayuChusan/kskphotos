@@ -249,13 +249,13 @@ erDiagram
 | `latitude` | Float? | 緯度。地図上のピンの南北位置 |
 | `longitude` | Float? | 経度。地図上のピンの東西位置 |
 
-`latitude`（緯度）と `longitude`（経度）は、地図上に写真を配置するための座標です。地球上の位置を数値で表すもので、この 2 つが揃っていると Mapbox / Google Maps 上にピンとして展開できます。値は EXIF の GPS 情報から自動抽出されるか、手動で付与します。α7R IV は本体に GPS を内蔵していないため、Sony Creators' App による Bluetooth 連携で位置情報を写真に付けるか、後から手動で入力する運用です。
+`latitude`（緯度）と `longitude`（経度）は、地図上に写真を配置するための座標です。地球上の位置を数値で表すもので、この 2 つが揃っていると Mapbox / Google Maps 上にピンとして展開できます。値は EXIF の GPS 情報から自動抽出されるか、手動で付与します。α7R VI は本体に GPS を内蔵していないため、Sony Creators' App による Bluetooth 連携で位置情報を写真に付けるか、後から手動で入力する運用です。
 
 **EXIF（撮影時の自動記録メタデータ）**
 
 | フィールド | 型 | 意味 |
 |-----------|----|------|
-| `cameraModel` | String? | カメラ機種（例：`ILCE-7RM4`） |
+| `cameraModel` | String? | カメラ機種（例：`ILCE-7RM6`） |
 | `lensMake` | String? | レンズメーカー |
 | `lensModel` | String? | レンズ機種 |
 | `focalLength` | Float? | 焦点距離（mm）。画角の広さ・望遠の度合い |

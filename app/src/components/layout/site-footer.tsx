@@ -16,7 +16,7 @@ export function SiteFooter() {
               撮る、つくる、ささえる。
             </p>
             <p className="exif-text mt-5 text-muted-foreground/50">
-              <span className="text-safelight">●</span> Sony α7R IV · RAW ·
+              <span className="text-safelight">●</span> Sony α7R VI · RAW ·
               Lightroom
             </p>
           </div>

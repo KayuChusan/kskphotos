@@ -195,7 +195,7 @@ export default async function WorksPage() {
               </li>
               <li className="flex items-start gap-2">
                 <Clock className="mt-0.5 size-4 shrink-0 text-primary" />
-                Sony α7R IV で撮影、Lightroom レタッチのうえ 2 週間以内に納品
+                Sony α7R VI で撮影、Lightroom レタッチのうえ 2 週間以内に納品
               </li>
             </ul>
           </CardContent>

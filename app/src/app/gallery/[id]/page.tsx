@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .join(" ");
   const description =
     photo.description?.trim() ||
-    (exif ? `${photo.title} — ${exif}` : `${photo.title} — Sony α7R IV で撮影`);
+    (exif ? `${photo.title} — ${exif}` : `${photo.title} — Sony α7R VI で撮影`);
   return {
     title: photo.title,
     description,
@@ -153,7 +153,7 @@ export default async function PhotoDetailPage({ params }: Props) {
               Authenticity
             </h2>
             <ul className="exif-text space-y-1.5 text-muted-foreground">
-              <li>Captured on {photo.cameraModel ?? "Sony α7R IV"}</li>
+              <li>Captured on {photo.cameraModel ?? "Sony α7R VI"}</li>
               {dateTaken && <li>Shot on {dateTaken}</li>}
               <li>Developed in Adobe Lightroom</li>
               <li className="text-foreground/80">
