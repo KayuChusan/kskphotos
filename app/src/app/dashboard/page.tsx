@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { pageSeo } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
+import { excludeLockedPhotos } from "@/lib/photo-visibility";
 import { ExifDashboard } from "@/components/dashboard/exif-charts";
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export const revalidate = 3600;
 
 export default async function DashboardPage() {
   const photos = await prisma.photo.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, ...excludeLockedPhotos },
   });
 
   return (

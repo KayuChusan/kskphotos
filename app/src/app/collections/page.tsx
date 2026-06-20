@@ -15,7 +15,7 @@ export const revalidate = 3600;
 
 export default async function CollectionsPage() {
   const collections = await prisma.collection.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, isLocked: false },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     include: {
       photos: {

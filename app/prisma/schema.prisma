@@ -68,10 +68,28 @@ model Collection {
   slug        String   @unique
   description String?
   isPublished Boolean  @default(true)
+  // true の場合、会員解錠（UnlockToken）まで EXIF・現像メモ・マスク・高画素を出さない
+  isLocked    Boolean  @default(false)
   sortOrder   Int      @default(0)
   photos      Photo[]
+  unlockTokens UnlockToken[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// 会員解錠トークン。note の限定記事に貼る /u/<token> リンクの実体。
+// 平文は発行時に一度だけ表示し、DB にはハッシュのみ保存する。
+model UnlockToken {
+  id           String     @id @default(cuid())
+  tokenHash    String     @unique
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  label        String?
+  expiresAt    DateTime?
+  revoked      Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+
+  @@index([collectionId])
 }
 
 model Photo {
@@ -89,6 +107,8 @@ model Photo {
   beforeUrl   String?
   thumbnailUrl String?
   blurDataUrl String?
+  // 高画素ダウンロード用（会員解錠時のみ配信。公開URLには出さない）
+  originalUrl String?
 
   // カテゴリ・タグ
   category    PhotoCategory
@@ -119,6 +139,8 @@ model Photo {
   // 表示制御
   isPortfolio Boolean @default(false)
   isPublished Boolean @default(true)
+  // true の場合、所属コレクションが未解錠の間はマスク（ぼかし）表示にする
+  isLocked    Boolean @default(false)
   sortOrder   Int     @default(0)
 
   createdAt DateTime @default(now())

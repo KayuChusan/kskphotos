@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FileCheck, MapPin, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { excludeLockedPhotos } from "@/lib/photo-visibility";
 import {
   Card,
   CardHeader,
@@ -69,7 +70,7 @@ const FIELDS = [
 
 export default async function WorksPage() {
   const photos = await prisma.photo.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, ...excludeLockedPhotos },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     select: {
       id: true,

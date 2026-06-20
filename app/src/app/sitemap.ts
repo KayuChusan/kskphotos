@@ -1,12 +1,13 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { excludeLockedPhotos } from "@/lib/photo-visibility";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kskworks.jp";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [photos, posts, collections] = await Promise.all([
     prisma.photo.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...excludeLockedPhotos },
       select: { id: true, updatedAt: true, beforeUrl: true },
     }),
     prisma.blogPost.findMany({
@@ -14,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: { slug: true, updatedAt: true },
     }),
     prisma.collection.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, isLocked: false },
       select: { slug: true, updatedAt: true },
     }),
   ]);
