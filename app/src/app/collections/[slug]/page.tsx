@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Lock, LockOpen } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { isCollectionUnlocked } from "@/lib/unlock-server";
+import { redactPhotoMeta } from "@/lib/photo-visibility";
 import { pageSeo } from "@/lib/seo";
 import { PhotoCard } from "@/components/gallery/photo-grid";
 
@@ -10,7 +12,8 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export const revalidate = 3600;
+// 会員解錠状態（Cookie）をリクエストごとに反映するため動的レンダリング
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   const collections = await prisma.collection.findMany({
@@ -34,6 +37,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   });
   if (!collection) return { title: "Not Found" };
+  // 会員限定コレクションは noindex、OG にロック写真を使わない
+  if (collection.isLocked) {
+    return {
+      title: collection.title,
+      description:
+        collection.description ?? `${collection.title} — 会員限定コレクション`,
+      robots: { index: false, follow: false },
+      ...pageSeo({ path: `/collections/${slug}`, type: "article" }),
+    };
+  }
   return {
     title: collection.title,
     description: collection.description ?? `${collection.title} — フォトコレクション`,
@@ -57,6 +70,14 @@ export default async function CollectionDetailPage({ params }: Props) {
     },
   });
   if (!collection || !collection.isPublished) notFound();
+
+  const gated = collection.isLocked;
+  const unlocked = !gated || (await isCollectionUnlocked(collection.id));
+  // 未解錠の会員限定コレクションは、一覧カードからも EXIF を伏せる
+  const visiblePhotos =
+    gated && !unlocked
+      ? collection.photos.map(redactPhotoMeta)
+      : collection.photos;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -82,6 +103,22 @@ export default async function CollectionDetailPage({ params }: Props) {
             {collection.description}
           </p>
         )}
+
+        {gated && (
+          <div className="mt-5 inline-flex items-center gap-2 rounded-md border border-dashed border-border/60 px-3 py-2 text-xs text-muted-foreground">
+            {unlocked ? (
+              <>
+                <LockOpen className="size-3.5 text-safelight" />
+                解錠済み — EXIF・現像レシピを表示しています
+              </>
+            ) : (
+              <>
+                <Lock className="size-3.5" />
+                会員限定 — note メンバーシップの解錠リンクで EXIF・現像レシピが見られます
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {collection.photos.length === 0 ? (
@@ -90,7 +127,7 @@ export default async function CollectionDetailPage({ params }: Props) {
         </p>
       ) : (
         <div className="columns-1 gap-6 sm:columns-2 md:columns-3 xl:columns-4">
-          {collection.photos.map((photo, i) => (
+          {visiblePhotos.map((photo, i) => (
             <PhotoCard key={photo.id} photo={photo} index={i} />
           ))}
         </div>

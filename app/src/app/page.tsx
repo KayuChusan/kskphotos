@@ -3,6 +3,7 @@ import { pageSeo } from "@/lib/seo";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
+import { excludeLockedPhotos } from "@/lib/photo-visibility";
 import { HeroSection } from "@/components/home/hero-section";
 import { CountUp } from "@/components/count-up";
 
@@ -14,18 +15,18 @@ export const revalidate = 3600;
 export default async function HomePage() {
   const [featured, totalPhotos, lenses, locations] = await Promise.all([
     prisma.photo.findMany({
-      where: { isPublished: true, isPortfolio: true },
+      where: { isPublished: true, isPortfolio: true, ...excludeLockedPhotos },
       orderBy: { createdAt: "desc" },
       take: 6,
     }),
-    prisma.photo.count({ where: { isPublished: true } }),
+    prisma.photo.count({ where: { isPublished: true, ...excludeLockedPhotos } }),
     prisma.photo.findMany({
-      where: { isPublished: true, lensModel: { not: null } },
+      where: { isPublished: true, lensModel: { not: null }, ...excludeLockedPhotos },
       select: { lensModel: true },
       distinct: ["lensModel"],
     }),
     prisma.photo.findMany({
-      where: { isPublished: true, location: { not: null } },
+      where: { isPublished: true, location: { not: null }, ...excludeLockedPhotos },
       select: { location: true },
       distinct: ["location"],
     }),

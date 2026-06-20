@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BadgeCheck, Calendar, Tag } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Calendar, Lock, Tag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
@@ -10,12 +10,15 @@ import { PhotoLightbox } from "@/components/gallery/photo-lightbox";
 import { cn } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { pageSeo } from "@/lib/seo";
+import { isCollectionUnlocked } from "@/lib/unlock-server";
+import { redactPhotoMeta } from "@/lib/photo-visibility";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-export const revalidate = 3600;
+// 会員解錠状態（Cookie）をリクエストごとに反映するため動的レンダリング
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   const photos = await prisma.photo.findMany({
@@ -27,8 +30,26 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const photo = await prisma.photo.findUnique({ where: { id } });
+  const photo = await prisma.photo.findUnique({
+    where: { id },
+    include: { collection: true },
+  });
   if (!photo) return { title: "Not Found" };
+
+  // 会員限定コレクションは EXIF を説明文に出さず、検索インデックスからも外す
+  if (photo.collection?.isLocked) {
+    return {
+      title: photo.title,
+      description: photo.description?.trim() || `${photo.title} — KSK Works`,
+      robots: { index: false, follow: false },
+      ...pageSeo({
+        path: `/gallery/${id}`,
+        image: photo.imageUrl,
+        type: "article",
+      }),
+    };
+  }
+
   // EXIF 部品を組み立て、欠損項目を除いてから連結（末尾ダッシュの破綻を防ぐ）
   const exif = [
     photo.lensModel,
@@ -64,11 +85,26 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export default async function PhotoDetailPage({ params }: Props) {
   const { id } = await params;
-  const photo = await prisma.photo.findUnique({ where: { id } });
+  const photo = await prisma.photo.findUnique({
+    where: { id },
+    include: { collection: true },
+  });
   if (!photo || !photo.isPublished) notFound();
 
-  const dateTaken = photo.dateTaken
-    ? new Date(photo.dateTaken).toLocaleDateString("ja-JP", {
+  // 会員限定コレクションは、解錠まで EXIF・現像レシピを出さない
+  const gated = photo.collection?.isLocked ?? false;
+  const unlocked =
+    !gated ||
+    (photo.collectionId
+      ? await isCollectionUnlocked(photo.collectionId)
+      : false);
+
+  // 未解錠の会員限定写真は、ライトボックスのキャプション等からも EXIF を伏せる
+  const safe = gated && !unlocked ? redactPhotoMeta(photo) : photo;
+
+  const dt = safe.dateTaken;
+  const dateTaken = dt
+    ? new Date(dt).toLocaleDateString("ja-JP", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -87,7 +123,7 @@ export default async function PhotoDetailPage({ params }: Props) {
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <div>
-          <PhotoLightbox photo={photo} />
+          <PhotoLightbox photo={safe} />
 
           {photo.beforeUrl && (
             <div className="mt-5 text-center">
@@ -139,10 +175,35 @@ export default async function PhotoDetailPage({ params }: Props) {
 
           <Separator />
 
-          <div>
-            <h2 className="eyebrow mb-4">EXIF Data</h2>
-            <ExifTable photo={photo} />
-          </div>
+          {gated && !unlocked ? (
+            <div className="border border-dashed border-border/60 p-5 text-center">
+              <Lock className="mx-auto mb-2 size-5 text-muted-foreground" />
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                このコレクションは会員限定です。
+                <br />
+                note メンバーシップの解錠リンクから、EXIF と現像レシピをご覧いただけます。
+              </p>
+            </div>
+          ) : (
+            <>
+              <div>
+                <h2 className="eyebrow mb-4">EXIF Data</h2>
+                <ExifTable photo={photo} />
+              </div>
+
+              {gated && photo.developNotes && (
+                <>
+                  <Separator />
+                  <div>
+                    <h2 className="eyebrow mb-3">現像レシピ</h2>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+                      {photo.developNotes}
+                    </p>
+                  </div>
+                </>
+              )}
+            </>
+          )}
 
           <Separator />
 
@@ -153,7 +214,9 @@ export default async function PhotoDetailPage({ params }: Props) {
               Authenticity
             </h2>
             <ul className="exif-text space-y-1.5 text-muted-foreground">
-              <li>Captured on {photo.cameraModel ?? "Sony α7R VI"}</li>
+              {unlocked && (
+                <li>Captured on {safe.cameraModel ?? "Sony α7R VI"}</li>
+              )}
               {dateTaken && <li>Shot on {dateTaken}</li>}
               <li>Developed in Adobe Lightroom</li>
               <li className="text-foreground/80">

@@ -9,7 +9,10 @@ export const metadata: Metadata = {
 export default async function AdminCollectionsPage() {
   const collections = await prisma.collection.findMany({
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-    include: { _count: { select: { photos: true } } },
+    include: {
+      _count: { select: { photos: true } },
+      unlockTokens: { orderBy: { createdAt: "desc" } },
+    },
   });
 
   return (
