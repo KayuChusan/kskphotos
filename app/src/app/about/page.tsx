@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 const GEAR = {
-  body: [{ name: "Sony α7R IV (ILCE-7RM4)", note: "61MP フルサイズ" }],
+  body: [{ name: "Sony α7R VI (ILCE-7RM6)", note: "61MP フルサイズ" }],
   lenses: [
     { name: "FE 16-35mm F2.8 GM", note: "広角ズーム" },
     { name: "FE 24-70mm F2.8 GM II", note: "標準ズーム" },
@@ -51,7 +51,7 @@ export default function AboutPage() {
             <h2 className="font-heading text-2xl font-medium">ksk</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               東京を拠点に活動するフォトグラファー。ポートレート、風景、ストリートスナップを中心に撮影。
-              Sony α7R IV の高解像度を活かした描写と、Lightroom
+              Sony α7R VI の高解像度を活かした描写と、Lightroom
               での丁寧なRAW現像にこだわっています。
             </p>
           </div>

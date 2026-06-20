@@ -132,7 +132,7 @@ kskphotos/                     ← プロジェクトルート（git root）
 
 | 項目 | 内容 |
 |------|------|
-| カメラ | Sony α7R IV (ILCE-7RM4, 約6100万画素) |
+| カメラ | Sony α7R VI (ILCE-7RM6, 約6100万画素) |
 | 撮影形式 | RAW (ARW) |
 | 現像 | Adobe Lightroom |
 | 書き出し | JPEG（EXIF 完全保持） |

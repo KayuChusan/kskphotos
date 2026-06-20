@@ -62,7 +62,7 @@ longitude: data.longitude ?? null,
 
 `exifr` は EXIF 内の度・分・秒（DMS）形式の生 GPS を、扱いやすい**十進数の `latitude` / `longitude`** に変換してくれます。GPS タグが無い写真（例: GPS を切って撮影、レタッチで除去された等）では両方とも `null` になります。この `null` の扱いが後段（表示）で効いてきます。
 
-> 撮影環境メモ: α7R IV は本体に GPS を内蔵していません。位置情報は Creators' App の Bluetooth 連携、または手動付与で埋め込みます（[01-project-overview.md](./01-project-overview.md) の撮影環境表を参照）。そのため「GPS が無い写真」は普通に発生する前提です。
+> 撮影環境メモ: α7R VI は本体に GPS を内蔵していません。位置情報は Creators' App の Bluetooth 連携、または手動付与で埋め込みます（[01-project-overview.md](./01-project-overview.md) の撮影環境表を参照）。そのため「GPS が無い写真」は普通に発生する前提です。
 
 ### 1-2. 保存 — `Photo.latitude` / `Photo.longitude`
 

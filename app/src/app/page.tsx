@@ -64,7 +64,7 @@ export default async function HomePage() {
                 </div>
                 <div className="flex items-baseline justify-between gap-6">
                   <dt className="exif-text text-muted-foreground">Gear</dt>
-                  <dd className="exif-text">SONY α7R IV ・ ADOBE LIGHTROOM</dd>
+                  <dd className="exif-text">SONY α7R VI ・ ADOBE LIGHTROOM</dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-6">
                   <dt className="exif-text text-muted-foreground">For</dt>

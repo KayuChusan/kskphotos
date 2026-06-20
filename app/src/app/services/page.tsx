@@ -64,7 +64,7 @@ export default async function ServicesPage() {
         <p className="eyebrow">Menu &amp; Pricing</p>
         <h1 className="mt-3 font-heading text-5xl font-medium">料金・メニュー</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Sony α7R IV で撮影、Lightroom で丁寧にレタッチ。
+          Sony α7R VI で撮影、Lightroom で丁寧にレタッチ。
         </p>
       </div>
 

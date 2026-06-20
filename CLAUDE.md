@@ -14,7 +14,7 @@
 
 ## 撮影環境
 
-- カメラ: Sony α7R IV (ILCE-7RM4)
+- カメラ: Sony α7R VI (ILCE-7RM6)
 - 撮影: RAW → Lightroom 現像 → JPEG 書き出し
 - EXIF は Lightroom 書き出し後も完全保持
 

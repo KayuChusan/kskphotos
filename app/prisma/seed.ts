@@ -95,7 +95,7 @@ async function main() {
       location: p.location ?? null,
       latitude: p.latitude ?? null,
       longitude: p.longitude ?? null,
-      cameraModel: "ILCE-7RM4",
+      cameraModel: "ILCE-7RM6",
       lensMake: "Sony",
       lensModel: p.lensModel,
       focalLength: p.focalLength,
