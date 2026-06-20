@@ -293,6 +293,20 @@ setPosition(percent);
 
 2枚とも `next/image` の `priority` で読み込むため、比較画面に入った瞬間に両画像が揃います。
 
+### 3-4. 現像レシピ（`developNotes`）と `.xmp` 取込
+
+`Photo.developNotes`（任意）に Lightroom の調整内容をテキストで保持します。手入力に加え、**Lightroom の `.xmp` サイドカーから現像設定を自動取込**できます（[xmp-develop.ts](../app/src/lib/xmp-develop.ts)）。
+
+| 項目 | 内容 |
+|------|------|
+| 取込元 | RAW の `.xmp`（Lightroom「メタデータをファイルに保存」/「元画像」書き出しで生成）。**書き出し JPEG には現像設定が入らない**ため非対応 |
+| 解析 | `crs:` 名前空間の属性を抽出（`formatDevelopSettings`）。露光量・コントラスト・ハイライト/シャドウ・白/黒・テクスチャ・明瞭度・かすみ除去・自然な彩度/彩度・WB・ノイズ軽減を数値化。トーンカーブ/HSL/レンズ補正/マスクは有無を要約 |
+| 追記 | `mergeDevelopNotes(existing, extracted)` で、既存テキストがあれば**後ろに追記**（空なら抽出のみ）。取込後も入力欄で編集可 |
+| UI | アップロードフォーム（[photo-upload-form.tsx](../app/src/app/admin/photos/photo-upload-form.tsx)）の「.xmp から現像設定を取り込む」。解析はクライアント側（純粋関数）で即時反映 |
+| テスト | [xmp-develop.test.ts](../app/src/lib/xmp-develop.test.ts)（属性抽出・整形・追記・該当なし） |
+
+> 公開（閲覧側での表示）は、会員向けギャラリーのパスワード解錠で出す方針（別途実装予定）。現時点では取込・保存のみ。
+
 ### 図2: ビフォーアフターの有効化フロー
 
 ```mermaid
