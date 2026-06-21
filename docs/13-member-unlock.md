@@ -50,9 +50,12 @@ note 限定記事の /u/<token> リンク
 |--------|------------------|----------|-------------|
 | `/gallery`・`/works`・`/collections`(一覧) | **モザイク表示**（`maskForViewer`）。本画像・EXIF・GPS を除去し `LockedTile` で blur のみ | 実画像 | `force-dynamic` |
 | コレクション/写真詳細/比較 | コレクション全写真をモザイク（`maskPhotoImage`）＋EXIF・現像レシピ非表示、`noindex`、OG 画像なし | 実画像＋EXIF＋現像＋高画素DL | `force-dynamic` |
-| トップ`/`・`/dashboard`・`/sitemap` | **除外**（`excludeLockedPhotos`） | （同左） | 静的 |
+| トップ`/`の写真表示（ヒーロー・フィルムストリップ） | **除外**（`excludeLockedPhotos`） | （同左） | `force-dynamic` |
+| トップ`/`の集計（By the Numbers）・`/dashboard` | **匿名化して算入**（後述） | （同左） | 静的(dashboard)/動的(top) |
+| `/sitemap` | **除外**（detail が `noindex` のため） | （同左） | 静的 |
 
-- **トップは会員写真を出さない**方針。**`/dashboard` は EXIF 集計**のため未解錠の会員写真を含めると EXIF（レンズ・F値・ISO 等）が集計に漏れる→除外。**sitemap** は detail が `noindex` のため除外。
+- **トップの写真表示・ヒーローは会員写真を出さない**方針（画像が出るため除外）。
+- **撮影データの集計は会員限定も件数に算入**（ユーザー要望）。ただし EXIF は本来 gated なので、**個別の1枚に紐づかないよう匿名化**して算入する：会員写真は `title`→「会員限定」、`location`/`imageUrl`/GPS をペイロードに出さず、`/dashboard` のチャート用には EXIF 数値のみ（匿名行）を渡す。`撮影場所数` は値を出さずサーバー側で `distinct` 件数のみ算出し渡す（`ExifDashboard` の `locationCount`）。集計（分布・件数）に寄与するだけで、特定の会員写真の EXIF・画像は復元できない。
 - **マスクはコレクション単位**：`Collection.isLocked && 未解錠` ならそのコレクションの全写真をモザイク（旧・個別 `Photo.isLocked` は廃止）。
 - **本画像を一切出さない**：`maskForViewer`/`maskPhotoImage` で `imageUrl`/`thumbnailUrl`/`beforeUrl` と EXIF・GPS を除去。RSC ペイロード・OGP のいずれにも本画像 URL を載せず、`LockedTile` は `blurDataUrl`（16px）だけを描画。地図ビューも GPS を消すので会員写真はプロットされない。
 - **失効が即効く**：Cookie にトークンID を含め、表示時に DB で `revoked`/`expiresAt` を検証。管理画面で失効すると、既にクリック済みのブラウザも次アクセスで無効化される。

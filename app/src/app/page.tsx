@@ -36,24 +36,15 @@ export default async function HomePage() {
       }),
       // ヒーロー候補（管理画面で Hero 指定した写真）の件数。全件は読み込まない
       prisma.photo.count({ where: heroWhere }),
-      prisma.photo.count({
-        where: { isPublished: true, ...excludeLockedPhotos },
-      }),
+      // 撮影データの集計は会員限定（非公開）も含めてカウント（件数のみ表示・値は出さない）
+      prisma.photo.count({ where: { isPublished: true } }),
       prisma.photo.findMany({
-        where: {
-          isPublished: true,
-          lensModel: { not: null },
-          ...excludeLockedPhotos,
-        },
+        where: { isPublished: true, lensModel: { not: null } },
         select: { lensModel: true },
         distinct: ["lensModel"],
       }),
       prisma.photo.findMany({
-        where: {
-          isPublished: true,
-          location: { not: null },
-          ...excludeLockedPhotos,
-        },
+        where: { isPublished: true, location: { not: null } },
         select: { location: true },
         distinct: ["location"],
       }),
