@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FileCheck, MapPin, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { getUnlockedCollectionIds } from "@/lib/unlock-server";
+import { isMember } from "@/lib/unlock-server";
 import { LockedTile } from "@/components/gallery/locked-tile";
 import {
   Card,
@@ -70,8 +70,8 @@ const FIELDS = [
 ];
 
 export default async function WorksPage() {
-  // 会員写真も除外せず取得し、未解錠ならモザイク表示する
-  const [rows, unlockedIds] = await Promise.all([
+  // 会員限定コレクションの写真は、非会員には本画像をマスク（実績は画像のみで EXIF は出さない）
+  const [rows, member] = await Promise.all([
     prisma.photo.findMany({
       where: { isPublished: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
@@ -88,15 +88,13 @@ export default async function WorksPage() {
         collection: { select: { isLocked: true } },
       },
     }),
-    getUnlockedCollectionIds(),
+    isMember(),
   ]);
-  const unlocked = new Set(unlockedIds);
-  // 未解錠の会員写真は本画像 URL を取り除き、モザイクタイルで表示する
   const photos = rows.map((p) => {
-    const masked =
-      !!p.collection?.isLocked &&
-      !(p.collectionId != null && unlocked.has(p.collectionId));
-    return masked ? { ...p, imageUrl: "", thumbnailUrl: null, masked } : { ...p, masked };
+    const masked = !member && !!p.collection?.isLocked;
+    return masked
+      ? { ...p, imageUrl: "", thumbnailUrl: null, masked }
+      : { ...p, masked };
   });
 
   // ジャンル（カテゴリ）別にまとめる。写真のある順序カテゴリのみ表示

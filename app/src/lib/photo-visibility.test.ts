@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import type { Photo } from "@/generated/prisma/client";
 import {
   redactPhotoMeta,
+  redactShootingMeta,
   maskPhotoImage,
   maskForViewer,
 } from "./photo-visibility";
@@ -94,42 +95,53 @@ describe("maskPhotoImage", () => {
   });
 });
 
+describe("redactShootingMeta", () => {
+  it("撮影設定は伏せるが位置情報・画像は残す", () => {
+    const r = redactShootingMeta(makePhoto());
+    expect(r.cameraModel).toBeNull();
+    expect(r.aperture).toBeNull();
+    expect(r.iso).toBeNull();
+    expect(r.dateTaken).toBeNull();
+    expect(r.developNotes).toBeNull();
+    expect(r.originalUrl).toBeNull();
+    // 地図用の位置情報と画像は残す
+    expect(r.latitude).toBe(35.6);
+    expect(r.location).toBe("Tokyo");
+    expect(r.imageUrl).toBe("/uploads/real.jpg");
+  });
+});
+
 describe("maskForViewer", () => {
   const lockedPhoto = () => ({
     ...makePhoto(),
     collectionId: "c1",
     collection: { isLocked: true },
   });
+  const publicPhoto = () => ({
+    ...makePhoto(),
+    collectionId: "c2",
+    collection: { isLocked: false },
+  });
 
-  it("会員限定コレクション×未解錠 → モザイク", () => {
-    const r = maskForViewer(lockedPhoto(), new Set<string>());
+  it("非会員×会員限定コレクション → 画像も EXIF もマスク", () => {
+    const r = maskForViewer(lockedPhoto(), false);
     expect(r.masked).toBe(true);
     expect(r.imageUrl).toBe("");
     expect(r.cameraModel).toBeNull();
   });
 
-  it("会員限定コレクション×解錠済み → 実画像のまま", () => {
-    const r = maskForViewer(lockedPhoto(), new Set(["c1"]));
+  it("非会員×公開コレクション → 画像は残し撮影設定だけ伏せる", () => {
+    const r = maskForViewer(publicPhoto(), false);
+    expect(r.masked).toBe(false);
+    expect(r.imageUrl).toBe("/uploads/real.jpg");
+    expect(r.cameraModel).toBeNull();
+    expect(r.location).toBe("Tokyo"); // 位置情報は残す
+  });
+
+  it("会員 → そのまま全部見える", () => {
+    const r = maskForViewer(lockedPhoto(), true);
     expect(r.masked).toBe(false);
     expect(r.imageUrl).toBe("/uploads/real.jpg");
     expect(r.cameraModel).toBe("ILCE-7RM6");
-  });
-
-  it("公開コレクション(ロック無し) → そのまま", () => {
-    const photo = {
-      ...makePhoto(),
-      collectionId: "c2",
-      collection: { isLocked: false },
-    };
-    const r = maskForViewer(photo, new Set<string>());
-    expect(r.masked).toBe(false);
-    expect(r.imageUrl).toBe("/uploads/real.jpg");
-  });
-
-  it("コレクション未所属 → そのまま", () => {
-    const photo = { ...makePhoto(), collectionId: null, collection: null };
-    const r = maskForViewer(photo, new Set<string>());
-    expect(r.masked).toBe(false);
-    expect(r.imageUrl).toBe("/uploads/real.jpg");
   });
 });

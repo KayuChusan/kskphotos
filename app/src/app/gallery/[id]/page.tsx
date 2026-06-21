@@ -10,8 +10,8 @@ import { PhotoLightbox } from "@/components/gallery/photo-lightbox";
 import { cn } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { pageSeo } from "@/lib/seo";
-import { isCollectionUnlocked } from "@/lib/unlock-server";
-import { maskPhotoImage } from "@/lib/photo-visibility";
+import { isMember } from "@/lib/unlock-server";
+import { maskPhotoImage, redactShootingMeta } from "@/lib/photo-visibility";
 import { LockedTile } from "@/components/gallery/locked-tile";
 import { MemberGate } from "@/components/member-gate";
 
@@ -38,39 +38,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
   if (!photo) return { title: "Not Found" };
 
-  // 会員限定コレクションは EXIF を説明文に出さず、検索インデックスからも外す
-  if (photo.collection?.isLocked) {
-    return {
-      title: photo.title,
-      description: photo.description?.trim() || `${photo.title} — KSK Works`,
-      robots: { index: false, follow: false },
-      ...pageSeo({
-        path: `/gallery/${id}`,
-        // 会員限定コレクションは OG に本画像を出さない
-        image: undefined,
-        type: "article",
-      }),
-    };
-  }
-
-  // EXIF 部品を組み立て、欠損項目を除いてから連結（末尾ダッシュの破綻を防ぐ）
-  const exif = [
-    photo.lensModel,
-    photo.aperture ? `f/${photo.aperture}` : null,
-    photo.shutterSpeed ? `${photo.shutterSpeed}s` : null,
-    photo.iso ? `ISO ${photo.iso}` : null,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  // EXIF（撮影設定）は全写真で会員限定のため、説明文・OGP には出さない（クローラ＝非会員）。
+  const locked = photo.collection?.isLocked ?? false;
   const description =
-    photo.description?.trim() ||
-    (exif ? `${photo.title} — ${exif}` : `${photo.title} — Sony α7R VI で撮影`);
+    photo.description?.trim() || `${photo.title} — Sony α7R VI で撮影`;
   return {
     title: photo.title,
     description,
+    // 会員限定コレクションは検索インデックスからも外す
+    ...(locked ? { robots: { index: false, follow: false } } : {}),
     ...pageSeo({
       path: `/gallery/${id}`,
-      image: photo.imageUrl,
+      // 会員限定コレクションは OG に本画像を出さない
+      image: locked ? undefined : photo.imageUrl,
       type: "article",
     }),
   };
@@ -94,17 +74,15 @@ export default async function PhotoDetailPage({ params }: Props) {
   });
   if (!photo || !photo.isPublished) notFound();
 
-  // 会員限定コレクションは、解錠まで EXIF・現像レシピを出さない
-  const gated = photo.collection?.isLocked ?? false;
-  const unlocked =
-    !gated ||
-    (photo.collectionId
-      ? await isCollectionUnlocked(photo.collectionId)
-      : false);
-
-  // 未解錠の会員限定コレクションは、本画像も EXIF も出さずモザイク
-  const masked = gated && !unlocked;
-  const safe = masked ? maskPhotoImage(photo) : photo;
+  // EXIF（撮影設定）は全写真で会員限定。会員限定コレクションは本画像もマスク。
+  const lockedCollection = photo.collection?.isLocked ?? false;
+  const member = await isMember();
+  const masked = lockedCollection && !member; // 本画像のマスク（会員限定コレクション×非会員）
+  const safe = masked
+    ? maskPhotoImage(photo)
+    : member
+      ? photo
+      : redactShootingMeta(photo); // 公開写真の非会員：画像・位置は出し撮影設定だけ伏せる
 
   const dt = safe.dateTaken;
   const dateTaken = dt
@@ -138,7 +116,9 @@ export default async function PhotoDetailPage({ params }: Props) {
             <PhotoLightbox photo={safe} />
           )}
 
-          {safe.beforeUrl && (
+          {/* before 画像 URL は safe では伏せるため、有無の判定は元データで行う
+              （URL は出力せず /compare へ誘導するだけ。非会員は compare 側で会員案内） */}
+          {photo.beforeUrl && (
             <div className="mt-5 text-center">
               <Link
                 href={`/gallery/${photo.id}/compare`}
@@ -188,8 +168,8 @@ export default async function PhotoDetailPage({ params }: Props) {
 
           <Separator />
 
-          {gated && !unlocked ? (
-            <MemberGate message="この写真は会員限定です。note メンバーシップに参加すると、EXIF・現像レシピの閲覧と高画素（4096px）ダウンロードができます。" />
+          {!member ? (
+            <MemberGate message="撮影設定（EXIF）は会員限定です。note メンバーシップに参加すると、EXIF・現像レシピの閲覧と高画素（4096px）ダウンロードができます。" />
           ) : (
             <>
               <div>
@@ -197,7 +177,7 @@ export default async function PhotoDetailPage({ params }: Props) {
                 <ExifTable photo={photo} />
               </div>
 
-              {gated && photo.developNotes && (
+              {photo.developNotes && (
                 <>
                   <Separator />
                   <div>
@@ -209,7 +189,7 @@ export default async function PhotoDetailPage({ params }: Props) {
                 </>
               )}
 
-              {gated && photo.originalUrl && (
+              {photo.originalUrl && (
                 <>
                   <Separator />
                   <div>
@@ -242,7 +222,7 @@ export default async function PhotoDetailPage({ params }: Props) {
               Authenticity
             </h2>
             <ul className="exif-text space-y-1.5 text-muted-foreground">
-              {unlocked && (
+              {member && (
                 <li>Captured on {safe.cameraModel ?? "Sony α7R VI"}</li>
               )}
               {dateTaken && <li>Shot on {dateTaken}</li>}

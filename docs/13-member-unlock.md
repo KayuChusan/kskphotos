@@ -43,22 +43,24 @@ note 限定記事の /u/<token> リンク
 | `src/app/u/[token]/route.ts` | 解錠リンク。Cookie 発行 → コレクションへリダイレクト |
 | `src/app/admin/collections/*` | 会員限定トグル＋解錠リンク発行/失効（管理画面） |
 
-## 表示ポリシー（一覧での扱い）
+## 表示ポリシー
 
-会員限定コレクションの写真は「隠す」ではなく「モザイクで見せる」方針（解錠を促すため）。ページにより扱いが異なる：
+**会員＝有効な解錠トークンを1つでも持つ人**（`isMember()`＝`getUnlockedCollectionIds().length > 0`）。note メンバーシップの解錠リンクを踏めば会員。
 
-| ページ | 未解錠の会員写真 | 解錠済み | レンダリング |
-|--------|------------------|----------|-------------|
-| `/gallery`・`/works`・`/collections`(一覧) | **モザイク表示**（`maskForViewer`）。本画像・EXIF・GPS を除去し `LockedTile` で blur のみ | 実画像 | `force-dynamic` |
-| コレクション/写真詳細/比較 | コレクション全写真をモザイク（`maskPhotoImage`）＋EXIF・現像レシピ非表示、`noindex`、OG 画像なし | 実画像＋EXIF＋現像＋高画素DL | `force-dynamic` |
-| トップ`/`の写真表示（ヒーロー・フィルムストリップ） | **除外**（`excludeLockedPhotos`） | （同左） | `force-dynamic` |
-| トップ`/`の集計（By the Numbers）・`/dashboard` | **匿名化して算入**（後述） | （同左） | 静的(dashboard)/動的(top) |
-| `/sitemap` | **除外**（detail が `noindex` のため） | （同左） | 静的 |
+**EXIF（撮影設定）は全写真で会員限定**：カメラ/レンズ/焦点/F値/SS/ISO/WB/測光/撮影日/現像レシピ/高画素/AUTHENTICITY のカメラ・日付。非会員には公開写真でも見せない。一方、**地図用の位置情報(lat/long/location)と撮影データ(集計ダッシュボード)は公開維持**（差別化機能を残すユーザー判断）。
 
-- **トップの写真表示・ヒーローは会員写真を出さない**方針（画像が出るため除外）。
-- **撮影データの集計は会員限定も件数に算入**（ユーザー要望）。ただし EXIF は本来 gated なので、**個別の1枚に紐づかないよう匿名化**して算入する：会員写真は `title`→「会員限定」、`location`/`imageUrl`/GPS をペイロードに出さず、`/dashboard` のチャート用には EXIF 数値のみ（匿名行）を渡す。`撮影場所数` は値を出さずサーバー側で `distinct` 件数のみ算出し渡す（`ExifDashboard` の `locationCount`）。集計（分布・件数）に寄与するだけで、特定の会員写真の EXIF・画像は復元できない。
-- **マスクはコレクション単位**：`Collection.isLocked && 未解錠` ならそのコレクションの全写真をモザイク（旧・個別 `Photo.isLocked` は廃止）。
-- **本画像を一切出さない**：`maskForViewer`/`maskPhotoImage` で `imageUrl`/`thumbnailUrl`/`beforeUrl` と EXIF・GPS を除去。RSC ペイロード・OGP のいずれにも本画像 URL を載せず、`LockedTile` は `blurDataUrl`（16px）だけを描画。地図ビューも GPS を消すので会員写真はプロットされない。
+| ページ | 非会員 | 会員 | レンダリング |
+|--------|--------|------|-------------|
+| `/gallery`・`/works`・`/collections`(一覧) | 公開写真=画像表示＋撮影設定だけ伏せる（`redactShootingMeta`）／会員限定ｺﾚｸｼｮﾝ=本画像もモザイク（`maskForViewer`） | 実画像＋EXIF | `force-dynamic` |
+| 写真詳細/比較 | 撮影設定枠は `MemberGate`（note誘導）／会員限定ｺﾚｸｼｮﾝは本画像もモザイク・比較も会員限定 | 実画像＋EXIF＋現像＋高画素DL | `force-dynamic` |
+| トップ`/`の写真表示（ヒーロー等） | 会員限定ｺﾚｸｼｮﾝは**除外**（`excludeLockedPhotos`） | （同左） | `force-dynamic` |
+| トップ集計・`/dashboard` | **集計は公開**（会員写真も匿名化して算入） | （同左） | 静的/動的 |
+| `/sitemap` | 会員限定ｺﾚｸｼｮﾝは除外 | （同左） | 静的 |
+
+- **会員判定はグローバル**：有効トークンを持てば全写真の撮影設定＋会員限定ｺﾚｸｼｮﾝの本画像が見える（コレクションごとの個別解錠ではなく「会員かどうか」で判定）。
+- **撮影データの集計は会員限定も件数に算入**（公開維持）。EXIF は本来 gated なので**個別の1枚に紐づかないよう匿名化**して算入：会員写真は `title`→「会員限定」、`location`/`imageUrl`/GPS をペイロードに出さず、チャート用は EXIF 数値のみ（匿名行）。`撮影場所数` はサーバー側 `distinct` 件数のみ（`ExifDashboard` の `locationCount`）。
+- **本画像を一切出さない（会員限定ｺﾚｸｼｮﾝ）**：`maskForViewer`/`maskPhotoImage` で `imageUrl`/`thumbnailUrl`/`beforeUrl` と EXIF・GPS を除去。`LockedTile` は `blurDataUrl`（16px）のみ描画。
+- **公開写真の撮影設定だけ伏せる**：`redactShootingMeta` は EXIF を null 化するが `imageUrl`/位置情報は残す（画像・地図は公開のまま、EXIF だけ会員限定）。
 - **失効が即効く**：Cookie にトークンID を含め、表示時に DB で `revoked`/`expiresAt` を検証。管理画面で失効すると、既にクリック済みのブラウザも次アクセスで無効化される。
 - **「非表示」ではなく「会員限定」表示で note 誘導**：未解錠の会員機能（EXIF・現像レシピ・高画素DL・本画像）は隠さず `MemberGate`/`LockedTile` で「会員限定」と見せ、`NoteUnlockButton`（`NOTE_MEMBERSHIP_URL`）で note メンバーシップ参加へ誘導する。一覧のマスクタイルはクリックで写真詳細（＝誘導枠）へ繋がる。note URL は `member-gate.tsx` の定数で一元管理。
 

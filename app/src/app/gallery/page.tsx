@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { pageSeo } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import { maskForViewer } from "@/lib/photo-visibility";
-import { getUnlockedCollectionIds } from "@/lib/unlock-server";
+import { isMember } from "@/lib/unlock-server";
 import { PhotoGallery } from "@/components/gallery/photo-grid";
 
 export const metadata: Metadata = {
@@ -16,17 +16,17 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function GalleryPage() {
-  // 会員限定コレクションの写真も除外せず取得し、未解錠ならモザイク表示する
-  const [rows, unlockedIds] = await Promise.all([
+  // EXIF(撮影設定)は全写真で会員限定。非会員は撮影設定を伏せ、会員限定コレクションは
+  // 本画像もマスク。地図用の位置情報は残す。
+  const [rows, member] = await Promise.all([
     prisma.photo.findMany({
       where: { isPublished: true },
       orderBy: { createdAt: "desc" },
       include: { collection: { select: { title: true, isLocked: true } } },
     }),
-    getUnlockedCollectionIds(),
+    isMember(),
   ]);
-  const unlocked = new Set(unlockedIds);
-  const photos = rows.map((p) => maskForViewer(p, unlocked));
+  const photos = rows.map((p) => maskForViewer(p, member));
 
   return (
     <div className="container mx-auto px-4 py-12">
