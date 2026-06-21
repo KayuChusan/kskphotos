@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Lock } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { CompareSlider } from "@/components/gallery/compare-slider";
 import { ExifTable } from "@/components/gallery/exif-table";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { pageSeo } from "@/lib/seo";
 import { isCollectionUnlocked } from "@/lib/unlock-server";
 import { LockedTile } from "@/components/gallery/locked-tile";
+import { MemberGate } from "@/components/member-gate";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -101,10 +102,7 @@ export default async function ComparePage({ params }: Props) {
       <div className="max-w-md">
         <h2 className="eyebrow mb-4">Shooting Data</h2>
         {gated && !unlocked ? (
-          <div className="flex items-center gap-2 border border-dashed border-border/60 p-4 text-sm text-muted-foreground">
-            <Lock className="size-4 shrink-0" />
-            会員限定です。note の解錠リンクから EXIF をご覧いただけます。
-          </div>
+          <MemberGate message="会員限定です。note メンバーシップに参加すると、EXIF とビフォーアフターをご覧いただけます。" />
         ) : (
           <ExifTable photo={photo} />
         )}

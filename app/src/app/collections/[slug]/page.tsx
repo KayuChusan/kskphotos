@@ -5,6 +5,7 @@ import { ArrowLeft, Lock, LockOpen } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { isCollectionUnlocked } from "@/lib/unlock-server";
 import { maskPhotoImage } from "@/lib/photo-visibility";
+import { NoteUnlockButton } from "@/components/member-gate";
 import { pageSeo } from "@/lib/seo";
 import { PhotoCard } from "@/components/gallery/photo-grid";
 
@@ -104,21 +105,21 @@ export default async function CollectionDetailPage({ params }: Props) {
           </p>
         )}
 
-        {gated && (
-          <div className="mt-5 inline-flex items-center gap-2 rounded-md border border-dashed border-border/60 px-3 py-2 text-xs text-muted-foreground">
-            {unlocked ? (
-              <>
-                <LockOpen className="size-3.5 text-safelight" />
-                解錠済み — EXIF・現像レシピを表示しています
-              </>
-            ) : (
-              <>
-                <Lock className="size-3.5" />
-                会員限定 — note メンバーシップの解錠リンクで EXIF・現像レシピが見られます
-              </>
-            )}
-          </div>
-        )}
+        {gated &&
+          (unlocked ? (
+            <div className="mt-5 inline-flex items-center gap-2 rounded-md border border-dashed border-border/60 px-3 py-2 text-xs text-muted-foreground">
+              <LockOpen className="size-3.5 text-safelight" />
+              解錠済み — EXIF・現像レシピを表示しています
+            </div>
+          ) : (
+            <div className="mt-5 flex max-w-xl flex-col items-start gap-3 rounded-md border border-dashed border-border/60 p-4">
+              <p className="flex items-center gap-2 text-xs leading-relaxed text-muted-foreground">
+                <Lock className="size-3.5 shrink-0" />
+                このシリーズは会員限定です。note メンバーシップに参加すると、写真・EXIF・現像レシピ・高画素ダウンロードがご覧いただけます。
+              </p>
+              <NoteUnlockButton />
+            </div>
+          ))}
       </div>
 
       {collection.photos.length === 0 ? (

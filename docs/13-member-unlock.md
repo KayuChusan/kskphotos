@@ -36,6 +36,7 @@ note 限定記事の /u/<token> リンク
 | `src/lib/unlock-server.ts` | RSC から Cookie を読み、トークンID を DB と突き合わせて**失効・期限を毎回検証**（管理画面での失効が即時反映） |
 | `src/lib/photo-visibility.ts` | `maskPhotoImage`（本画像 URL を取り除き blur+寸法のみ残す）／`maskForViewer`（写真ごとに「未解錠の会員限定コレクションか」を判定しマスク＋`masked`付与）／`excludeLockedPhotos`（トップ/dashboard/sitemap でロック写真を除外する where 断片）／`redactPhotoMeta`（EXIF だけ伏せる・現状未使用）。テスト: `photo-visibility.test.ts` |
 | `src/components/gallery/locked-tile.tsx` | マスク表示タイル。`blurDataUrl` だけを描画（本画像を参照しない）＋鍵アイコン＋「会員限定」ラベル |
+| `src/components/member-gate.tsx` | 会員限定機能のマスク表示＋note 誘導。`NOTE_MEMBERSHIP_URL`（note メンバーシップ URL を一元管理）／`NoteUnlockButton`（解錠ボタン）／`MemberGate`（「〜は会員限定です」＋ボタンの枠）。写真詳細・比較・コレクションの未解錠枠で使用 |
 | `src/lib/storage.ts` | `saveOriginal`/`deleteOriginal`/`getOriginalSignedUrl`（本番=短期V4署名URL）/`readOriginal`（開発フォールバック）。非公開バケット `GCS_ORIGINALS_BUCKET` を使用 |
 | `src/lib/images.ts` | `processOriginal`（4096px・高品質JPEG 生成） |
 | `src/app/gallery/[id]/download/route.ts` | 高画素DL。会員限定×解錠済みのみ配信。本番は署名URLへリダイレクト、開発は直接ストリーム |
@@ -59,6 +60,7 @@ note 限定記事の /u/<token> リンク
 - **マスクはコレクション単位**：`Collection.isLocked && 未解錠` ならそのコレクションの全写真をモザイク（旧・個別 `Photo.isLocked` は廃止）。
 - **本画像を一切出さない**：`maskForViewer`/`maskPhotoImage` で `imageUrl`/`thumbnailUrl`/`beforeUrl` と EXIF・GPS を除去。RSC ペイロード・OGP のいずれにも本画像 URL を載せず、`LockedTile` は `blurDataUrl`（16px）だけを描画。地図ビューも GPS を消すので会員写真はプロットされない。
 - **失効が即効く**：Cookie にトークンID を含め、表示時に DB で `revoked`/`expiresAt` を検証。管理画面で失効すると、既にクリック済みのブラウザも次アクセスで無効化される。
+- **「非表示」ではなく「会員限定」表示で note 誘導**：未解錠の会員機能（EXIF・現像レシピ・高画素DL・本画像）は隠さず `MemberGate`/`LockedTile` で「会員限定」と見せ、`NoteUnlockButton`（`NOTE_MEMBERSHIP_URL`）で note メンバーシップ参加へ誘導する。一覧のマスクタイルはクリックで写真詳細（＝誘導枠）へ繋がる。note URL は `member-gate.tsx` の定数で一元管理。
 
 ## 運用
 

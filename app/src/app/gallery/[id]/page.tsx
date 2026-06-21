@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  BadgeCheck,
-  Calendar,
-  Download,
-  Lock,
-  Tag,
-} from "lucide-react";
+import { ArrowLeft, BadgeCheck, Calendar, Download, Tag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
@@ -20,6 +13,7 @@ import { pageSeo } from "@/lib/seo";
 import { isCollectionUnlocked } from "@/lib/unlock-server";
 import { maskPhotoImage } from "@/lib/photo-visibility";
 import { LockedTile } from "@/components/gallery/locked-tile";
+import { MemberGate } from "@/components/member-gate";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -195,14 +189,7 @@ export default async function PhotoDetailPage({ params }: Props) {
           <Separator />
 
           {gated && !unlocked ? (
-            <div className="border border-dashed border-border/60 p-5 text-center">
-              <Lock className="mx-auto mb-2 size-5 text-muted-foreground" />
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                このコレクションは会員限定です。
-                <br />
-                note メンバーシップの解錠リンクから、EXIF・現像レシピの閲覧と高画素ダウンロードができます。
-              </p>
-            </div>
+            <MemberGate message="この写真は会員限定です。note メンバーシップに参加すると、EXIF・現像レシピの閲覧と高画素（4096px）ダウンロードができます。" />
           ) : (
             <>
               <div>
