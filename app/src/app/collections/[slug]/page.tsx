@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Lock, LockOpen } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { isCollectionUnlocked } from "@/lib/unlock-server";
-import { redactPhotoMeta, maskPhotoImage } from "@/lib/photo-visibility";
+import { maskPhotoImage } from "@/lib/photo-visibility";
 import { pageSeo } from "@/lib/seo";
 import { PhotoCard } from "@/components/gallery/photo-grid";
 
@@ -73,12 +73,10 @@ export default async function CollectionDetailPage({ params }: Props) {
 
   const gated = collection.isLocked;
   const unlocked = !gated || (await isCollectionUnlocked(collection.id));
-  // 未解錠の会員限定コレクション: EXIF を伏せ、ロック写真は本画像も出さずマスク
+  // 未解錠の会員限定コレクションは、全写真をモザイク（本画像・EXIF を伏せる）
   const visiblePhotos =
     gated && !unlocked
-      ? collection.photos.map((p) =>
-          p.isLocked ? maskPhotoImage(p) : redactPhotoMeta(p)
-        )
+      ? collection.photos.map((p) => maskPhotoImage(p))
       : collection.photos;
 
   return (
@@ -134,7 +132,7 @@ export default async function CollectionDetailPage({ params }: Props) {
               key={photo.id}
               photo={photo}
               index={i}
-              masked={gated && !unlocked && photo.isLocked}
+              masked={gated && !unlocked}
             />
           ))}
         </div>

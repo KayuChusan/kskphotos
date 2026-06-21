@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { pageSeo } from "@/lib/seo";
 import { isCollectionUnlocked } from "@/lib/unlock-server";
-import { redactPhotoMeta, maskPhotoImage } from "@/lib/photo-visibility";
+import { maskPhotoImage } from "@/lib/photo-visibility";
 import { LockedTile } from "@/components/gallery/locked-tile";
 
 interface Props {
@@ -52,8 +52,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       robots: { index: false, follow: false },
       ...pageSeo({
         path: `/gallery/${id}`,
-        // マスク対象写真は OG にも本画像を出さない
-        image: photo.isLocked ? undefined : photo.imageUrl,
+        // 会員限定コレクションは OG に本画像を出さない
+        image: undefined,
         type: "article",
       }),
     };
@@ -108,13 +108,9 @@ export default async function PhotoDetailPage({ params }: Props) {
       ? await isCollectionUnlocked(photo.collectionId)
       : false);
 
-  // 未解錠の会員限定写真は EXIF を伏せ、ロック写真は本画像も出さずマスク
-  const masked = gated && !unlocked && photo.isLocked;
-  const safe = masked
-    ? maskPhotoImage(photo)
-    : gated && !unlocked
-      ? redactPhotoMeta(photo)
-      : photo;
+  // 未解錠の会員限定コレクションは、本画像も EXIF も出さずモザイク
+  const masked = gated && !unlocked;
+  const safe = masked ? maskPhotoImage(photo) : photo;
 
   const dt = safe.dateTaken;
   const dateTaken = dt

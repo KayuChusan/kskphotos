@@ -40,11 +40,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : {}),
     ...pageSeo({
       path: `/gallery/${id}/compare`,
-      // マスク対象写真は OG にも本画像を出さない
-      image:
-        photo.collection?.isLocked && photo.isLocked
-          ? undefined
-          : photo.imageUrl,
+      // 会員限定コレクションは OG に本画像を出さない
+      image: photo.collection?.isLocked ? undefined : photo.imageUrl,
       type: "article",
     }),
   };
@@ -65,7 +62,7 @@ export default async function ComparePage({ params }: Props) {
     (photo.collectionId
       ? await isCollectionUnlocked(photo.collectionId)
       : false);
-  const masked = gated && !unlocked && photo.isLocked;
+  const masked = gated && !unlocked;
 
   return (
     <div className="container mx-auto px-4 py-8">

@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import type { Photo } from "@/generated/prisma/client";
-import { redactPhotoMeta, maskPhotoImage } from "./photo-visibility";
+import {
+  redactPhotoMeta,
+  maskPhotoImage,
+  maskForViewer,
+} from "./photo-visibility";
 
 // テスト用の最小 Photo（型を満たすダミー値）
 function makePhoto(overrides: Partial<Photo> = {}): Photo {
@@ -85,5 +89,45 @@ describe("maskPhotoImage", () => {
     expect(m.cameraModel).toBeNull();
     expect(m.developNotes).toBeNull();
     expect(m.originalUrl).toBeNull();
+  });
+});
+
+describe("maskForViewer", () => {
+  const lockedPhoto = () => ({
+    ...makePhoto(),
+    collectionId: "c1",
+    collection: { isLocked: true },
+  });
+
+  it("会員限定コレクション×未解錠 → モザイク", () => {
+    const r = maskForViewer(lockedPhoto(), new Set<string>());
+    expect(r.masked).toBe(true);
+    expect(r.imageUrl).toBe("");
+    expect(r.cameraModel).toBeNull();
+  });
+
+  it("会員限定コレクション×解錠済み → 実画像のまま", () => {
+    const r = maskForViewer(lockedPhoto(), new Set(["c1"]));
+    expect(r.masked).toBe(false);
+    expect(r.imageUrl).toBe("/uploads/real.jpg");
+    expect(r.cameraModel).toBe("ILCE-7RM6");
+  });
+
+  it("公開コレクション(ロック無し) → そのまま", () => {
+    const photo = {
+      ...makePhoto(),
+      collectionId: "c2",
+      collection: { isLocked: false },
+    };
+    const r = maskForViewer(photo, new Set<string>());
+    expect(r.masked).toBe(false);
+    expect(r.imageUrl).toBe("/uploads/real.jpg");
+  });
+
+  it("コレクション未所属 → そのまま", () => {
+    const photo = { ...makePhoto(), collectionId: null, collection: null };
+    const r = maskForViewer(photo, new Set<string>());
+    expect(r.masked).toBe(false);
+    expect(r.imageUrl).toBe("/uploads/real.jpg");
   });
 });

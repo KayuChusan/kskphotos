@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { pageSeo } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
-import { excludeLockedPhotos } from "@/lib/photo-visibility";
+import { maskForViewer } from "@/lib/photo-visibility";
+import { getUnlockedCollectionIds } from "@/lib/unlock-server";
 import { PhotoGallery } from "@/components/gallery/photo-grid";
 
 export const metadata: Metadata = {
@@ -11,13 +12,21 @@ export const metadata: Metadata = {
     "フォトギャラリー — ポートレート、風景、イベント、ストリートスナップ。GPS地図ビューでも閲覧可能。",
 };
 
-export const revalidate = 3600;
+// 解錠状態(Cookie)をリクエストごとに反映するため動的レンダリング
+export const dynamic = "force-dynamic";
 
 export default async function GalleryPage() {
-  const photos = await prisma.photo.findMany({
-    where: { isPublished: true, ...excludeLockedPhotos },
-    orderBy: { createdAt: "desc" },
-  });
+  // 会員限定コレクションの写真も除外せず取得し、未解錠ならモザイク表示する
+  const [rows, unlockedIds] = await Promise.all([
+    prisma.photo.findMany({
+      where: { isPublished: true },
+      orderBy: { createdAt: "desc" },
+      include: { collection: { select: { isLocked: true } } },
+    }),
+    getUnlockedCollectionIds(),
+  ]);
+  const unlocked = new Set(unlockedIds);
+  const photos = rows.map((p) => maskForViewer(p, unlocked));
 
   return (
     <div className="container mx-auto px-4 py-12">
