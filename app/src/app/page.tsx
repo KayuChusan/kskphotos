@@ -9,6 +9,14 @@ import { CountUp } from "@/components/count-up";
 
 export const metadata: Metadata = pageSeo({ path: "/" });
 
+// 「つくる」セクションの Web 対応範囲（幅広さの訴求）
+const WEB_SCOPE = [
+  { title: "新規制作", desc: "構成・デザインから実装・公開まで一括で。" },
+  { title: "運用・保守", desc: "公開後の更新代行・改善・トラブル対応。" },
+  { title: "引き継ぎ", desc: "他社で作ったサイトの移管・保守も歓迎。" },
+  { title: "リニューアル", desc: "既存サイトの作り替え・再設計。" },
+] as const;
+
 // ヒーローを訪問ごとにランダム表示するためリクエスト単位でレンダリング
 export const dynamic = "force-dynamic";
 
@@ -216,45 +224,74 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* ブラウザ風フレーム(後日スクリーンショットに差し替え可) */}
-            <div className="border bg-card">
-              <div className="flex items-center gap-1.5 border-b px-4 py-3">
-                <span className="size-2.5 rounded-full bg-muted-foreground/30" />
-                <span className="size-2.5 rounded-full bg-muted-foreground/30" />
-                <span className="size-2.5 rounded-full bg-muted-foreground/30" />
-                <span className="exif-text ml-3 text-muted-foreground">
-                  kskworks.jp
+            {/* 写真 → Web フロー（撮影×Web ワンストップを一目で） */}
+            <div className="flex items-center gap-3 sm:gap-5">
+              {/* 撮った写真（素材） */}
+              {mockupPhoto && (
+                <div className="viewfinder relative aspect-[3/4] w-24 shrink-0 overflow-hidden bg-muted sm:w-28">
+                  <Image
+                    src={mockupPhoto.thumbnailUrl ?? mockupPhoto.imageUrl}
+                    alt=""
+                    fill
+                    placeholder={mockupPhoto.blurDataUrl ? "blur" : "empty"}
+                    blurDataURL={mockupPhoto.blurDataUrl ?? undefined}
+                    className="object-cover"
+                    sizes="120px"
+                  />
+                  <span className="exif-text absolute bottom-1.5 left-1.5 text-safelight drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                    RAW
+                  </span>
+                </div>
+              )}
+              {/* 撮影 → 制作 */}
+              <div className="flex shrink-0 flex-col items-center gap-1 text-muted-foreground">
+                <span className="font-mono text-2xl leading-none text-safelight">
+                  →
                 </span>
+                <span className="exif-text">制作</span>
               </div>
-              <div className="space-y-3 p-6">
+              {/* 仕上がりのサイト（この サイト自体が制作例） */}
+              <div className="min-w-0 flex-1 border bg-card">
+                <div className="flex items-center gap-1.5 border-b px-3 py-2">
+                  <span className="size-2 rounded-full bg-muted-foreground/30" />
+                  <span className="size-2 rounded-full bg-muted-foreground/30" />
+                  <span className="size-2 rounded-full bg-muted-foreground/30" />
+                  <span className="exif-text ml-2 truncate text-muted-foreground">
+                    kskworks.jp
+                  </span>
+                </div>
                 {mockupPhoto && (
-                  // 実サイトのヒーローらしく 16:9 バナーで表示。見出し帯を重ねて
-                  // 「Web サイト」だと一目で伝わるようにする（中央上寄りでクロップ）
-                  <div className="relative aspect-[16/9] overflow-hidden rounded-sm bg-muted">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                     <Image
                       src={mockupPhoto.thumbnailUrl ?? mockupPhoto.imageUrl}
                       alt=""
                       fill
-                      placeholder={mockupPhoto.blurDataUrl ? "blur" : "empty"}
-                      blurDataURL={mockupPhoto.blurDataUrl ?? undefined}
                       className="object-cover object-[50%_30%]"
-                      sizes="(max-width: 1024px) 90vw, 45vw"
+                      sizes="(max-width: 1024px) 70vw, 35vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-                    <div className="absolute inset-x-4 bottom-3">
-                      <div className="h-2.5 w-1/2 rounded-full bg-white/85" />
-                      <div className="mt-1.5 h-2 w-1/3 rounded-full bg-white/55" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+                    <div className="absolute inset-x-3 bottom-2.5">
+                      <div className="h-2 w-1/2 rounded-full bg-white/85" />
+                      <div className="mt-1 h-1.5 w-1/3 rounded-full bg-white/55" />
                     </div>
                   </div>
                 )}
-                <div className="h-3 w-2/3 bg-muted" />
-                <div className="h-3 w-1/2 bg-muted" />
-                <div className="grid grid-cols-3 gap-2 pt-2">
-                  <div className="aspect-square bg-muted" />
-                  <div className="aspect-square bg-muted" />
-                  <div className="aspect-square bg-muted" />
-                </div>
               </div>
+            </div>
+          </div>
+
+          {/* 対応範囲カード（比率に依存せずどの幅でも読みやすい） */}
+          <div className="mt-16">
+            <p className="eyebrow mb-6">対応範囲</p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {WEB_SCOPE.map((s) => (
+                <div key={s.title} className="border bg-card p-5">
+                  <h3 className="font-heading text-lg font-medium">{s.title}</h3>
+                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                    {s.desc}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
