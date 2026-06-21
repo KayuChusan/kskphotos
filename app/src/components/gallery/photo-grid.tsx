@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Grid3X3, MapPin, Lock, LockOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhotoMap } from "@/components/gallery/photo-map";
-import { LockedTile } from "@/components/gallery/locked-tile";
+import { LockedPhotoTile } from "@/components/gallery/locked-photo-tile";
 import { cn } from "@/lib/utils";
 import type { Photo, PhotoCategory } from "@/generated/prisma/client";
 
@@ -54,15 +54,24 @@ export function PhotoCard({
       transition={{ duration: 0.6, delay: (index % 3) * 0.08, ease: "easeOut" }}
       className="mb-6 break-inside-avoid"
     >
-      <Link href={`/gallery/${photo.id}`} className="group block">
-        {masked ? (
-          <LockedTile
+      {masked ? (
+        // 会員限定：遷移せず note 誘導モーダルを開く
+        <div className="block">
+          <LockedPhotoTile
             blurDataUrl={photo.blurDataUrl}
             width={photo.imageWidth}
             height={photo.imageHeight}
             className="viewfinder"
           />
-        ) : (
+          <div className="mt-2 flex items-baseline justify-between gap-3">
+            <p className="truncate font-heading text-base text-foreground/90">
+              {photo.title}
+            </p>
+            <p className="shrink-0 text-xs text-muted-foreground">会員限定</p>
+          </div>
+        </div>
+      ) : (
+        <Link href={`/gallery/${photo.id}`} className="group block">
           <div className="viewfinder develop relative overflow-hidden">
             <Image
               src={photo.thumbnailUrl ?? photo.imageUrl}
@@ -76,35 +85,22 @@ export function PhotoCard({
               style={{ viewTransitionName: `photo-${photo.id}` }}
             />
           </div>
-        )}
 
-        {/* Caption strip — フィルムの縁コードのように */}
-        <div className="mt-2 flex items-baseline justify-between gap-3">
-          <p className="truncate font-heading text-base text-foreground/90">
-            {photo.title}
-          </p>
-          <p
-            className={cn(
-              "shrink-0 text-muted-foreground",
-              masked ? "text-xs" : "exif-text"
-            )}
-          >
-            {masked ? (
-              "会員限定"
-            ) : (
-              <>
-                {CATEGORY_LABELS[photo.category]}
-                {photo.beforeUrl && (
-                  <span className="text-safelight"> · RAW</span>
-                )}
-              </>
-            )}
-          </p>
-        </div>
-        {exif && (
-          <p className="exif-text mt-0.5 text-muted-foreground/60">{exif}</p>
-        )}
-      </Link>
+          {/* Caption strip — フィルムの縁コードのように */}
+          <div className="mt-2 flex items-baseline justify-between gap-3">
+            <p className="truncate font-heading text-base text-foreground/90">
+              {photo.title}
+            </p>
+            <p className="exif-text shrink-0 text-muted-foreground">
+              {CATEGORY_LABELS[photo.category]}
+              {photo.beforeUrl && <span className="text-safelight"> · RAW</span>}
+            </p>
+          </div>
+          {exif && (
+            <p className="exif-text mt-0.5 text-muted-foreground/60">{exif}</p>
+          )}
+        </Link>
+      )}
     </motion.div>
   );
 }

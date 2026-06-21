@@ -213,25 +213,26 @@ export default async function PhotoDetailPage({ params }: Props) {
             </>
           )}
 
-          <Separator />
-
-          {/* 撮影来歴 — 生成AI不使用の表明 */}
-          <div className="border border-border/60 p-4">
-            <h2 className="eyebrow mb-3">
-              <BadgeCheck className="mr-1.5 inline size-3.5 text-safelight" />
-              Authenticity
-            </h2>
-            <ul className="exif-text space-y-1.5 text-muted-foreground">
-              {member && (
-                <li>Captured on {safe.cameraModel ?? "Sony α7R VI"}</li>
-              )}
-              {dateTaken && <li>Shot on {dateTaken}</li>}
-              <li>Developed in Adobe Lightroom</li>
-              <li className="text-foreground/80">
-                No generative AI — 生成AIは使用していません
-              </li>
-            </ul>
-          </div>
+          {/* 撮影来歴 — EXIF と同じく会員限定 */}
+          {member && (
+            <>
+              <Separator />
+              <div className="border border-border/60 p-4">
+                <h2 className="eyebrow mb-3">
+                  <BadgeCheck className="mr-1.5 inline size-3.5 text-safelight" />
+                  Authenticity
+                </h2>
+                <ul className="exif-text space-y-1.5 text-muted-foreground">
+                  <li>Captured on {safe.cameraModel ?? "Sony α7R VI"}</li>
+                  {dateTaken && <li>Shot on {dateTaken}</li>}
+                  <li>Developed in Adobe Lightroom</li>
+                  <li className="text-foreground/80">
+                    No generative AI — 生成AIは使用していません
+                  </li>
+                </ul>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

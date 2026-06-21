@@ -5,7 +5,7 @@ import Image from "next/image";
 import { FileCheck, MapPin, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { isMember } from "@/lib/unlock-server";
-import { LockedTile } from "@/components/gallery/locked-tile";
+import { LockedPhotoTile } from "@/components/gallery/locked-photo-tile";
 import {
   Card,
   CardHeader,
@@ -129,20 +129,31 @@ export default async function WorksPage() {
               </span>
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {group.items.map((photo) => (
-                <Link
-                  key={photo.id}
-                  href={`/gallery/${photo.id}`}
-                  className="group block"
-                >
-                  {photo.masked ? (
-                    <LockedTile
+              {group.items.map((photo) =>
+                photo.masked ? (
+                  // 会員限定：遷移せず note 誘導モーダルを開く
+                  <div key={photo.id} className="block">
+                    <LockedPhotoTile
                       blurDataUrl={photo.blurDataUrl}
                       width={photo.imageWidth}
                       height={photo.imageHeight}
                       className="viewfinder"
                     />
-                  ) : (
+                    <div className="mt-3">
+                      <p className="font-heading text-lg font-medium">
+                        {photo.title}
+                      </p>
+                      <p className="exif-text mt-1 text-muted-foreground">
+                        会員限定
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={photo.id}
+                    href={`/gallery/${photo.id}`}
+                    className="group block"
+                  >
                     <div className="viewfinder relative overflow-hidden">
                       <Image
                         src={photo.thumbnailUrl ?? photo.imageUrl}
@@ -155,17 +166,17 @@ export default async function WorksPage() {
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                     </div>
-                  )}
-                  <div className="mt-3">
-                    <p className="font-heading text-lg font-medium">
-                      {photo.title}
-                    </p>
-                    <p className="exif-text mt-1 text-muted-foreground">
-                      {photo.masked ? "会員限定" : group.label}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+                    <div className="mt-3">
+                      <p className="font-heading text-lg font-medium">
+                        {photo.title}
+                      </p>
+                      <p className="exif-text mt-1 text-muted-foreground">
+                        {group.label}
+                      </p>
+                    </div>
+                  </Link>
+                )
+              )}
             </div>
           </section>
         ))
