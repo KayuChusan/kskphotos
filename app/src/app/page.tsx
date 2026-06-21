@@ -53,12 +53,12 @@ export default async function HomePage() {
 
   // ヒーロー候補から1枚だけランダム取得（count→skipで全件ロードを避ける）。
   // 指定が無ければ最新ポートフォリオで代替。
+  // force-dynamic のサーバーコンポーネントなので、訪問ごとの乱数は意図的（純度ルール対象外）。
+  // eslint-disable-next-line react-hooks/purity
+  const heroSkip = heroCount > 0 ? Math.floor(Math.random() * heroCount) : 0;
   const heroPhoto =
     heroCount > 0
-      ? await prisma.photo.findFirst({
-          where: heroWhere,
-          skip: Math.floor(Math.random() * heroCount),
-        })
+      ? await prisma.photo.findFirst({ where: heroWhere, skip: heroSkip })
       : (featured[0] ?? null);
   const mockupPhoto = heroPhoto ?? featured[0];
 
