@@ -1,37 +1,26 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { isCollectionUnlocked } from "@/lib/unlock-server";
+import { isMember } from "@/lib/unlock-server";
 import { getOriginalSignedUrl, readOriginal } from "@/lib/storage";
 
 // 解錠状態(Cookie)をリクエストごとに評価するため動的
 export const dynamic = "force-dynamic";
 
 /**
- * 会員向け高画素(4096px)ダウンロード。
- * 会員限定コレクションが解錠済みのときだけ配信する（メンバー特典）。
- * 公開コレクションの写真や未解錠は 404/403（原本 URL を一切露出しない）。
+ * 会員向け高画素(4096px)ダウンロード。会員（有効な解錠トークン保有）のみ配信。
+ * 非会員・原本なしは 403/404（原本 URL を一切露出しない）。
  */
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const photo = await prisma.photo.findUnique({
-    where: { id },
-    include: { collection: true },
-  });
+  const photo = await prisma.photo.findUnique({ where: { id } });
   if (!photo || !photo.isPublished || !photo.originalUrl) {
     return new NextResponse(null, { status: 404 });
   }
 
-  // 高画素 DL は会員限定コレクション(isLocked)のみの特典
-  const gated = photo.collection?.isLocked ?? false;
-  if (!gated) return new NextResponse(null, { status: 404 });
-
-  const unlocked = photo.collectionId
-    ? await isCollectionUnlocked(photo.collectionId)
-    : false;
-  if (!unlocked) {
+  if (!(await isMember())) {
     return new NextResponse("会員限定です。note の解錠リンクをご利用ください。", {
       status: 403,
     });

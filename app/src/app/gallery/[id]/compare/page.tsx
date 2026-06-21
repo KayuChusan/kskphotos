@@ -7,7 +7,7 @@ import { ExifTable } from "@/components/gallery/exif-table";
 import { Separator } from "@/components/ui/separator";
 import { prisma } from "@/lib/prisma";
 import { pageSeo } from "@/lib/seo";
-import { isCollectionUnlocked } from "@/lib/unlock-server";
+import { isMember } from "@/lib/unlock-server";
 import { LockedTile } from "@/components/gallery/locked-tile";
 import { MemberGate } from "@/components/member-gate";
 
@@ -57,13 +57,9 @@ export default async function ComparePage({ params }: Props) {
   if (!photo || !photo.isPublished) notFound();
   if (!photo.beforeUrl) redirect(`/gallery/${id}`);
 
-  const gated = photo.collection?.isLocked ?? false;
-  const unlocked =
-    !gated ||
-    (photo.collectionId
-      ? await isCollectionUnlocked(photo.collectionId)
-      : false);
-  const masked = gated && !unlocked;
+  // ビフォーアフター（現像過程）と EXIF は会員限定。非会員はスライダーもマスク。
+  const member = await isMember();
+  const masked = !member;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -101,8 +97,8 @@ export default async function ComparePage({ params }: Props) {
 
       <div className="max-w-md">
         <h2 className="eyebrow mb-4">Shooting Data</h2>
-        {gated && !unlocked ? (
-          <MemberGate message="会員限定です。note メンバーシップに参加すると、EXIF とビフォーアフターをご覧いただけます。" />
+        {!member ? (
+          <MemberGate message="撮影設定（EXIF）とビフォーアフターは会員限定です。note メンバーシップに参加するとご覧いただけます。" />
         ) : (
           <ExifTable photo={photo} />
         )}

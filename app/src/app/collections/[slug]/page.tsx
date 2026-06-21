@@ -3,8 +3,8 @@ import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Lock, LockOpen } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { isCollectionUnlocked } from "@/lib/unlock-server";
-import { maskPhotoImage } from "@/lib/photo-visibility";
+import { isMember } from "@/lib/unlock-server";
+import { maskPhotoImage, redactShootingMeta } from "@/lib/photo-visibility";
 import { NoteUnlockButton } from "@/components/member-gate";
 import { pageSeo } from "@/lib/seo";
 import { PhotoCard } from "@/components/gallery/photo-grid";
@@ -73,12 +73,14 @@ export default async function CollectionDetailPage({ params }: Props) {
   if (!collection || !collection.isPublished) notFound();
 
   const gated = collection.isLocked;
-  const unlocked = !gated || (await isCollectionUnlocked(collection.id));
-  // 未解錠の会員限定コレクションは、全写真をモザイク（本画像・EXIF を伏せる）
-  const visiblePhotos =
-    gated && !unlocked
-      ? collection.photos.map((p) => maskPhotoImage(p))
-      : collection.photos;
+  const member = await isMember();
+  const unlocked = member; // 会員なら全コレクションを閲覧可
+  // 非会員：会員限定コレクションは全写真をモザイク、公開コレクションは撮影設定だけ伏せる
+  const visiblePhotos = member
+    ? collection.photos
+    : collection.photos.map((p) =>
+        gated ? maskPhotoImage(p) : redactShootingMeta(p)
+      );
 
   return (
     <div className="container mx-auto px-4 py-12">

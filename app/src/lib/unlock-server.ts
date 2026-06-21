@@ -30,3 +30,12 @@ export async function isCollectionUnlocked(
   const ids = await getUnlockedCollectionIds();
   return ids.includes(collectionId);
 }
+
+/**
+ * 会員かどうか。有効な解錠トークンを1つでも持っていれば会員とみなす。
+ * EXIF（撮影設定）は全写真で会員限定なので、表示可否はこの判定で行う
+ * （note メンバーシップの解錠リンクを踏めば、全写真の撮影設定が見られる）。
+ */
+export async function isMember(): Promise<boolean> {
+  return (await getUnlockedCollectionIds()).length > 0;
+}

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Link } from "next-view-transitions";
 import { Lock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { getUnlockedCollectionIds } from "@/lib/unlock-server";
+import { isMember } from "@/lib/unlock-server";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/collections" }),
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CollectionsPage() {
-  // 会員限定コレクションも除外せず表示し、未解錠ならカバーをモザイクにする
-  const [collections, unlockedIds] = await Promise.all([
+  // 会員限定コレクションも除外せず表示し、非会員ならカバーをモザイクにする
+  const [collections, member] = await Promise.all([
     prisma.collection.findMany({
       where: { isPublished: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
@@ -31,9 +31,8 @@ export default async function CollectionsPage() {
         _count: { select: { photos: { where: { isPublished: true } } } },
       },
     }),
-    getUnlockedCollectionIds(),
+    isMember(),
   ]);
-  const unlocked = new Set(unlockedIds);
 
   const withPhotos = collections.filter((c) => c._count.photos > 0);
 
@@ -55,9 +54,8 @@ export default async function CollectionsPage() {
         <div className="grid gap-6 sm:grid-cols-2">
           {withPhotos.map((collection) => {
             const cover = collection.photos[0];
-            // 未解錠の会員限定コレクションはカバーをモザイク（本画像を出さない）
-            const masked =
-              collection.isLocked && !unlocked.has(collection.id);
+            // 非会員には会員限定コレクションのカバーをモザイク（本画像を出さない）
+            const masked = collection.isLocked && !member;
             return (
               <Link
                 key={collection.id}
