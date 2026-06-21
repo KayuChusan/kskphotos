@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Trash2, Eye, EyeOff, Star, StarOff, Lock, LockOpen } from "lucide-react";
+import { Trash2, Eye, EyeOff, Star, StarOff } from "lucide-react";
 import { updatePhoto, deletePhoto } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,9 +46,7 @@ function PhotoRow({
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
-  async function toggleField(
-    field: "isPublished" | "isPortfolio" | "isLocked"
-  ) {
+  async function toggleField(field: "isPublished" | "isPortfolio") {
     const result = await updatePhoto(photo.id, { [field]: !photo[field] });
     if (!result.ok) alert(result.error);
     router.refresh();
@@ -147,21 +145,6 @@ function PhotoRow({
           <Switch
             checked={photo.isPortfolio}
             onCheckedChange={() => toggleField("isPortfolio")}
-          />
-        </div>
-
-        <div
-          className="flex items-center gap-1.5"
-          title="会員限定マスク（解錠まで画像をぼかす）"
-        >
-          {photo.isLocked ? (
-            <Lock className="size-3.5 text-safelight" />
-          ) : (
-            <LockOpen className="size-3.5 text-muted-foreground" />
-          )}
-          <Switch
-            checked={photo.isLocked}
-            onCheckedChange={() => toggleField("isLocked")}
           />
         </div>
 

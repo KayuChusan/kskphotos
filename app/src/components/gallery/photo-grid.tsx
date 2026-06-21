@@ -109,7 +109,11 @@ export function PhotoCard({
   );
 }
 
-export function PhotoGallery({ photos }: { photos: Photo[] }) {
+export function PhotoGallery({
+  photos,
+}: {
+  photos: (Photo & { masked?: boolean })[];
+}) {
   const [category, setCategory] = useState<PhotoCategory | "ALL">("ALL");
   const [view, setView] = useState<"grid" | "map">("grid");
 
@@ -171,7 +175,12 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
             className="columns-1 gap-6 sm:columns-2 md:columns-3 xl:columns-4"
           >
             {filtered.map((photo, i) => (
-              <PhotoCard key={photo.id} photo={photo} index={i} />
+              <PhotoCard
+                key={photo.id}
+                photo={photo}
+                index={i}
+                masked={photo.masked}
+              />
             ))}
           </motion.div>
         </AnimatePresence>

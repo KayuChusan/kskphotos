@@ -25,7 +25,7 @@ note 限定記事の /u/<token> リンク
 |------|------|
 | `Collection.isLocked` | true で会員限定（解錠まで EXIF・現像レシピ・(将来)マスク・高画素を出さない） |
 | `UnlockToken` | 解錠トークン。`tokenHash` のみ保存（平文は発行時に一度だけ表示）。`collectionId` / `label` / `expiresAt` / `revoked` |
-| `Photo.isLocked` | 未解錠時にマスク（ぼかし）する写真。管理画面の写真テーブルでトグル |
+| `Photo.isLocked` | （未使用・廃止予定）旧・個別マスクフラグ。マスクはコレクション単位（`Collection.isLocked`）に統一したため不要。DB 列は残置 |
 | `Photo.originalUrl` | 高画素オリジナル(4096px)の保存キー。**非公開バケット**に格納し公開 URL は持たない |
 
 ## 主要ファイル
@@ -34,7 +34,7 @@ note 限定記事の /u/<token> リンク
 |----------|------|
 | `src/lib/unlock.ts` | 純粋関数：トークン生成/ハッシュ、Cookie 値の署名/検証（`{c,k}` 配列）、`addEntry`。テスト: `unlock.test.ts` |
 | `src/lib/unlock-server.ts` | RSC から Cookie を読み、トークンID を DB と突き合わせて**失効・期限を毎回検証**（管理画面での失効が即時反映） |
-| `src/lib/photo-visibility.ts` | `redactPhotoMeta`（EXIF・現像・GPS を伏せる）／`maskPhotoImage`（本画像 URL も取り除き blur+寸法のみ残す）／`excludeLockedPhotos`（公開一覧からロック写真を除外する where 断片）。テスト: `photo-visibility.test.ts` |
+| `src/lib/photo-visibility.ts` | `maskPhotoImage`（本画像 URL を取り除き blur+寸法のみ残す）／`maskForViewer`（写真ごとに「未解錠の会員限定コレクションか」を判定しマスク＋`masked`付与）／`excludeLockedPhotos`（トップ/dashboard/sitemap でロック写真を除外する where 断片）／`redactPhotoMeta`（EXIF だけ伏せる・現状未使用）。テスト: `photo-visibility.test.ts` |
 | `src/components/gallery/locked-tile.tsx` | マスク表示タイル。`blurDataUrl` だけを描画（本画像を参照しない）＋鍵アイコン＋「会員限定」ラベル |
 | `src/lib/storage.ts` | `saveOriginal`/`deleteOriginal`/`getOriginalSignedUrl`（本番=短期V4署名URL）/`readOriginal`（開発フォールバック）。非公開バケット `GCS_ORIGINALS_BUCKET` を使用 |
 | `src/lib/images.ts` | `processOriginal`（4096px・高品質JPEG 生成） |
@@ -42,13 +42,20 @@ note 限定記事の /u/<token> リンク
 | `src/app/u/[token]/route.ts` | 解錠リンク。Cookie 発行 → コレクションへリダイレクト |
 | `src/app/admin/collections/*` | 会員限定トグル＋解錠リンク発行/失効（管理画面） |
 
-## 漏えい対策（重要）
+## 表示ポリシー（一覧での扱い）
 
-- **公開一覧から除外**：`/gallery`・`/dashboard`・トップ・`/works`・`sitemap`・`/collections` のクエリに `excludeLockedPhotos`／`isLocked:false` を付与し、ロック中コレクションの写真・コレクションを出さない（会員写真は公開ファイアホースに載せない）。
-- **個別ページで伏せる**：コレクション/写真詳細/比較は未解錠なら EXIF・現像レシピを非表示、`generateMetadata` も EXIF を出さず `noindex`、一覧カード/ライトボックスへ渡す写真は `redactPhotoMeta` で伏せる。
-- **マスク写真は本画像を出さない**：`isLocked` 写真は未解錠時 `maskPhotoImage` で `imageUrl`/`thumbnailUrl`/`beforeUrl` を除去し、`LockedTile` が `blurDataUrl`（16px）だけを描画。RSC ペイロード・OGP のいずれにも本画像 URL を載せない（`generateMetadata` の OG 画像も `isLocked` なら省略）。比較ページもスライダーを出さずマスクタイルに差し替え。
+会員限定コレクションの写真は「隠す」ではなく「モザイクで見せる」方針（解錠を促すため）。ページにより扱いが異なる：
+
+| ページ | 未解錠の会員写真 | 解錠済み | レンダリング |
+|--------|------------------|----------|-------------|
+| `/gallery`・`/works`・`/collections`(一覧) | **モザイク表示**（`maskForViewer`）。本画像・EXIF・GPS を除去し `LockedTile` で blur のみ | 実画像 | `force-dynamic` |
+| コレクション/写真詳細/比較 | コレクション全写真をモザイク（`maskPhotoImage`）＋EXIF・現像レシピ非表示、`noindex`、OG 画像なし | 実画像＋EXIF＋現像＋高画素DL | `force-dynamic` |
+| トップ`/`・`/dashboard`・`/sitemap` | **除外**（`excludeLockedPhotos`） | （同左） | 静的 |
+
+- **トップは会員写真を出さない**方針。**`/dashboard` は EXIF 集計**のため未解錠の会員写真を含めると EXIF（レンズ・F値・ISO 等）が集計に漏れる→除外。**sitemap** は detail が `noindex` のため除外。
+- **マスクはコレクション単位**：`Collection.isLocked && 未解錠` ならそのコレクションの全写真をモザイク（旧・個別 `Photo.isLocked` は廃止）。
+- **本画像を一切出さない**：`maskForViewer`/`maskPhotoImage` で `imageUrl`/`thumbnailUrl`/`beforeUrl` と EXIF・GPS を除去。RSC ペイロード・OGP のいずれにも本画像 URL を載せず、`LockedTile` は `blurDataUrl`（16px）だけを描画。地図ビューも GPS を消すので会員写真はプロットされない。
 - **失効が即効く**：Cookie にトークンID を含め、表示時に DB で `revoked`/`expiresAt` を検証。管理画面で失効すると、既にクリック済みのブラウザも次アクセスで無効化される。
-- 解錠対象ページは `force-dynamic`（Cookie をリクエストごとに読むため）。公開一覧は除外フィルタで対応するので静的のまま。
 
 ## 運用
 
@@ -59,8 +66,9 @@ note 限定記事の /u/<token> リンク
 ## フェーズ
 
 - **Phase 1（実装済み）**：解錠基盤＋ EXIF・現像レシピの会員限定表示＋公開一覧からの除外。
-- **Phase 2（実装済み）**：一部写真のマスク。`Photo.isLocked` 写真を未解錠時に `maskPhotoImage`＋`LockedTile` でぼかし、本画像を一切出さない（一覧・詳細・比較・OGP）。管理画面の写真テーブルにロックトグル追加。
+- **Phase 2（実装済み）**：写真のマスク。未解錠の会員限定コレクションを `maskPhotoImage`＋`LockedTile` でぼかし、本画像を一切出さない（詳細・比較・OGP）。
 - **Phase 3（実装済み）**：高画素ダウンロード。アップロード時に 4096px オリジナルを**非公開バケット**へ保存し、会員限定×解錠済みのときだけ `/gallery/[id]/download` が短期署名 URL を発行して配信。
+- **Phase 4（実装済み）**：公開一覧でのモザイク表示。会員写真を「除外」から「モザイク表示」に変更（`/gallery`・`/works`・`/collections` を `force-dynamic` 化、未解錠は `maskForViewer` でぼかし、解錠済みは実画像）。トップ・dashboard・sitemap は引き続き除外。マスクをコレクション単位に統一し旧 `Photo.isLocked` トグルは廃止。詳細は「表示ポリシー」。
 
 ## 高画素ダウンロード（Phase 3）
 

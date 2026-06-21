@@ -4,7 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { FileCheck, MapPin, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { excludeLockedPhotos } from "@/lib/photo-visibility";
+import { getUnlockedCollectionIds } from "@/lib/unlock-server";
+import { LockedTile } from "@/components/gallery/locked-tile";
 import {
   Card,
   CardHeader,
@@ -22,8 +23,8 @@ export const metadata: Metadata = {
     "撮影実績 — 議員・候補者のポートレートをはじめ、政治・選挙写真からファミリーフォトまで、ジャンル別にご覧いただけます。",
 };
 
-// 静的生成 + 管理画面の更新時にオンデマンド再検証（revalidatePhotoPages）
-export const revalidate = 3600;
+// 解錠状態(Cookie)をリクエストごとに反映するため動的レンダリング
+export const dynamic = "force-dynamic";
 
 // カテゴリ（ジャンル）の日本語ラベルと表示順
 const CATEGORY_LABELS: Record<string, string> = {
@@ -69,19 +70,33 @@ const FIELDS = [
 ];
 
 export default async function WorksPage() {
-  const photos = await prisma.photo.findMany({
-    where: { isPublished: true, ...excludeLockedPhotos },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-    select: {
-      id: true,
-      title: true,
-      category: true,
-      imageUrl: true,
-      thumbnailUrl: true,
-      imageWidth: true,
-      imageHeight: true,
-      blurDataUrl: true,
-    },
+  // 会員写真も除外せず取得し、未解錠ならモザイク表示する
+  const [rows, unlockedIds] = await Promise.all([
+    prisma.photo.findMany({
+      where: { isPublished: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+      select: {
+        id: true,
+        title: true,
+        category: true,
+        imageUrl: true,
+        thumbnailUrl: true,
+        imageWidth: true,
+        imageHeight: true,
+        blurDataUrl: true,
+        collectionId: true,
+        collection: { select: { isLocked: true } },
+      },
+    }),
+    getUnlockedCollectionIds(),
+  ]);
+  const unlocked = new Set(unlockedIds);
+  // 未解錠の会員写真は本画像 URL を取り除き、モザイクタイルで表示する
+  const photos = rows.map((p) => {
+    const masked =
+      !!p.collection?.isLocked &&
+      !(p.collectionId != null && unlocked.has(p.collectionId));
+    return masked ? { ...p, imageUrl: "", thumbnailUrl: null, masked } : { ...p, masked };
   });
 
   // ジャンル（カテゴリ）別にまとめる。写真のある順序カテゴリのみ表示
@@ -122,24 +137,33 @@ export default async function WorksPage() {
                   href={`/gallery/${photo.id}`}
                   className="group block"
                 >
-                  <div className="viewfinder relative overflow-hidden">
-                    <Image
-                      src={photo.thumbnailUrl ?? photo.imageUrl}
-                      alt={photo.title}
-                      width={photo.imageWidth ?? 1200}
-                      height={photo.imageHeight ?? 800}
-                      placeholder={photo.blurDataUrl ? "blur" : "empty"}
-                      blurDataURL={photo.blurDataUrl ?? undefined}
-                      className="h-auto w-full transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-110"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  {photo.masked ? (
+                    <LockedTile
+                      blurDataUrl={photo.blurDataUrl}
+                      width={photo.imageWidth}
+                      height={photo.imageHeight}
+                      className="viewfinder"
                     />
-                  </div>
+                  ) : (
+                    <div className="viewfinder relative overflow-hidden">
+                      <Image
+                        src={photo.thumbnailUrl ?? photo.imageUrl}
+                        alt={photo.title}
+                        width={photo.imageWidth ?? 1200}
+                        height={photo.imageHeight ?? 800}
+                        placeholder={photo.blurDataUrl ? "blur" : "empty"}
+                        blurDataURL={photo.blurDataUrl ?? undefined}
+                        className="h-auto w-full transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-110"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                    </div>
+                  )}
                   <div className="mt-3">
                     <p className="font-heading text-lg font-medium">
                       {photo.title}
                     </p>
                     <p className="exif-text mt-1 text-muted-foreground">
-                      {group.label}
+                      {photo.masked ? "会員限定" : group.label}
                     </p>
                   </div>
                 </Link>
