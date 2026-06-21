@@ -3,7 +3,6 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Upload } from "lucide-react";
-import { createPhoto } from "./actions";
 import { formatDevelopSettings, mergeDevelopNotes } from "@/lib/xmp-develop";
 import type { Collection } from "@/generated/prisma/client";
 import { Button } from "@/components/ui/button";
@@ -81,8 +80,17 @@ export function PhotoUploadForm({
       formData.set("isPortfolio", String(isPortfolio));
       formData.set("isHero", String(isHero));
 
-      const result = await createPhoto(formData);
-      if (!result.ok) throw new Error(result.error);
+      // Server Action ではなく Route Handler 経由（Cloud Run での
+      // "Unexpected end of form" 回避）。
+      const res = await fetch("/api/admin/photos", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await res.json().catch(() => ({
+        ok: false,
+        error: `アップロードに失敗しました (HTTP ${res.status})`,
+      }));
+      if (!result.ok) throw new Error(result.error || "Upload failed");
 
       setOpen(false);
       formRef.current?.reset();
