@@ -47,6 +47,7 @@ export function PhotoUploadForm({
   const [uploading, setUploading] = useState(false);
   const [isPublished, setIsPublished] = useState(true);
   const [isPortfolio, setIsPortfolio] = useState(false);
+  const [isHero, setIsHero] = useState(false);
   const [developNotes, setDevelopNotes] = useState("");
   const [xmpStatus, setXmpStatus] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -78,6 +79,7 @@ export function PhotoUploadForm({
       const formData = new FormData(form);
       formData.set("isPublished", String(isPublished));
       formData.set("isPortfolio", String(isPortfolio));
+      formData.set("isHero", String(isHero));
 
       const result = await createPhoto(formData);
       if (!result.ok) throw new Error(result.error);
@@ -86,6 +88,7 @@ export function PhotoUploadForm({
       formRef.current?.reset();
       setIsPublished(true);
       setIsPortfolio(false);
+      setIsHero(false);
       setDevelopNotes("");
       setXmpStatus(null);
       router.refresh();
@@ -256,6 +259,12 @@ export function PhotoUploadForm({
               />
               <Label htmlFor="isPortfolio" className="text-sm">
                 Portfolio
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch id="isHero" checked={isHero} onCheckedChange={setIsHero} />
+              <Label htmlFor="isHero" className="text-sm">
+                Hero
               </Label>
             </div>
           </div>

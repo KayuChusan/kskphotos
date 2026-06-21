@@ -45,6 +45,7 @@ const createPhotoSchema = z.object({
     ),
   isPublished: z.stringbool().default(true),
   isPortfolio: z.stringbool().default(false),
+  isHero: z.stringbool().default(false),
 });
 
 const updatePhotoSchema = z
@@ -56,6 +57,7 @@ const updatePhotoSchema = z
     collectionId: z.string().nullable(),
     isPublished: z.boolean(),
     isPortfolio: z.boolean(),
+    isHero: z.boolean(),
     isLocked: z.boolean(),
     sortOrder: z.number().int(),
   })
@@ -107,6 +109,7 @@ export async function createPhoto(formData: FormData): Promise<ActionResult> {
       tags: formData.get("tags") || undefined,
       isPublished: formData.get("isPublished") ?? undefined,
       isPortfolio: formData.get("isPortfolio") ?? undefined,
+      isHero: formData.get("isHero") ?? undefined,
     });
     if (!parsed.success) {
       return { ok: false, error: parsed.error.issues[0].message };
@@ -187,6 +190,7 @@ export async function createPhoto(formData: FormData): Promise<ActionResult> {
         collectionId: data.collectionId,
         isPortfolio: data.isPortfolio,
         isPublished: data.isPublished,
+        isHero: data.isHero,
         ...exif,
       },
     });

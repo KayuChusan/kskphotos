@@ -139,7 +139,9 @@ model Photo {
   // 表示制御
   isPortfolio Boolean @default(false)
   isPublished Boolean @default(true)
-  // true の場合、所属コレクションが未解錠の間はマスク（ぼかし）表示にする
+  // トップのヒーローセクション候補。指定された写真からランダムで1枚表示する
+  isHero      Boolean @default(false)
+  // （未使用・廃止予定）旧・個別マスクフラグ。マスクはコレクション単位に統一
   isLocked    Boolean @default(false)
   sortOrder   Int     @default(0)
 
