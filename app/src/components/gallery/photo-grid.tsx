@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Grid3X3, MapPin, Lock, LockOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhotoMap } from "@/components/gallery/photo-map";
@@ -226,25 +226,24 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
       </div>
 
       {view === "grid" ? (
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${category}-${collectionId}-${hideLocked}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="columns-1 gap-6 sm:columns-2 md:columns-3 xl:columns-4"
-          >
-            {filtered.map((photo, i) => (
-              <PhotoCard
-                key={photo.id}
-                photo={photo}
-                index={i}
-                masked={photo.masked}
-              />
-            ))}
-          </motion.div>
-        </AnimatePresence>
+        // key 変更で再マウントしフェードイン。AnimatePresence mode="wait" は
+        // 退場アニメが完了せず古いグリッドが残ることがあるため使わない。
+        <motion.div
+          key={`${category}-${collectionId}-${hideLocked}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.25 }}
+          className="columns-1 gap-6 sm:columns-2 md:columns-3 xl:columns-4"
+        >
+          {filtered.map((photo, i) => (
+            <PhotoCard
+              key={photo.id}
+              photo={photo}
+              index={i}
+              masked={photo.masked}
+            />
+          ))}
+        </motion.div>
       ) : (
         <PhotoMap photos={filtered} />
       )}
