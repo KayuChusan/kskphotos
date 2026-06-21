@@ -155,6 +155,25 @@ export async function readOriginal(key: string): Promise<Buffer> {
   return readFile(path.join(ORIGINALS_DIR, filename));
 }
 
+/**
+ * 公開画像（通常画素 2560px）のバイト列を読み出す。本番は「イメージに焼き込まれた
+ * 静的ファイル(public/uploads)」と「ビルド後に GCS へ上げた分」が混在するため、
+ * ローカルの public/uploads を優先し、無ければ GCS から取得する。
+ */
+export async function readImage(url: string): Promise<Buffer> {
+  const filename = path.basename(url);
+  try {
+    return await readFile(path.join(UPLOAD_DIR, filename));
+  } catch {
+    // 焼き込み静的に無ければ GCS を見る
+  }
+  if (bucketName) {
+    const [buf] = await bucket().file(`${GCS_PREFIX}/${filename}`).download();
+    return buf;
+  }
+  throw new Error(`image not found: ${filename}`);
+}
+
 export async function deleteFile(url: string): Promise<void> {
   if (!url.startsWith("/uploads/")) return;
   const filename = path.basename(url);

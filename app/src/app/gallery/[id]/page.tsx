@@ -14,6 +14,7 @@ import { isMember } from "@/lib/unlock-server";
 import { maskPhotoImage, redactShootingMeta } from "@/lib/photo-visibility";
 import { LockedTile } from "@/components/gallery/locked-tile";
 import { MemberGate } from "@/components/member-gate";
+import { NoteGateButton } from "@/components/note-gate-button";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -189,27 +190,43 @@ export default async function PhotoDetailPage({ params }: Props) {
                 </>
               )}
 
-              {photo.originalUrl && (
-                <>
-                  <Separator />
-                  <div>
-                    <h2 className="eyebrow mb-3">High-Res Download</h2>
-                    <a
-                      href={`/gallery/${photo.id}/download`}
-                      className={cn(
-                        buttonVariants({ variant: "outline", size: "sm" })
-                      )}
-                      download
-                    >
-                      <Download className="size-4" />
-                      高画素（4096px）をダウンロード
-                    </a>
-                    <p className="exif-text mt-2 text-muted-foreground/60">
-                      会員特典 — 個人利用の範囲でお使いください
-                    </p>
-                  </div>
-                </>
-              )}
+            </>
+          )}
+
+          {/* ダウンロード — 画像が見られるとき（公開写真 or 会員）に表示。
+              通常画素は誰でも、高画素は会員のみ（非会員はロック→note誘導）。 */}
+          {!masked && (
+            <>
+              <Separator />
+              <div>
+                <h2 className="eyebrow mb-3">Download</h2>
+                <div className="flex flex-wrap gap-2">
+                  <a
+                    href={`/gallery/${photo.id}/download?res=standard`}
+                    className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+                    download
+                  >
+                    <Download className="size-4" />
+                    通常画素（2560px）
+                  </a>
+                  {photo.originalUrl &&
+                    (member ? (
+                      <a
+                        href={`/gallery/${photo.id}/download`}
+                        className={cn(buttonVariants({ size: "sm" }))}
+                        download
+                      >
+                        <Download className="size-4" />
+                        高画素（4096px）
+                      </a>
+                    ) : (
+                      <NoteGateButton label="高画素（4096px）会員限定" />
+                    ))}
+                </div>
+                <p className="exif-text mt-2 text-muted-foreground/60">
+                  個人利用の範囲でお使いください
+                </p>
+              </div>
             </>
           )}
 
