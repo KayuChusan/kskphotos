@@ -21,7 +21,7 @@ export default async function GalleryPage() {
     prisma.photo.findMany({
       where: { isPublished: true },
       orderBy: { createdAt: "desc" },
-      include: { collection: { select: { isLocked: true } } },
+      include: { collection: { select: { title: true, isLocked: true } } },
     }),
     getUnlockedCollectionIds(),
   ]);

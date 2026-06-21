@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Grid3X3, MapPin } from "lucide-react";
+import { Grid3X3, MapPin, Lock, LockOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhotoMap } from "@/components/gallery/photo-map";
 import { LockedTile } from "@/components/gallery/locked-tile";
@@ -109,23 +109,44 @@ export function PhotoCard({
   );
 }
 
-export function PhotoGallery({
-  photos,
-}: {
-  photos: (Photo & { masked?: boolean })[];
-}) {
+type GalleryPhoto = Photo & {
+  masked?: boolean;
+  collection?: { title: string; isLocked: boolean } | null;
+};
+
+export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
   const [category, setCategory] = useState<PhotoCategory | "ALL">("ALL");
+  const [collectionId, setCollectionId] = useState<string>("ALL");
+  const [hideLocked, setHideLocked] = useState(false); // 既定は全表示
   const [view, setView] = useState<"grid" | "map">("grid");
 
-  const filtered =
-    category === "ALL"
-      ? photos
-      : photos.filter((p) => p.category === category);
+  // 写真から実在するシリーズ（コレクション）を抽出
+  const collections = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of photos) {
+      if (p.collectionId && p.collection?.title) {
+        map.set(p.collectionId, p.collection.title);
+      }
+    }
+    return Array.from(map, ([id, title]) => ({ id, title }));
+  }, [photos]);
+
+  const hasLocked = useMemo(
+    () => photos.some((p) => p.collection?.isLocked),
+    [photos]
+  );
+
+  const filtered = photos.filter((p) => {
+    if (category !== "ALL" && p.category !== category) return false;
+    if (collectionId !== "ALL" && p.collectionId !== collectionId) return false;
+    if (hideLocked && p.collection?.isLocked) return false;
+    return true;
+  });
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Category filter */}
+      <div className="space-y-4">
+        {/* 主フィルター：カテゴリー */}
         <div className="flex flex-wrap gap-x-5 gap-y-2">
           {CATEGORIES.map((cat) => (
             <button
@@ -144,30 +165,70 @@ export function PhotoGallery({
           ))}
         </div>
 
-        <div className="flex gap-1 border p-1">
-          <Button
-            variant={view === "grid" ? "secondary" : "ghost"}
-            size="sm"
-            onClick={() => setView("grid")}
-            className="h-7 rounded-none px-2"
-          >
-            <Grid3X3 className="size-4" />
-          </Button>
-          <Button
-            variant={view === "map" ? "secondary" : "ghost"}
-            size="sm"
-            onClick={() => setView("map")}
-            className="h-7 rounded-none px-2"
-          >
-            <MapPin className="size-4" />
-          </Button>
+        {/* 副フィルター：シリーズ選択・会員限定トグル・表示切替 */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+          <div className="flex flex-wrap items-center gap-3">
+            {collections.length > 0 && (
+              <select
+                value={collectionId}
+                onChange={(e) => setCollectionId(e.target.value)}
+                aria-label="シリーズで絞り込み"
+                className="h-8 rounded-none border border-border bg-background px-2 text-xs text-muted-foreground outline-none focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                <option value="ALL">すべてのシリーズ</option>
+                {collections.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {hasLocked && (
+              <Button
+                variant={hideLocked ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setHideLocked((v) => !v)}
+                aria-pressed={hideLocked}
+                className="h-8 rounded-none px-2.5 text-xs"
+              >
+                {hideLocked ? (
+                  <LockOpen className="size-3.5" />
+                ) : (
+                  <Lock className="size-3.5" />
+                )}
+                {hideLocked ? "会員限定を表示" : "会員限定を隠す"}
+              </Button>
+            )}
+          </div>
+
+          <div className="flex gap-1 border p-1">
+            <Button
+              variant={view === "grid" ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setView("grid")}
+              aria-label="グリッド表示"
+              className="h-7 rounded-none px-2"
+            >
+              <Grid3X3 className="size-4" />
+            </Button>
+            <Button
+              variant={view === "map" ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setView("map")}
+              aria-label="地図表示"
+              className="h-7 rounded-none px-2"
+            >
+              <MapPin className="size-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
       {view === "grid" ? (
         <AnimatePresence mode="wait">
           <motion.div
-            key={category}
+            key={`${category}-${collectionId}-${hideLocked}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -190,7 +251,7 @@ export function PhotoGallery({
 
       {filtered.length === 0 && (
         <p className="py-12 text-center text-muted-foreground">
-          No photos in this category yet.
+          条件に合う写真がありません。
         </p>
       )}
     </div>

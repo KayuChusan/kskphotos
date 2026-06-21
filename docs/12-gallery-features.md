@@ -94,7 +94,17 @@ const photos = await prisma.photo.findMany({
 
 ### 1-4. 表示 — `PhotoGallery` → `PhotoMap`（MapLibre）
 
-`PhotoGallery`（[photo-grid.tsx](../app/src/components/gallery/photo-grid.tsx)）はグリッド表示と地図表示をトグルで切り替えるクライアントコンポーネントです。地図ボタンが押されると、カテゴリ絞り込み後の `filtered` を `PhotoMap` に渡します（[photo-grid.tsx:155](../app/src/components/gallery/photo-grid.tsx)）。
+`PhotoGallery`（[photo-grid.tsx](../app/src/components/gallery/photo-grid.tsx)）はグリッド表示と地図表示をトグルで切り替えるクライアントコンポーネントです。地図ボタンが押されると、絞り込み後の `filtered` を `PhotoMap` に渡します。
+
+**絞り込みは3軸**（視認性のため2段ツールバーに整理）：
+
+| 軸 | UI | 説明 |
+|----|----|------|
+| カテゴリー | 上段のチップ（ポートレート/風景 等） | `PhotoCategory` で絞り込み。主フィルター |
+| シリーズ（コレクション） | 下段の `<select>`「すべてのシリーズ」 | 写真に実在する `collection` だけを選択肢に出す。カテゴリーとは独立（AND） |
+| 会員限定の表示/非表示 | 下段のトグル「会員限定を隠す」 | `collection.isLocked` の写真を一時的に隠す。**既定は全表示**。会員写真が無ければボタン自体を出さない |
+
+3軸は AND で適用。下段右に グリッド/地図 切替を置き、上段（カテゴリー）と下段（シリーズ・会員限定・表示切替）を罫線で分けて整理している。
 
 ```tsx
 ) : (
