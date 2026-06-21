@@ -23,7 +23,11 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { CountUp } from "@/components/count-up";
-import type { Photo } from "@/generated/prisma/client";
+
+// 集計済みデータのみを受け取る（会員限定写真の個別 EXIF はサーバーで集計し
+// クライアントへは出さない＝ペイロードから member EXIF を復元できない）。
+type Dist = { name: string; count: number };
+type ScatterPoint = { focalLength: number; aperture: number; title: string };
 
 // アクセント(琥珀)はデータの「最重要1点」専用、それ以外は低彩度ニュートラルに寄せる
 const ACCENT = "var(--chart-1)"; // セーフライト琥珀 — 強調1点のみ
@@ -61,20 +65,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   OTHER: "その他",
 };
 
-function countBy<T>(items: T[], key: (item: T) => string | null) {
-  const counts: Record<string, number> = {};
-  for (const item of items) {
-    const k = key(item);
-    if (k) counts[k] = (counts[k] || 0) + 1;
-  }
-  return Object.entries(counts)
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
-}
-
-function LensDistribution({ photos }: { photos: Photo[] }) {
+function LensDistribution({ data }: { data: Dist[] }) {
   const reduced = useReducedMotion();
-  const data = countBy(photos, (p) => p.lensModel);
   if (data.length === 0) return null;
   return (
     <Card>
@@ -107,9 +99,13 @@ function LensDistribution({ photos }: { photos: Photo[] }) {
   );
 }
 
-function CategoryBreakdown({ photos }: { photos: Photo[] }) {
+function CategoryBreakdown({ data: raw }: { data: Dist[] }) {
   const reduced = useReducedMotion();
-  const data = countBy(photos, (p) => CATEGORY_LABELS[p.category] ?? p.category);
+  // サーバーは生のカテゴリ enum で集計するため、ここで日本語ラベルに変換
+  const data = raw.map((d) => ({
+    name: CATEGORY_LABELS[d.name] ?? d.name,
+    count: d.count,
+  }));
   if (data.length === 0) return null;
   return (
     <Card>
@@ -145,15 +141,8 @@ function CategoryBreakdown({ photos }: { photos: Photo[] }) {
   );
 }
 
-function FocalLengthVsAperture({ photos }: { photos: Photo[] }) {
+function FocalLengthVsAperture({ data }: { data: ScatterPoint[] }) {
   const reduced = useReducedMotion();
-  const data = photos
-    .filter((p) => p.focalLength != null && p.aperture != null)
-    .map((p) => ({
-      focalLength: p.focalLength,
-      aperture: p.aperture,
-      title: p.title,
-    }));
   if (data.length === 0) return null;
 
   return (
@@ -189,20 +178,8 @@ function FocalLengthVsAperture({ photos }: { photos: Photo[] }) {
   );
 }
 
-function IsoDistribution({ photos }: { photos: Photo[] }) {
+function IsoDistribution({ data }: { data: Dist[] }) {
   const reduced = useReducedMotion();
-  const buckets = [
-    { label: "100", min: 0, max: 100 },
-    { label: "200-400", min: 101, max: 400 },
-    { label: "800-1600", min: 401, max: 1600 },
-    { label: "3200+", min: 1601, max: Infinity },
-  ];
-  const data = buckets.map((b) => ({
-    name: b.label,
-    count: photos.filter(
-      (p) => p.iso != null && p.iso >= b.min && p.iso <= b.max
-    ).length,
-  }));
 
   return (
     <Card>
@@ -230,21 +207,30 @@ function IsoDistribution({ photos }: { photos: Photo[] }) {
   );
 }
 
-export function ExifDashboard({ photos }: { photos: Photo[] }) {
-  const uniqueLenses = new Set(
-    photos.filter((p) => p.lensModel).map((p) => p.lensModel)
-  ).size;
-  const uniqueLocations = new Set(
-    photos.filter((p) => p.location).map((p) => p.location)
-  ).size;
-
+export function ExifDashboard({
+  totalCount,
+  uniqueLenses,
+  uniqueLocations,
+  lensDist,
+  categoryDist,
+  isoDist,
+  scatter,
+}: {
+  totalCount: number;
+  uniqueLenses: number;
+  uniqueLocations: number;
+  lensDist: Dist[];
+  categoryDist: Dist[];
+  isoDist: Dist[];
+  scatter: ScatterPoint[];
+}) {
   return (
     <div className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardContent className="pt-6">
             <p className="font-heading text-5xl font-medium">
-              <CountUp value={photos.length} />
+              <CountUp value={totalCount} />
             </p>
             <p className="eyebrow-jp mt-2">総撮影枚数</p>
           </CardContent>
@@ -268,10 +254,10 @@ export function ExifDashboard({ photos }: { photos: Photo[] }) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <LensDistribution photos={photos} />
-        <CategoryBreakdown photos={photos} />
-        <FocalLengthVsAperture photos={photos} />
-        <IsoDistribution photos={photos} />
+        <LensDistribution data={lensDist} />
+        <CategoryBreakdown data={categoryDist} />
+        <FocalLengthVsAperture data={scatter} />
+        <IsoDistribution data={isoDist} />
       </div>
     </div>
   );
