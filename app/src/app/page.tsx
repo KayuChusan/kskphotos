@@ -9,34 +9,62 @@ import { CountUp } from "@/components/count-up";
 
 export const metadata: Metadata = pageSeo({ path: "/" });
 
-// 静的生成 + 管理画面の更新時にオンデマンド再検証（revalidatePhotoPages）
-export const revalidate = 3600;
+// ヒーローを訪問ごとにランダム表示するためリクエスト単位でレンダリング
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [featured, totalPhotos, lenses, locations] = await Promise.all([
-    prisma.photo.findMany({
-      where: { isPublished: true, isPortfolio: true, ...excludeLockedPhotos },
-      orderBy: { createdAt: "desc" },
-      take: 6,
-    }),
-    prisma.photo.count({ where: { isPublished: true, ...excludeLockedPhotos } }),
-    prisma.photo.findMany({
-      where: { isPublished: true, lensModel: { not: null }, ...excludeLockedPhotos },
-      select: { lensModel: true },
-      distinct: ["lensModel"],
-    }),
-    prisma.photo.findMany({
-      where: { isPublished: true, location: { not: null }, ...excludeLockedPhotos },
-      select: { location: true },
-      distinct: ["location"],
-    }),
-  ]);
+  const heroWhere = {
+    isPublished: true,
+    isHero: true,
+    ...excludeLockedPhotos,
+  };
 
-  const mockupPhoto = featured[0];
+  const [featured, heroCount, totalPhotos, lenses, locations] =
+    await Promise.all([
+      prisma.photo.findMany({
+        where: { isPublished: true, isPortfolio: true, ...excludeLockedPhotos },
+        orderBy: { createdAt: "desc" },
+        take: 6,
+      }),
+      // ヒーロー候補（管理画面で Hero 指定した写真）の件数。全件は読み込まない
+      prisma.photo.count({ where: heroWhere }),
+      prisma.photo.count({
+        where: { isPublished: true, ...excludeLockedPhotos },
+      }),
+      prisma.photo.findMany({
+        where: {
+          isPublished: true,
+          lensModel: { not: null },
+          ...excludeLockedPhotos,
+        },
+        select: { lensModel: true },
+        distinct: ["lensModel"],
+      }),
+      prisma.photo.findMany({
+        where: {
+          isPublished: true,
+          location: { not: null },
+          ...excludeLockedPhotos,
+        },
+        select: { location: true },
+        distinct: ["location"],
+      }),
+    ]);
+
+  // ヒーロー候補から1枚だけランダム取得（count→skipで全件ロードを避ける）。
+  // 指定が無ければ最新ポートフォリオで代替。
+  // force-dynamic のサーバーコンポーネントなので、訪問ごとの乱数は意図的（純度ルール対象外）。
+  // eslint-disable-next-line react-hooks/purity
+  const heroSkip = heroCount > 0 ? Math.floor(Math.random() * heroCount) : 0;
+  const heroPhoto =
+    heroCount > 0
+      ? await prisma.photo.findFirst({ where: heroWhere, skip: heroSkip })
+      : (featured[0] ?? null);
+  const mockupPhoto = heroPhoto ?? featured[0];
 
   return (
     <>
-      <HeroSection photos={featured} />
+      <HeroSection photos={heroPhoto ? [heroPhoto] : featured} />
 
       {/* Introduction — 3本柱の宣言 */}
       <section className="border-b">
@@ -200,23 +228,31 @@ export default async function HomePage() {
               </div>
               <div className="space-y-3 p-6">
                 {mockupPhoto && (
-                  <div className="h-32 overflow-hidden md:h-40">
+                  // 実サイトのヒーローらしく 16:9 バナーで表示。見出し帯を重ねて
+                  // 「Web サイト」だと一目で伝わるようにする（中央上寄りでクロップ）
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-sm bg-muted">
                     <Image
                       src={mockupPhoto.thumbnailUrl ?? mockupPhoto.imageUrl}
                       alt=""
-                      width={mockupPhoto.imageWidth ?? 1200}
-                      height={mockupPhoto.imageHeight ?? 800}
-                      className="h-full w-full object-cover object-top"
+                      fill
+                      placeholder={mockupPhoto.blurDataUrl ? "blur" : "empty"}
+                      blurDataURL={mockupPhoto.blurDataUrl ?? undefined}
+                      className="object-cover object-[50%_30%]"
                       sizes="(max-width: 1024px) 90vw, 45vw"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                    <div className="absolute inset-x-4 bottom-3">
+                      <div className="h-2.5 w-1/2 rounded-full bg-white/85" />
+                      <div className="mt-1.5 h-2 w-1/3 rounded-full bg-white/55" />
+                    </div>
                   </div>
                 )}
                 <div className="h-3 w-2/3 bg-muted" />
                 <div className="h-3 w-1/2 bg-muted" />
                 <div className="grid grid-cols-3 gap-2 pt-2">
-                  <div className="h-14 bg-muted" />
-                  <div className="h-14 bg-muted" />
-                  <div className="h-14 bg-muted" />
+                  <div className="aspect-square bg-muted" />
+                  <div className="aspect-square bg-muted" />
+                  <div className="aspect-square bg-muted" />
                 </div>
               </div>
             </div>

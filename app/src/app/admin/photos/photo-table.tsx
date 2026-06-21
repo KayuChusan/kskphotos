@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Trash2, Eye, EyeOff, Star, StarOff } from "lucide-react";
+import { Trash2, Eye, EyeOff, Star, StarOff, Sparkles } from "lucide-react";
 import { updatePhoto, deletePhoto } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,7 +46,9 @@ function PhotoRow({
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
-  async function toggleField(field: "isPublished" | "isPortfolio") {
+  async function toggleField(
+    field: "isPublished" | "isPortfolio" | "isHero"
+  ) {
     const result = await updatePhoto(photo.id, { [field]: !photo[field] });
     if (!result.ok) alert(result.error);
     router.refresh();
@@ -145,6 +147,23 @@ function PhotoRow({
           <Switch
             checked={photo.isPortfolio}
             onCheckedChange={() => toggleField("isPortfolio")}
+          />
+        </div>
+
+        <div
+          className="flex items-center gap-1.5"
+          title="Hero（トップのヒーロー候補）"
+        >
+          <Sparkles
+            className={
+              photo.isHero
+                ? "size-3.5 text-safelight"
+                : "size-3.5 text-muted-foreground"
+            }
+          />
+          <Switch
+            checked={photo.isHero}
+            onCheckedChange={() => toggleField("isHero")}
           />
         </div>
 

@@ -38,11 +38,13 @@ function makePhoto(overrides: Partial<Photo> = {}): Photo {
     developNotes: "secret recipe",
     isPublished: true,
     isPortfolio: false,
+    isHero: false,
     isLocked: true,
     sortOrder: 0,
     collectionId: "c1",
     createdAt: new Date("2026-01-01"),
     updatedAt: new Date("2026-01-01"),
+    ...overrides,
   } as Photo;
 }
 

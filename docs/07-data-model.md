@@ -273,8 +273,9 @@ erDiagram
 
 | フィールド | 型 | 意味 |
 |-----------|----|------|
-| `isPortfolio` | Boolean | トップページの代表作に出すか。初期値 `false` |
+| `isPortfolio` | Boolean | トップページの代表作（「撮る」フィルムストリップ）に出すか。初期値 `false` |
 | `isPublished` | Boolean | 公開中か。初期値 `true` |
+| `isHero` | Boolean | トップのヒーローセクション候補。指定写真から訪問ごとに1枚ランダム表示。未指定ならポートフォリオで代替。初期値 `false` |
 | `sortOrder` | Int | 表示順。初期値 `0` |
 | `createdAt` / `updatedAt` | DateTime | 作成 / 更新日時 |
 
