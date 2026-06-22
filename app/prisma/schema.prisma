@@ -263,3 +263,27 @@ model ContactMessage {
   @@index([isRead])
   @@index([createdAt])
 }
+
+// ============================================
+// プロフィール（/about の編集可能コンテンツ・単一レコード）
+// id は固定値 "singleton" で1行のみ運用する
+// ============================================
+
+model SiteProfile {
+  id           String   @id @default("singleton")
+  name         String   @default("")
+  tagline      String   @default("")
+  bio          String   @default("")
+  // プロフィール写真（公開URL）と blur プレースホルダ
+  profileImage String?
+  profileBlur  String?
+  // 撮影機材。各行 "名称 | 補足" 形式の文字列配列
+  gearBody     String[]
+  gearLenses   String[]
+  gearSoftware String[]
+  // 撮影ポリシー
+  policyBadge  String   @default("")
+  policy       String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
