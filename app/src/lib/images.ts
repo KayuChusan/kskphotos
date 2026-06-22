@@ -80,3 +80,27 @@ export async function processOriginal(buffer: Buffer): Promise<Buffer> {
     .jpeg({ quality: 92, mozjpeg: true })
     .toBuffer();
 }
+
+/**
+ * プロフィール写真（アバター）用。正方形 512px の JPEG と blur プレースホルダを生成。
+ * 円形表示なので cover でクロップする。next/image の変種は作らないため <img> で表示する。
+ */
+export async function processAvatar(
+  buffer: Buffer
+): Promise<{ jpeg: Buffer; blurDataUrl: string }> {
+  const base = sharp(buffer).rotate();
+  const jpeg = await base
+    .clone()
+    .resize(512, 512, { fit: "cover" })
+    .jpeg({ quality: 88, mozjpeg: true })
+    .toBuffer();
+  const blur = await base
+    .clone()
+    .resize(BLUR_WIDTH)
+    .webp({ quality: 30 })
+    .toBuffer();
+  return {
+    jpeg,
+    blurDataUrl: `data:image/webp;base64,${blur.toString("base64")}`,
+  };
+}

@@ -120,7 +120,7 @@ kskphotos/                     ← プロジェクトルート（git root）
 | `/dashboard` | EXIF ダッシュボード | Photo (aggregate) |
 | `/services` | 撮影メニュー・料金 | Service |
 | `/booking` | 撮影依頼フォーム | Booking (create) |
-| `/about` | プロフィール | 静的 |
+| `/about` | プロフィール | SiteProfile（/admin/profile で編集） |
 | `/blog` | ブログ一覧 | BlogPost |
 | `/blog/[slug]` | ブログ記事詳細 | BlogPost (single) |
 | `/contact` | お問い合わせ | ContactMessage (create) |

@@ -109,6 +109,7 @@ erDiagram
 | 写真 | `Collection` / `Photo` | ポートフォリオの中身。シリーズ単位の `Collection` と 1 枚ずつの `Photo` |
 | 商売 | `Service` / `Booking` | 撮影メニュー（`Service`）と、その依頼（`Booking`） |
 | 読み物・連絡 | `BlogPost` / `ContactMessage` | ブログ記事と、お問い合わせメッセージ |
+| サイト設定 | `SiteProfile` | プロフィールページ（`/about`）の内容。サイト全体で 1 行だけ持つ |
 
 > 注：`docs/01-project-overview.md` では「8 モデル」と表記していますが、現在の `schema.prisma` には上記の通り 9 モデルが定義されています（認証 3 + 写真 2 + 商売 2 + 読み物・連絡 2）。
 
@@ -369,6 +370,27 @@ erDiagram
 | `createdAt` | DateTime | 受信日時 |
 
 `@@index([isRead])` と `@@index([createdAt])` により、未読だけの抽出や新着順表示が速くなります。`ContactMessage` には `updatedAt` がありません。問い合わせは「届いた内容を後から書き換えない」性質のため、更新日時を持たない設計です。
+
+### 6-3. SiteProfile（プロフィールページの内容）
+
+プロフィールページ `/about`（氏名・肩書き・自己紹介・撮影機材・撮影ポリシー・プロフィール写真）の内容を保持します。管理画面 `/admin/profile` から編集でき、保存すると `/about` に反映されます。サイト全体で**常に 1 行だけ**持つ「シングルトン」設計で、主キー `id` は固定値 `"singleton"` を使います（`cuid()` ではない）。
+
+| フィールド | 型 | 意味 |
+|-----------|----|------|
+| `id` | String | 主キー。固定値 `"singleton"`（常に 1 行のため） |
+| `name` | String | 氏名・名義（初期値 空文字） |
+| `tagline` | String | 肩書き（初期値 空文字） |
+| `bio` | String | 自己紹介本文（初期値 空文字） |
+| `profileImage` | String? | プロフィール写真の公開 URL（省略可） |
+| `profileBlur` | String? | 写真読み込み時の blur プレースホルダ（data URL、省略可） |
+| `gearBody` | String[] | カメラ。各行 `"名称 \| 補足"` 形式の文字列配列 |
+| `gearLenses` | String[] | レンズ。同上 |
+| `gearSoftware` | String[] | ソフトウェア。同上 |
+| `policyBadge` | String | 撮影ポリシーのバッジ文言（例 `No Generative AI`、空でバッジ非表示） |
+| `policy` | String | 撮影ポリシー本文（空で `/about` のポリシー欄ごと非表示） |
+| `createdAt` / `updatedAt` | DateTime | 作成 / 更新日時 |
+
+DB に行が無いときは `lib/profile.ts` の `DEFAULT_PROFILE`（既定の文言）を表示し、テーブル未作成などの DB エラー時も既定値にフォールバックしてページが落ちないようにしています。テキストの保存はサーバーアクション、写真のアップロードは Route Handler `/api/admin/profile/image`（Cloud Run で multipart を扱うため）に分けています。機材の各行は「名称 ｜ 補足」を `|` で区切り、表示時に `parseGearItem` で分解します。
 
 ---
 

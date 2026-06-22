@@ -11,6 +11,7 @@ import {
   Layers,
   MessageSquare,
   Tag,
+  User,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ const adminNav = [
   { title: "Bookings", href: "/admin/bookings", icon: Calendar },
   { title: "Messages", href: "/admin/messages", icon: MessageSquare },
   { title: "Blog", href: "/admin/blog", icon: FileText },
+  { title: "Profile", href: "/admin/profile", icon: User },
 ];
 
 export default async function AdminLayout({
