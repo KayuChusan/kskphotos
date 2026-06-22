@@ -88,7 +88,7 @@ export default async function HomePage() {
               <dl className="mt-10 space-y-3 border-t pt-6">
                 <div className="flex items-baseline justify-between gap-6">
                   <dt className="exif-text text-muted-foreground">Based in</dt>
-                  <dd className="exif-text">KANAGAWA / TOKYO — 出張撮影対応</dd>
+                  <dd className="exif-text">KANAGAWA — 全国出張対応</dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-6">
                   <dt className="exif-text text-muted-foreground">Gear</dt>
@@ -96,7 +96,7 @@ export default async function HomePage() {
                 </div>
                 <div className="flex items-baseline justify-between gap-6">
                   <dt className="exif-text text-muted-foreground">For</dt>
-                  <dd className="exif-text">個人・法人・政治団体 — 請求書対応</dd>
+                  <dd className="exif-text">個人・法人・政治団体 — お支払いは柔軟に対応</dd>
                 </div>
               </dl>
             </div>

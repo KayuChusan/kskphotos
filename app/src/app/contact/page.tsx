@@ -51,7 +51,7 @@ export default function ContactPage() {
             <div>
               <p className="text-sm font-medium">対応エリア</p>
               <p className="text-sm text-muted-foreground">
-                神奈川・東京を中心に出張対応
+                神奈川を拠点に全国出張対応（ご相談ください）
               </p>
             </div>
           </div>
