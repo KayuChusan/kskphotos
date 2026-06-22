@@ -55,7 +55,7 @@ const FIELDS = [
   {
     title: "ファミリー・ポートレート",
     description:
-      "七五三・お宮参り・家族写真の出張撮影。神奈川・東京を中心に、公園や神社などお好きなロケーションへ伺います。",
+      "七五三・お宮参り・家族写真の出張撮影。全国どこでも出張（神奈川拠点）。公園や神社などお好きなロケーションへ伺います。",
   },
   {
     title: "イベント・ビジネス",
@@ -225,7 +225,7 @@ export default async function WorksPage() {
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
-                神奈川・東京を中心に出張撮影（その他エリアはご相談ください）
+                全国どこでも出張撮影（神奈川拠点・その他エリアもご相談ください）
               </li>
               <li className="flex items-start gap-2">
                 <Clock className="mt-0.5 size-4 shrink-0 text-primary" />

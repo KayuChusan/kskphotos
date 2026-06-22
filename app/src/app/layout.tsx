@@ -49,7 +49,7 @@ const zenKaku = Zen_Kaku_Gothic_New({
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kskworks.jp";
 const siteDescription =
-  "KSK Works — 出張撮影・ポートレート。家族写真・七五三からプロフィール・イベント撮影、政治・選挙写真まで、神奈川・東京を中心に承ります。";
+  "KSK Works — 出張撮影・ポートレート。家族写真・七五三からプロフィール・イベント撮影、政治・選挙写真まで、神奈川を拠点に全国で承ります（出張はご相談ください）。";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -68,6 +68,7 @@ export const metadata: Metadata = {
     "イベント撮影",
     "選挙ポスター",
     "政治 写真",
+    "全国出張",
     "神奈川",
     "東京",
     "フォトグラファー",
@@ -103,7 +104,13 @@ const jsonLd = {
   url: siteUrl,
   image: `${siteUrl}/opengraph-image`,
   email: "info@kskworks.jp",
-  areaServed: ["神奈川県", "東京都"],
+  // 居住地は神奈川、出張撮影は全国対応
+  address: {
+    "@type": "PostalAddress",
+    addressRegion: "神奈川県",
+    addressCountry: "JP",
+  },
+  areaServed: ["日本"],
   serviceType: [
     "出張撮影",
     "ポートレート撮影",

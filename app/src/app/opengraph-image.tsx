@@ -50,7 +50,7 @@ export default function OpengraphImage() {
           Capturing moments, telling stories
         </div>
         <div style={{ fontSize: 30, color: "#a89e8e", marginTop: 40 }}>
-          出張撮影・ポートレート ｜ 神奈川・東京
+          出張撮影・ポートレート ｜ 神奈川拠点・全国対応
         </div>
       </div>
     ),
