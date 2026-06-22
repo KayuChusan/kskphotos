@@ -311,11 +311,11 @@ export default async function HomePage() {
                 </p>
                 <p className="pt-2">
                   <span className="text-safelight">$</span> systemctl status
-                  live-stream
+                  website
                 </p>
                 <p className="text-foreground">
                   <span className="text-safelight">●</span> active (running) —
-                  本番は止めない
+                  サイトは止めない
                 </p>
                 <p className="pt-2">
                   <span className="text-safelight">$</span> support --request
@@ -338,9 +338,9 @@ export default async function HomePage() {
                 ささえる
               </h2>
               <p className="mt-6 text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
-                街宣・集会のライブ配信環境づくり、事務所の IT まわりの整備、
+                公開後のウェブサイトの運用・保守を継続サポート。更新代行、表示速度やスマホ対応の改善、
                 ドメインやメールの設定、日々の「なんだか動かない」まで。
-                本番に強い現役インフラエンジニアが、現場の困りごとを引き受けます。
+                本番に強い現役インフラエンジニアが、サイトと現場の困りごとを引き受けます。
               </p>
               <div className="mt-8 flex gap-8">
                 <Link
