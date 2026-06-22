@@ -4,8 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FileCheck, MapPin, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { isMember } from "@/lib/unlock-server";
-import { LockedPhotoTile } from "@/components/gallery/locked-photo-tile";
+import { excludeLockedPhotos } from "@/lib/photo-visibility";
 import {
   Card,
   CardHeader,
@@ -23,8 +22,8 @@ export const metadata: Metadata = {
     "撮影実績 — 議員・候補者のポートレートをはじめ、政治・選挙写真からファミリーフォトまで、ジャンル別にご覧いただけます。",
 };
 
-// 解錠状態(Cookie)をリクエストごとに反映するため動的レンダリング
-export const dynamic = "force-dynamic";
+// 会員限定写真は除外し公開写真のみ表示するため静的生成（更新時に再検証）
+export const revalidate = 3600;
 
 // カテゴリ（ジャンル）の日本語ラベルと表示順
 const CATEGORY_LABELS: Record<string, string> = {
@@ -70,31 +69,20 @@ const FIELDS = [
 ];
 
 export default async function WorksPage() {
-  // 会員限定コレクションの写真は、非会員には本画像をマスク（実績は画像のみで EXIF は出さない）
-  const [rows, member] = await Promise.all([
-    prisma.photo.findMany({
-      where: { isPublished: true },
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-      select: {
-        id: true,
-        title: true,
-        category: true,
-        imageUrl: true,
-        thumbnailUrl: true,
-        imageWidth: true,
-        imageHeight: true,
-        blurDataUrl: true,
-        collectionId: true,
-        collection: { select: { isLocked: true } },
-      },
-    }),
-    isMember(),
-  ]);
-  const photos = rows.map((p) => {
-    const masked = !member && !!p.collection?.isLocked;
-    return masked
-      ? { ...p, imageUrl: "", thumbnailUrl: null, masked }
-      : { ...p, masked };
+  // 実績は公開写真のみ。会員限定コレクションの写真は除外する。
+  const photos = await prisma.photo.findMany({
+    where: { isPublished: true, ...excludeLockedPhotos },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+    select: {
+      id: true,
+      title: true,
+      category: true,
+      imageUrl: true,
+      thumbnailUrl: true,
+      imageWidth: true,
+      imageHeight: true,
+      blurDataUrl: true,
+    },
   });
 
   // ジャンル（カテゴリ）別にまとめる。写真のある順序カテゴリのみ表示
@@ -129,54 +117,34 @@ export default async function WorksPage() {
               </span>
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {group.items.map((photo) =>
-                photo.masked ? (
-                  // 会員限定：遷移せず note 誘導モーダルを開く
-                  <div key={photo.id} className="block">
-                    <LockedPhotoTile
-                      blurDataUrl={photo.blurDataUrl}
-                      width={photo.imageWidth}
-                      height={photo.imageHeight}
-                      className="viewfinder"
+              {group.items.map((photo) => (
+                <Link
+                  key={photo.id}
+                  href={`/gallery/${photo.id}`}
+                  className="group block"
+                >
+                  <div className="viewfinder relative overflow-hidden">
+                    <Image
+                      src={photo.thumbnailUrl ?? photo.imageUrl}
+                      alt={photo.title}
+                      width={photo.imageWidth ?? 1200}
+                      height={photo.imageHeight ?? 800}
+                      placeholder={photo.blurDataUrl ? "blur" : "empty"}
+                      blurDataURL={photo.blurDataUrl ?? undefined}
+                      className="h-auto w-full transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-110"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
-                    <div className="mt-3">
-                      <p className="font-heading text-lg font-medium">
-                        {photo.title}
-                      </p>
-                      <p className="exif-text mt-1 text-muted-foreground">
-                        会員限定
-                      </p>
-                    </div>
                   </div>
-                ) : (
-                  <Link
-                    key={photo.id}
-                    href={`/gallery/${photo.id}`}
-                    className="group block"
-                  >
-                    <div className="viewfinder relative overflow-hidden">
-                      <Image
-                        src={photo.thumbnailUrl ?? photo.imageUrl}
-                        alt={photo.title}
-                        width={photo.imageWidth ?? 1200}
-                        height={photo.imageHeight ?? 800}
-                        placeholder={photo.blurDataUrl ? "blur" : "empty"}
-                        blurDataURL={photo.blurDataUrl ?? undefined}
-                        className="h-auto w-full transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-110"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
-                    </div>
-                    <div className="mt-3">
-                      <p className="font-heading text-lg font-medium">
-                        {photo.title}
-                      </p>
-                      <p className="exif-text mt-1 text-muted-foreground">
-                        {group.label}
-                      </p>
-                    </div>
-                  </Link>
-                )
-              )}
+                  <div className="mt-3">
+                    <p className="font-heading text-lg font-medium">
+                      {photo.title}
+                    </p>
+                    <p className="exif-text mt-1 text-muted-foreground">
+                      {group.label}
+                    </p>
+                  </div>
+                </Link>
+              ))}
             </div>
           </section>
         ))
