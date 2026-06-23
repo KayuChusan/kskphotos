@@ -17,7 +17,7 @@ const schema = z.object({
     .email("メールアドレスの形式が正しくありません")
     .max(200),
   phone: z.string().trim().max(40).optional(),
-  serviceId: z.string().trim().min(1, "撮影プランを選択してください"),
+  serviceId: z.string().trim().min(1, "ご依頼の種類を選択してください"),
   date: z.string().trim().optional(),
   location: z.string().trim().max(200).optional(),
   message: z.string().trim().max(4000).optional(),
@@ -48,11 +48,11 @@ export async function submitBooking(
     select: { id: true, title: true },
   });
   if (!service) {
-    return { status: "error", message: "選択された撮影プランが見つかりません" };
+    return { status: "error", message: "選択されたご依頼の種類が見つかりません" };
   }
 
   const composedMessage =
-    `【ご希望プラン】${service.title}` + (d.message ? `\n\n${d.message}` : "");
+    `【ご依頼の種類】${service.title}` + (d.message ? `\n\n${d.message}` : "");
 
   let preferredDate: Date | undefined;
   if (d.date) {
