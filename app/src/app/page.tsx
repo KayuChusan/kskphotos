@@ -17,8 +17,9 @@ const WEB_SCOPE = [
   { title: "リニューアル", desc: "既存サイトの作り替え・再設計。" },
 ] as const;
 
-// ヒーローを訪問ごとにランダム表示するためリクエスト単位でレンダリング
-export const dynamic = "force-dynamic";
+// ISR: 一定間隔で再生成し CDN/キャッシュから即返す（TTFB/LCP 改善）。
+// ヒーローは「毎回ランダム」ではなく「再生成のたびに切り替わる」。
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const heroWhere = {
@@ -50,9 +51,8 @@ export default async function HomePage() {
       }),
     ]);
 
-  // ヒーロー候補から1枚だけランダム取得（count→skipで全件ロードを避ける）。
-  // 指定が無ければ最新ポートフォリオで代替。
-  // force-dynamic のサーバーコンポーネントなので、訪問ごとの乱数は意図的（純度ルール対象外）。
+  // ヒーロー候補から1枚だけ取得（count→skipで全件ロードを避ける）。指定が無ければ最新で代替。
+  // ISR の再生成時に乱数が1回評価され、その期間のヒーローが決まる（純度ルール対象外）。
   // eslint-disable-next-line react-hooks/purity
   const heroSkip = heroCount > 0 ? Math.floor(Math.random() * heroCount) : 0;
   const heroPhoto =

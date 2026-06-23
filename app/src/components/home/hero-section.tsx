@@ -127,14 +127,17 @@ export function HeroSection({ photos }: HeroSectionProps) {
           animate={{ opacity: 1 }}
           transition={{ duration: 1.6, ease: EASE }}
         >
-          {/* Blurred fill for letterbox areas */}
-          <Image
-            src={main.imageUrl}
-            alt=""
-            fill
-            className="scale-110 object-cover blur-2xl brightness-[0.35]"
-            sizes="100vw"
-            priority
+          {/* Blurred fill for letterbox areas
+              — 追加の画像リクエストを避け、軽量な blur プレースホルダ(data URL)を
+                拡大表示してレターボックスの帯を埋める。LCP 画像はシャープ版のみ。 */}
+          <div
+            aria-hidden
+            className="absolute inset-0 scale-110 bg-black bg-cover bg-center blur-2xl brightness-[0.35]"
+            style={
+              main.blurDataUrl
+                ? { backgroundImage: `url(${main.blurDataUrl})` }
+                : undefined
+            }
           />
           {/* Sharp main photo — fully visible */}
           <Image
