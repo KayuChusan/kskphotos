@@ -57,10 +57,10 @@ export function BookingForm({ services }: { services: ServiceOption[] }) {
           <Input id="phone" name="phone" type="tel" placeholder="090-1234-5678" />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service">撮影プラン *</Label>
+          <Label htmlFor="service">ご依頼の種類 *</Label>
           <Select name="serviceId">
             <SelectTrigger id="service" className="w-full">
-              <SelectValue placeholder="プランを選択" />
+              <SelectValue placeholder="選択してください" />
             </SelectTrigger>
             <SelectContent>
               {services.map((s) => (
@@ -89,7 +89,7 @@ export function BookingForm({ services }: { services: ServiceOption[] }) {
         <Textarea
           id="message"
           name="message"
-          placeholder="撮影イメージや人数、衣装の相談など"
+          placeholder="撮影時間の目安、用途、人数、衣装の相談など"
           rows={5}
         />
       </div>
