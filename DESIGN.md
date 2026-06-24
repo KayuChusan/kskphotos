@@ -57,22 +57,26 @@ OKLCH で全トークンを統一管理。色相は暖色帯（hue 55〜85）に
 
 ## 3. タイポグラフィ規則【和文重視・最重要】
 
-### 3.1 役割別書体（`layout.tsx` / next/font）
-| 役割 | 書体 | 変数 |
+### 3.1 役割別書体（`layout.tsx` / next/font ＋ OS フォールバック）
+和文 Web フォントは表示速度のため**廃止**し、和文は OS 標準にフォールバックする（[`docs/01`の経緯] / PR #47）。
+
+| 役割 | 書体 | 変数・適用 |
 |------|------|------|
-| 和文 本文 | Zen Kaku Gothic New（やわらかい角ゴ） | `--font-jp` |
-| 和文 見出し | Zen Maru Gothic（丸ゴ） | `--font-jp-heading` |
+| 和文 本文 | OS ゴシック（ヒラギノ角ゴ / Yu Gothic / Noto Sans JP） | `--font-sans` |
+| 和文 見出し | OS 明朝（ヒラギノ明朝 / Yu Mincho / Noto Serif） | `--font-heading` |
+| 和文 決め文句（ヒーロー） | Shippori Mincho（使用文字だけ self-host・約2.3KB） | `.tagline-jp` |
 | 欧文 ディスプレイ | Fraunces（ソフトセリフ） | `--font-display` |
 | 欧文 本文 | Geist | `--font-geist-sans` |
 | 数値・HUD | Geist Mono | `--font-geist-mono` |
 
-### 3.2 フォントスタック（必須: 和文→欧文→システム和文→generic）
-`globals.css` の `@theme` で合成。**システム和文フォールバックを必ず含める**（Web フォント未読込・失敗時も和文が崩れない）:
+### 3.2 フォントスタック（必須: 欧文→システム和文→generic）
+`globals.css` の `@theme` で合成。**システム和文フォールバックを必ず含める**（和文が崩れない）。
+**本文はゴシック、見出しは明朝**で和文を出し分ける（見出しを上質に・本文は可読性優先）:
 ```css
---font-sans: var(--font-geist-sans), var(--font-jp),
+--font-sans: var(--font-geist-sans),
   "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
---font-heading: var(--font-display), var(--font-jp-heading),
-  "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+--font-heading: var(--font-display),
+  "Hiragino Mincho ProN", "Hiragino Mincho Pro", "YuMincho", "Yu Mincho", "Noto Serif CJK JP", "Noto Serif JP", serif;
 ```
 
 ### 3.3 行間・字間・OpenType（`body` にグローバル付与）
