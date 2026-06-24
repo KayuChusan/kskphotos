@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-  Fraunces,
-  Zen_Maru_Gothic,
-  Zen_Kaku_Gothic_New,
-} from "next/font/google";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import { ViewTransitions } from "next-view-transitions";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -30,21 +24,10 @@ const fraunces = Fraunces({
   weight: ["400", "500", "600"],
 });
 
-// 和文見出し — 丸ゴシックでとっつきやすく
-const zenMaru = Zen_Maru_Gothic({
-  variable: "--font-jp-heading",
-  weight: ["500", "700"],
-  subsets: ["latin"],
-  preload: false,
-});
-
-// 和文本文 — やわらかい角ゴで読みやすさと信頼感を両立
-const zenKaku = Zen_Kaku_Gothic_New({
-  variable: "--font-jp",
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
-  preload: false,
-});
+// 和文は OS 標準フォント（ヒラギノ/Noto Sans JP 等）を使う。
+// next/font で日本語 Web フォントを self-host すると @font-face が数百個・約445KiB の
+// レンダリングブロック CSS になり、低速回線で FCP/LCP を大きく悪化させるため不採用。
+// フォールバック指定は globals.css の --font-sans / --font-heading に集約。
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kskworks.jp";
 const siteDescription =
@@ -127,7 +110,7 @@ export default function RootLayout({
     <ViewTransitions>
       <html
         lang="ja"
-        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${zenMaru.variable} ${zenKaku.variable} h-full antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
       >
         <body className="flex min-h-full flex-col">
           <script
