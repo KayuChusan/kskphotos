@@ -54,8 +54,8 @@ export function maskForViewer<T extends WithLock>(
 export function redactShootingMeta<T extends Photo>(photo: T): T {
   return {
     ...photo,
-    // ビフォーアフター(現像過程)も会員限定のため before 画像 URL は出さない
-    beforeUrl: null,
+    // ビフォーアフター(RAW→JPG)は依頼検討の訴求材料として公開写真では全員に見せる。
+    // before 画像 URL は伏せない（高画素 originalUrl は会員限定のまま伏せる）。
     originalUrl: null,
     cameraModel: null,
     lensMake: null,
