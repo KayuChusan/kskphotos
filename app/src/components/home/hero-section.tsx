@@ -258,7 +258,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
 
           <motion.p
             variants={rise}
-            className="mt-5 font-heading text-2xl font-medium text-white/85 md:text-3xl"
+            className="tagline-jp mt-5 text-2xl font-semibold text-white/85 md:text-3xl"
           >
             撮る、つくる、ささえる。
           </motion.p>

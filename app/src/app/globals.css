@@ -253,6 +253,12 @@
   .eyebrow {
     @apply font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground;
   }
+  /* 見出しの決め文句専用の明朝（text サブセット・数KB）。
+     指定外の文字は --font-heading にフォールバックする */
+  .tagline-jp {
+    font-family: "Shippori Mincho", var(--font-heading);
+    letter-spacing: 0.04em;
+  }
   /* 和文ラベル用 — 0.3em は欧文キャプス専用。和文は字間を詰め最低12pxを確保 */
   .eyebrow-jp {
     @apply font-sans text-xs tracking-[0.08em] text-muted-foreground;

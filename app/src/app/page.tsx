@@ -72,7 +72,7 @@ export default async function HomePage() {
             <span className="text-safelight">01</span> / Introduction
           </p>
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
-            <h2 className="font-heading text-4xl font-medium leading-snug md:text-5xl md:leading-snug">
+            <h2 className="tagline-jp text-4xl font-semibold leading-snug md:text-5xl md:leading-snug">
               撮る、つくる、
               <br />
               ささえる。
@@ -112,7 +112,7 @@ export default async function HomePage() {
               <p className="eyebrow">
                 <span className="text-safelight">02</span> / Photography
               </p>
-              <h2 className="mt-3 font-heading text-4xl font-medium md:text-5xl">
+              <h2 className="mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
                 撮る
               </h2>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -184,7 +184,7 @@ export default async function HomePage() {
               <p className="eyebrow">
                 <span className="text-safelight">03</span> / Web Production
               </p>
-              <h2 className="mt-3 font-heading text-4xl font-medium md:text-5xl">
+              <h2 className="mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
                 つくる
               </h2>
               <p className="mt-6 text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
@@ -334,7 +334,7 @@ export default async function HomePage() {
               <p className="eyebrow">
                 <span className="text-safelight">04</span> / IT Support
               </p>
-              <h2 className="mt-3 font-heading text-4xl font-medium md:text-5xl">
+              <h2 className="mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
                 ささえる
               </h2>
               <p className="mt-6 text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
