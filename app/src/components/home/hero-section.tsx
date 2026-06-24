@@ -91,15 +91,15 @@ export function HeroSection({ photos }: HeroSectionProps) {
         hidden: {
           opacity: 1,
           y: 26,
-          filter: "blur(20px) brightness(0.35)",
-          letterSpacing: "0.22em",
+          filter: "blur(8px) brightness(0.7)",
+          letterSpacing: "0.1em",
         },
         show: {
           opacity: 1,
           y: 0,
           filter: "blur(0px) brightness(1)",
           letterSpacing: "0.02em",
-          transition: { duration: 1.7, ease: EASE },
+          transition: { duration: 1.1, ease: EASE },
         },
       };
   // ファインダー枠が絞り込まれる（カメラがピントを合わせる）
@@ -125,9 +125,6 @@ export function HeroSection({ photos }: HeroSectionProps) {
         <motion.div
           className="absolute inset-0"
           style={reduce ? undefined : { y: bgY, scale: bgScale }}
-          initial={reduce ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.6, ease: EASE }}
         >
           {/* Blurred fill for letterbox areas
               — 追加の画像リクエストを避け、軽量な blur プレースホルダ(data URL)を
