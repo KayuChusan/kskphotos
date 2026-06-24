@@ -48,5 +48,11 @@
     "tsx": "^4.22.4",
     "typescript": "^5",
     "vitest": "^4.0.0"
-  }
+  },
+  "//browserslist": "モダンブラウザに絞り、古い構文への変換・polyfill(Array.at/flat 等)を除去して JS 転送量を削減する（直近2バージョン中心の安全範囲）",
+  "browserslist": [
+    "last 2 versions",
+    "not dead",
+    "not op_mini all"
+  ]
 }
