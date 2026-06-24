@@ -148,6 +148,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
             className="object-contain brightness-[0.8]"
             sizes="100vw"
             priority
+            fetchPriority="high"
           />
         </motion.div>
       )}
