@@ -30,8 +30,9 @@ const fraunces = Fraunces({
 // フォールバック指定は globals.css の --font-sans / --font-heading に集約。
 
 // 例外: 見出しの決め文句「撮る、つくる、ささえる。」だけは、上質な明朝(Shippori Mincho)を当てる。
-// next/font は日本語の text サブセットに未対応のため、Google Fonts の text API を
-// <head> の <link> で読み込む（使う文字だけ＝数KB）。適用は globals.css の .tagline-jp。
+// next/font は日本語の text サブセット未対応、かつ Google Fonts の外部 <link> は
+// レンダリングをブロックするため、使う8文字だけの woff2 を self-host する
+// （public/fonts/shippori-tagline.woff2、@font-face は globals.css、適用は .tagline-jp）。
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kskworks.jp";
 const siteDescription =
@@ -116,21 +117,6 @@ export default function RootLayout({
         lang="ja"
         className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
       >
-        <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin="anonymous"
-          />
-          {/* 見出しの決め文句専用。使う文字だけを text で取得（数KB）。
-              RootLayout なので全ページで読まれる（no-page-custom-font は App Router では誤検知） */}
-          {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-          <link
-            href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600&text=撮るつくるささえる、。&display=swap"
-            rel="stylesheet"
-          />
-        </head>
         <body className="flex min-h-full flex-col">
           <script
             type="application/ld+json"
