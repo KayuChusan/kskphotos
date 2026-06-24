@@ -75,11 +75,13 @@ export function HeroSection({ photos }: HeroSectionProps) {
       },
     },
   };
-  // 単純な「持ち上がり」フェード（アイブロウ・コピー・ボタン）
+  // 「持ち上がり」演出（アイブロウ・コピー・ボタン）。
+  // LCP 要素であるコピーを即描画させるため opacity は最初から 1 にし、
+  // 入場は y のスライドのみにする（opacity フェードを残すと LCP が数秒遅れる）。
   const rise: Variants = reduce
     ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
     : {
-        hidden: { opacity: 0, y: 22 },
+        hidden: { opacity: 1, y: 22 },
         show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE } },
       };
   // タイトル＝印画紙に像が結ぶ「現像」。ブラー・露出・字間が締まりながら浮かぶ。
@@ -87,7 +89,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
     ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
     : {
         hidden: {
-          opacity: 0,
+          opacity: 1,
           y: 26,
           filter: "blur(20px) brightness(0.35)",
           letterSpacing: "0.22em",
