@@ -305,8 +305,10 @@ export default function GuidePage() {
         <p className="eyebrow">Guide</p>
         <h1 className="mt-2 font-heading text-5xl font-medium">ご利用案内</h1>
         <p className="mt-4 max-w-2xl text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
-          <strong className="text-foreground">写真撮影・Web 制作・IT サポート</strong>
-          を一人の窓口でお引き受けします。ご検討中の項目から、お進みください。
+          <JaText>
+            <strong className="text-foreground">写真撮影・Web 制作・IT サポート</strong>
+            を一人の窓口でお引き受けします。ご検討中の項目から、お進みください。
+          </JaText>
         </p>
       </div>
 
@@ -322,7 +324,9 @@ export default function GuidePage() {
               <Icon className="size-5 shrink-0 text-safelight" />
               <span className="min-w-0">
                 <span className="block text-sm font-medium">{title}</span>
-                <span className="block text-xs text-muted-foreground">{desc}</span>
+                <span className="block text-xs text-muted-foreground">
+                  <JaText>{desc}</JaText>
+                </span>
               </span>
             </span>
           </a>
@@ -341,12 +345,14 @@ export default function GuidePage() {
         </CardHeader>
         <CardContent>
           <p className="text-sm leading-loose text-muted-foreground">
-            撮影会社と制作会社に別々に依頼すると、素材の受け渡しや認識合わせに手間がかかり、費用も二重になりがちです。KSK
-            Works なら撮影〜サイト公開までを一人の窓口で完結。
-            <strong className="text-foreground">
-              撮影と Web 制作をまとめてご依頼いただくと、それぞれ個別に頼むより割安なセット価格
-            </strong>
-            でご提供します（内容に応じてお見積り）。
+            <JaText>
+              撮影会社と制作会社に別々に依頼すると、素材の受け渡しや認識合わせに手間がかかり、費用も二重になりがちです。KSK
+              Works なら撮影〜サイト公開までを一人の窓口で完結。
+              <strong className="text-foreground">
+                撮影と Web 制作をまとめてご依頼いただくと、それぞれ個別に頼むより割安なセット価格
+              </strong>
+              でご提供します（内容に応じてお見積り）。
+            </JaText>
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
             <Camera className="size-4 text-safelight" />
@@ -372,9 +378,11 @@ export default function GuidePage() {
           写真撮影について
         </h2>
         <p className="mt-3 text-sm leading-loose text-muted-foreground">
-          ポートレート・ファミリー・イベントから、政治・選挙、商用・法人まで。ジャンルを問わず
-          <strong className="text-foreground">時間制</strong>
-          でお引き受けします。出張で現場へうかがい、RAW から丁寧に仕上げてお渡しします。
+          <JaText>
+            ポートレート・ファミリー・イベントから、政治・選挙、商用・法人まで。ジャンルを問わず
+            <strong className="text-foreground">時間制</strong>
+            でお引き受けします。出張で現場へうかがい、RAW から丁寧に仕上げてお渡しします。
+          </JaText>
         </p>
 
         <h3 className="mt-8 font-heading text-lg font-medium">撮影の流れ</h3>
@@ -402,7 +410,9 @@ export default function GuidePage() {
           Web 制作について
         </h2>
         <p className="mt-3 text-sm leading-loose text-muted-foreground">
-          新規制作から運用・引き継ぎ・リニューアルまで。テンプレートの流用ではなく、用途に合わせて一つひとつ設計してつくります。
+          <JaText>
+            新規制作から運用・引き継ぎ・リニューアルまで。テンプレートの流用ではなく、用途に合わせて一つひとつ設計してつくります。
+          </JaText>
         </p>
 
         <h3 className="mt-8 font-heading text-lg font-medium">Web の対応範囲</h3>
@@ -410,7 +420,9 @@ export default function GuidePage() {
 
         <h3 className="mt-8 font-heading text-lg font-medium">サイトができるまで</h3>
         <p className="mt-2 text-sm leading-loose text-muted-foreground">
-          ご相談から公開・運用まで、一人の窓口で進めます。専門用語はかみ砕いてご説明するので、はじめての方でも安心です。
+          <JaText>
+            ご相談から公開・運用まで、一人の窓口で進めます。専門用語はかみ砕いてご説明するので、はじめての方でも安心です。
+          </JaText>
         </p>
         <FlowGrid steps={WEB_FLOW} />
 
@@ -418,7 +430,9 @@ export default function GuidePage() {
           どんなサイトをつくるか
         </h3>
         <p className="mt-2 text-sm leading-loose text-muted-foreground">
-          安く見せるためのテンプレート流用ではありません。検索・速度・安全・拡張性まで、長く使えるサイトの土台をはじめから作り込みます。
+          <JaText>
+            安く見せるためのテンプレート流用ではありません。検索・速度・安全・拡張性まで、長く使えるサイトの土台をはじめから作り込みます。
+          </JaText>
         </p>
         <FeatureGrid items={SITE_FEATURES} />
 
@@ -429,7 +443,9 @@ export default function GuidePage() {
               すべてのサイトに標準で入っているもの
             </h4>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              追加料金のオプションではなく、最初から含めて作ります（このサイト自身でも使っている仕組みです）。
+              <JaText>
+                追加料金のオプションではなく、最初から含めて作ります（このサイト自身でも使っている仕組みです）。
+              </JaText>
             </p>
           </CardHeader>
           <CardContent>
@@ -459,21 +475,23 @@ export default function GuidePage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm leading-loose text-muted-foreground">
-              いまご覧いただいているこのサイトは、すべて手づくり。
-              <strong className="text-foreground">
-                地図から写真をたどる「地図ギャラリー」、撮影データを自動でグラフ化する「EXIF
-                ダッシュボード」、現像前後を見比べる「ビフォーアフター」、合言葉で限定公開する「会員ページ」
-              </strong>
-              ——こうした仕組みも、ご要望に応じてあなたのサイトに組み込めます。カタログではなく、実際に動くものでご判断いただけます。
+              <JaText>
+                いまご覧いただいているこのサイトは、すべて手づくり。
+                <strong className="text-foreground">
+                  地図から写真をたどる「地図ギャラリー」、撮影データを自動でグラフ化する「EXIF
+                  ダッシュボード」、現像前後を見比べる「ビフォーアフター」、合言葉で限定公開する「会員ページ」
+                </strong>
+                ——こうした仕組みも、ご要望に応じてあなたのサイトに組み込めます。カタログではなく、実際に動くものでご判断いただけます。
+              </JaText>
             </p>
-            <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            <div className="mt-6 flex flex-col gap-2.5 text-sm">
               {SHOWCASE_LINKS.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                  className="w-fit text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
                 >
-                  {label} →
+                  <JaText>{label}</JaText> →
                 </Link>
               ))}
             </div>
@@ -490,9 +508,11 @@ export default function GuidePage() {
           その他、IT まわりもお任せください
         </h2>
         <p className="mt-3 text-sm leading-loose text-muted-foreground">
-          撮影や Web 制作だけでなく、<strong className="text-foreground">現役インフラエンジニア</strong>
-          として日々の「ちょっと困った」も引き受けます。サーバーやメールの設定から、PC・ツールのトラブル、SNS
-          まわりの整備まで。どこに頼めばいいか分からないことこそ、まずはご相談ください。
+          <JaText>
+            撮影や Web 制作だけでなく、<strong className="text-foreground">現役インフラエンジニア</strong>
+            として日々の「ちょっと困った」も引き受けます。サーバーやメールの設定から、PC・ツールのトラブル、SNS
+            まわりの整備まで。どこに頼めばいいか分からないことこそ、まずはご相談ください。
+          </JaText>
         </p>
         <FeatureGrid items={IT_SUPPORT} cols="sm:grid-cols-2 lg:grid-cols-3" />
         <div className="mt-6">
