@@ -108,6 +108,8 @@ describe("redactShootingMeta", () => {
     expect(r.latitude).toBe(35.6);
     expect(r.location).toBe("Tokyo");
     expect(r.imageUrl).toBe("/uploads/real.jpg");
+    // ビフォーアフター比較は訴求材料として公開（before URL は残す）
+    expect(r.beforeUrl).toBe("/uploads/real-before.jpg");
   });
 });
 
@@ -136,6 +138,7 @@ describe("maskForViewer", () => {
     expect(r.imageUrl).toBe("/uploads/real.jpg");
     expect(r.cameraModel).toBeNull();
     expect(r.location).toBe("Tokyo"); // 位置情報は残す
+    expect(r.beforeUrl).toBe("/uploads/real-before.jpg"); // 比較は公開
   });
 
   it("会員 → そのまま全部見える", () => {

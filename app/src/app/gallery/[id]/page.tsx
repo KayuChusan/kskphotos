@@ -117,8 +117,9 @@ export default async function PhotoDetailPage({ params }: Props) {
             <PhotoLightbox photo={safe} />
           )}
 
-          {/* before 画像 URL は safe では伏せるため、有無の判定は元データで行う
-              （URL は出力せず /compare へ誘導するだけ。非会員は compare 側で会員案内） */}
+          {/* ビフォーアフター比較は全ユーザーに公開（依頼検討の訴求材料）。
+              有無の判定は元データで行い、/compare へ誘導する。
+              会員限定コレクションは compare 側でマスクされる。 */}
           {photo.beforeUrl && (
             <div className="mt-5 text-center">
               <Link

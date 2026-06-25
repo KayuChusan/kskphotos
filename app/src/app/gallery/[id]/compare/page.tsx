@@ -57,9 +57,12 @@ export default async function ComparePage({ params }: Props) {
   if (!photo || !photo.isPublished) notFound();
   if (!photo.beforeUrl) redirect(`/gallery/${id}`);
 
-  // ビフォーアフター（現像過程）と EXIF は会員限定。非会員はスライダーもマスク。
+  // ビフォーアフター比較は依頼検討の訴求材料として全ユーザーに公開。
+  // 会員限定コレクションの写真だけは本画像を伏せるため非会員にはマスクする。
+  // EXIF（撮影設定）は引き続き会員限定。
+  const lockedCollection = photo.collection?.isLocked ?? false;
   const member = await isMember();
-  const masked = !member;
+  const masked = lockedCollection && !member;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -87,7 +90,7 @@ export default async function ComparePage({ params }: Props) {
           width={photo.imageWidth}
           height={photo.imageHeight}
           className="viewfinder mx-auto max-h-[70vh] w-full"
-          label="会員限定 — 解錠でビフォーアフターを表示"
+          label="会員限定コレクション — 解錠で表示"
         />
       ) : (
         <CompareSlider beforeUrl={photo.beforeUrl} afterUrl={photo.imageUrl} />
@@ -98,7 +101,7 @@ export default async function ComparePage({ params }: Props) {
       <div className="max-w-md">
         <h2 className="eyebrow mb-4">Shooting Data</h2>
         {!member ? (
-          <MemberGate message="撮影設定（EXIF）とビフォーアフターは会員限定です。note メンバーシップに参加するとご覧いただけます。" />
+          <MemberGate message="撮影設定（EXIF）は会員限定です。note メンバーシップに参加するとご覧いただけます。" />
         ) : (
           <ExifTable photo={photo} />
         )}
