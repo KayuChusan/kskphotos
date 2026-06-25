@@ -35,12 +35,6 @@ export function SiteFooter() {
             </nav>
             <nav className="flex flex-wrap gap-x-6 gap-y-2 md:justify-end">
               <Link
-                href="/guide"
-                className="exif-text text-muted-foreground/70 transition-colors hover:text-foreground"
-              >
-                ご利用案内
-              </Link>
-              <Link
                 href="/collections"
                 className="exif-text text-muted-foreground/70 transition-colors hover:text-foreground"
               >

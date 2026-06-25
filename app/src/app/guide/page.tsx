@@ -12,6 +12,8 @@ import {
   Zap,
 } from "lucide-react";
 import { pageSeo } from "@/lib/seo";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -108,71 +110,112 @@ const STANDARD = [
   "落ちにくく低コストなクラウド運用 — アクセスがなければ自動で休み、増えれば自動で増強。無駄なく安定",
 ];
 
+// ご利用にあたっての取り決め
+const DETAILS = [
+  {
+    term: "お支払い",
+    body: "内容をうかがってお見積りを提示し、ご合意のうえでご依頼確定となります。お支払いは銀行振込です（前金・分割のご相談も内容に応じて承ります）。振込手数料はお客様のご負担とさせていただいております。",
+  },
+  {
+    term: "キャンセル・日程変更",
+    body: "ご予約日程の確定後にキャンセルや日程変更が生じる場合は、できるだけ早めにご連絡ください。撮影日に近いキャンセルや、制作着手後のキャンセルについては、進行状況に応じて費用を申し受ける場合があります。詳細はご依頼時の取り決めによります。",
+  },
+  {
+    term: "納品",
+    body: "撮影データは撮影後おおむね 1〜3 週間。全カットではなく、撮影時間に応じた枚数（1時間あたり約20枚、うちレタッチ仕上げ10枚）をセレクトしてお渡しします。Web サイトは規模により異なり、お見積り時にスケジュールをご提示します。",
+  },
+  {
+    term: "著作権・使用について",
+    body: "納品した写真は、ご依頼の用途の範囲でご自由にお使いいただけます。撮影制作物に生成 AI は使用していません。利用範囲のご希望（商用・二次利用等）はお気軽にご相談ください。",
+  },
+];
+
+const SHOWCASE_LINKS = [
+  { href: "/gallery", label: "地図ギャラリーを見る" },
+  { href: "/dashboard", label: "EXIF ダッシュボードを見る" },
+  { href: "/collections", label: "コレクションを見る" },
+];
+
 export default function GuidePage() {
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
-      <p className="eyebrow">Guide</p>
-      <h1 className="mb-4 mt-2 font-heading text-5xl font-medium">ご利用案内</h1>
-      <p className="mb-12 max-w-2xl text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
-        KSK Works は、<strong className="text-foreground">写真撮影と Web サイト</strong>を
-        まとめてお任せいただけるのが強みです。撮影で生まれた写真素材を、そのまま活きるかたちで
-        サイトに落とし込む——
-        <strong className="text-foreground">
-          素材づくりからサイトの公開・運用までを一元化
-        </strong>
-        できます。
-      </p>
+      {/* Header */}
+      <div className="mb-12">
+        <p className="eyebrow">Guide</p>
+        <h1 className="mt-2 font-heading text-5xl font-medium">ご利用案内</h1>
+        <p className="mt-4 max-w-2xl text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
+          KSK Works は、<strong className="text-foreground">写真撮影と Web サイト</strong>
+          をまとめてお任せいただけるのが強みです。撮影で生まれた写真素材を、そのまま活きるかたちでサイトに落とし込む——
+          <strong className="text-foreground">
+            素材づくりからサイトの公開・運用までを一元化
+          </strong>
+          できます。
+        </p>
+      </div>
 
       {/* ワンストップの価値 */}
-      <section className="mb-14 border bg-card p-6 md:p-8">
-        <p className="eyebrow">
-          <span className="text-safelight">One-stop</span> / 撮影 × Web
-        </p>
-        <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
-          まとめて頼めて、別々より、お得。
-        </h2>
-        <p className="mt-4 text-sm leading-loose text-muted-foreground">
-          撮影会社と制作会社に別々に依頼すると、素材の受け渡しや認識合わせに手間がかかり、
-          費用も二重になりがちです。KSK Works なら撮影〜サイト公開までを一人の窓口で完結。
-          <strong className="text-foreground">
-            撮影と Web 制作をまとめてご依頼いただくと、それぞれ個別に頼むより割安なセット価格
-          </strong>
-          でご提供します（内容に応じてお見積り）。
-        </p>
-        <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
-          <Camera className="size-4 text-safelight" />
-          <span>撮影</span>
-          <span className="text-muted-foreground/40">→</span>
-          <span>写真素材</span>
-          <span className="text-muted-foreground/40">→</span>
-          <Globe className="size-4 text-safelight" />
-          <span>Web サイト</span>
-          <span className="text-muted-foreground/40">→</span>
-          <Wrench className="size-4 text-safelight" />
-          <span>運用</span>
-        </div>
-      </section>
+      <Card className="border-safelight/40 bg-safelight/5">
+        <CardHeader>
+          <p className="eyebrow">
+            <span className="text-safelight">One-stop</span> / 撮影 × Web
+          </p>
+          <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
+            まとめて頼めて、別々より、お得。
+          </h2>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm leading-loose text-muted-foreground">
+            撮影会社と制作会社に別々に依頼すると、素材の受け渡しや認識合わせに手間がかかり、費用も二重になりがちです。KSK
+            Works なら撮影〜サイト公開までを一人の窓口で完結。
+            <strong className="text-foreground">
+              撮影と Web 制作をまとめてご依頼いただくと、それぞれ個別に頼むより割安なセット価格
+            </strong>
+            でご提供します（内容に応じてお見積り）。
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
+            <Camera className="size-4 text-safelight" />
+            <span>撮影</span>
+            <span className="text-muted-foreground/40">→</span>
+            <span>写真素材</span>
+            <span className="text-muted-foreground/40">→</span>
+            <Globe className="size-4 text-safelight" />
+            <span>Web サイト</span>
+            <span className="text-muted-foreground/40">→</span>
+            <Wrench className="size-4 text-safelight" />
+            <span>運用</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Separator className="my-12" />
 
       {/* Web の対応範囲 */}
-      <section className="mb-14">
-        <h2 className="font-heading text-2xl font-medium md:text-3xl">
+      <section>
+        <p className="eyebrow">Scope</p>
+        <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
           Web の対応範囲
         </h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           {WEB_SCOPE.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="border p-5">
-              <Icon className="size-5 text-safelight" />
-              <h3 className="mt-3 text-sm font-semibold">{title}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                {body}
-              </p>
-            </div>
+            <Card key={title}>
+              <CardContent>
+                <Icon className="size-5 text-safelight" />
+                <h3 className="mt-3 font-heading text-base font-medium">
+                  {title}
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  {body}
+                </p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </section>
 
-      {/* Web 制作の流れ */}
-      <section className="mb-14">
+      <Separator className="my-12" />
+
+      {/* サイトができるまで */}
+      <section>
         <p className="eyebrow">How we build</p>
         <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
           サイトができるまで
@@ -182,23 +225,31 @@ export default function GuidePage() {
         </p>
         <ol className="mt-6 grid gap-4 sm:grid-cols-2">
           {FLOW.map((step) => (
-            <li key={step.no} className="flex gap-4 border p-5">
-              <span className="exif-text shrink-0 text-safelight">
-                {step.no}
-              </span>
-              <div>
-                <h3 className="text-sm font-semibold">{step.title}</h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                  {step.body}
-                </p>
-              </div>
+            <li key={step.no}>
+              <Card className="h-full">
+                <CardContent className="flex gap-4">
+                  <span className="exif-text shrink-0 text-safelight">
+                    {step.no}
+                  </span>
+                  <div>
+                    <h3 className="font-heading text-base font-medium">
+                      {step.title}
+                    </h3>
+                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                      {step.body}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </li>
           ))}
         </ol>
       </section>
 
+      <Separator className="my-12" />
+
       {/* どんなサイトをつくるか */}
-      <section className="mb-14">
+      <section>
         <p className="eyebrow">What you get</p>
         <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
           どんなサイトをつくるか
@@ -208,130 +259,124 @@ export default function GuidePage() {
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {SITE_FEATURES.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="border p-5">
-              <Icon className="size-5 text-safelight" />
-              <h3 className="mt-3 text-sm font-semibold">{title}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                {body}
-              </p>
-            </div>
+            <Card key={title}>
+              <CardContent>
+                <Icon className="size-5 text-safelight" />
+                <h3 className="mt-3 font-heading text-base font-medium">
+                  {title}
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  {body}
+                </p>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
-        {/* 標準で入っているもの（具体・宣伝） */}
-        <div className="mt-6 border bg-card p-6 md:p-8">
-          <h3 className="text-sm font-semibold">
-            すべてのサイトに標準で入っているもの
-          </h3>
-          <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-            追加料金のオプションではなく、最初から含めて作ります（このサイト自身でも使っている仕組みです）。
+        {/* 標準で入っているもの */}
+        <Card className="mt-4">
+          <CardHeader>
+            <h3 className="font-heading text-base font-medium">
+              すべてのサイトに標準で入っているもの
+            </h3>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              追加料金のオプションではなく、最初から含めて作ります（このサイト自身でも使っている仕組みです）。
+            </p>
+          </CardHeader>
+          <CardContent>
+            <ul className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
+              {STANDARD.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-2 text-xs leading-relaxed"
+                >
+                  <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <span className="text-muted-foreground">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </section>
+
+      <Separator className="my-12" />
+
+      {/* このサイト自体が見本 */}
+      <Card className="border-safelight/40 bg-safelight/5">
+        <CardHeader>
+          <p className="eyebrow">
+            <span className="text-safelight">Showcase</span> / 動いている実例
           </p>
-          <ul className="mt-4 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
-            {STANDARD.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-xs leading-relaxed">
-                <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                <span className="text-muted-foreground">{item}</span>
-              </li>
+          <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
+            このサイト自体が、つくれるものの見本です。
+          </h2>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm leading-loose text-muted-foreground">
+            いまご覧いただいているこのサイトは、すべて手づくり。
+            <strong className="text-foreground">
+              地図から写真をたどる「地図ギャラリー」、撮影データを自動でグラフ化する「EXIF
+              ダッシュボード」、現像前後を見比べる「ビフォーアフター」、合言葉で限定公開する「会員ページ」
+            </strong>
+            ——こうした仕組みも、ご要望に応じてあなたのサイトに組み込めます。カタログではなく、実際に動くものでご判断いただけます。
+          </p>
+          <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            {SHOWCASE_LINKS.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              >
+                {label} →
+              </Link>
             ))}
-          </ul>
-        </div>
-      </section>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* このサイト自体が実例（最大の売り） */}
-      <section className="mb-14 border border-safelight/40 bg-safelight/5 p-6 md:p-8">
-        <p className="eyebrow">
-          <span className="text-safelight">Showcase</span> / 動いている実例
-        </p>
+      <Separator className="my-12" />
+
+      {/* 料金の考え方・取り決め */}
+      <section>
+        <p className="eyebrow">Notes</p>
         <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
-          このサイト自体が、つくれるものの見本です。
+          ご利用にあたって
         </h2>
-        <p className="mt-4 text-sm leading-loose text-muted-foreground">
-          いまご覧いただいているこのサイトは、すべて手づくり。
-          <strong className="text-foreground">
-            地図から写真をたどる「地図ギャラリー」、撮影データを自動でグラフ化する「EXIF
-            ダッシュボード」、現像前後を見比べる「ビフォーアフター」、合言葉で限定公開する「会員ページ」
-          </strong>
-          ——こうした仕組みも、ご要望に応じてあなたのサイトに組み込めます。カタログではなく、実際に動くものでご判断いただけます。
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3 text-sm">
-          <Link
-            href="/gallery"
-            className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-          >
-            地図ギャラリーを見る →
-          </Link>
-          <Link
-            href="/dashboard"
-            className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-          >
-            EXIF ダッシュボードを見る →
-          </Link>
-          <Link
-            href="/collections"
-            className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-          >
-            コレクションを見る →
-          </Link>
-        </div>
+
+        <Card className="mt-6">
+          <CardContent className="px-0">
+            <div className="divide-y divide-border/60">
+              {/* 料金の考え方（/services への導線を含む） */}
+              <div className="px-6 py-5">
+                <h3 className="font-heading text-base font-medium">
+                  料金の考え方
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  撮影プランと Web 制作の料金は
+                  <Link
+                    href="/services"
+                    className="mx-0.5 font-medium text-foreground underline underline-offset-4"
+                  >
+                    料金・メニュー
+                  </Link>
+                  に掲載しています（撮影はプラン別、サイト制作は規模別のお見積り）。撮影と
+                  Web をまとめてご依頼の場合は、セット価格で個別依頼より割安になります。正確な金額は、ご要望をうかがったうえでお見積りをご提示します。
+                </p>
+              </div>
+              {DETAILS.map(({ term, body }) => (
+                <div key={term} className="px-6 py-5">
+                  <h3 className="font-heading text-base font-medium">{term}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
-      <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none space-y-8">
-        <section>
-          <h2 className="text-lg font-semibold">料金の考え方</h2>
-          <p className="text-sm text-muted-foreground">
-            撮影プランと Web 制作の料金は
-            <Link
-              href="/services"
-              className="font-medium text-foreground underline underline-offset-4"
-            >
-              料金・メニュー
-            </Link>
-            に掲載しています（撮影はプラン別、サイト制作は規模別のお見積り）。
-            撮影と Web をまとめてご依頼の場合は、セット価格で個別依頼より割安になります。
-            正確な金額は、ご要望をうかがったうえでお見積りをご提示します。
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-semibold">お支払い</h2>
-          <p className="text-sm text-muted-foreground">
-            内容をうかがってお見積りを提示し、ご合意のうえでご依頼確定となります。
-            お支払いは<strong className="text-foreground">銀行振込</strong>です
-            （前金・分割のご相談も内容に応じて承ります）。振込手数料はお客様のご負担と
-            させていただいております。
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-semibold">キャンセル・日程変更</h2>
-          <p className="text-sm text-muted-foreground">
-            ご予約日程の確定後にキャンセルや日程変更が生じる場合は、できるだけ早めにご連絡ください。
-            撮影日に近いキャンセルや、制作着手後のキャンセルについては、進行状況に応じて
-            費用を申し受ける場合があります。詳細はご依頼時の取り決めによります。
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-semibold">納品</h2>
-          <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-            <li>
-              撮影データ: 撮影後おおむね 1〜3 週間。全カットではなく、撮影時間に応じた枚数（1時間あたり約20枚、うちレタッチ仕上げ10枚）をセレクトしてお渡しします
-            </li>
-            <li>
-              Web サイト: 規模により異なります。お見積り時にスケジュールをご提示します
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-lg font-semibold">著作権・使用について</h2>
-          <p className="text-sm text-muted-foreground">
-            納品した写真は、ご依頼の用途の範囲でご自由にお使いいただけます。撮影制作物に
-            生成 AI は使用していません。利用範囲のご希望（商用・二次利用等）はお気軽にご相談ください。
-          </p>
-        </section>
-      </div>
-
+      {/* CTA */}
       <div className="mt-14 border-t pt-10 text-center">
         <p className="text-sm text-muted-foreground">
           撮影だけ・サイトだけのご依頼も、まとめてのご相談も歓迎です。
