@@ -1,3 +1,5 @@
+import { BLOG_ENABLED } from "@/lib/feature-flags";
+
 export interface NavItem {
   /** 日本語の主ラベル(来訪者が読む) */
   title: string;
@@ -7,11 +9,14 @@ export interface NavItem {
 }
 
 // 来訪者の動線順: 見る → 実績 → 料金 → 読む → 知る
+// ブログは BLOG_ENABLED が false の間は非表示。
 export const mainNav: NavItem[] = [
   { title: "ギャラリー", en: "Gallery", href: "/gallery" },
   { title: "実績", en: "Works", href: "/works" },
   { title: "料金", en: "Price", href: "/services" },
-  { title: "ブログ", en: "Journal", href: "/blog" },
+  ...(BLOG_ENABLED
+    ? [{ title: "ブログ", en: "Journal", href: "/blog" }]
+    : []),
   { title: "プロフィール", en: "About", href: "/about" },
 ];
 

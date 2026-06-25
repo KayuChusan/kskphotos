@@ -1,4 +1,5 @@
 import type { PrismaClient } from "../src/generated/prisma/client";
+import { SOURCE_MANAGED_IDS } from "../src/lib/source-managed-services";
 
 // 公開の料金メニュー（本番にも投入する実データ）。
 // 撮影は「時間制1本」。/services の撮影料金表はコード側（services/page.tsx）で
@@ -17,7 +18,8 @@ export const SERVICES = [
 // ソース管理メニュー: 料金・納品ポリシーをコード側で一元管理する撮影/制作/保守。
 // createOnly（既存は触らない）でも、この3件だけは常に services-data.ts の内容で
 // 上書き同期する（admin 編集ではなくソースが正）。それ以外は従来どおり createOnly。
-export const SOURCE_MANAGED_IDS = ["seed-svc-photo", "seed-svc-web", "seed-svc-maint"];
+// ID 定義は src/lib/source-managed-services.ts に置き、admin の手編集ロックと共有する。
+export { SOURCE_MANAGED_IDS };
 
 // 時間制1本化に伴い廃止した旧・撮影メニュー（個別ジャンル）。
 // createOnly でも確実に消えるよう、seedServices 内で isActive=false にする。

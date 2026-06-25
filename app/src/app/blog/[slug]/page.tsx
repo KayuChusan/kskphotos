@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { pageSeo } from "@/lib/seo";
+import { BLOG_ENABLED } from "@/lib/feature-flags";
 import { Badge } from "@/components/ui/badge";
 
 export const revalidate = 3600;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export async function generateStaticParams() {
+  if (!BLOG_ENABLED) return [];
   const posts = await prisma.blogPost.findMany({
     where: { isPublished: true },
     select: { slug: true },
@@ -42,6 +44,7 @@ function formatDate(d: Date | null) {
 }
 
 export default async function BlogPostPage({ params }: Props) {
+  if (!BLOG_ENABLED) notFound();
   const { slug } = await params;
   const post = await prisma.blogPost.findUnique({ where: { slug } });
   if (!post || !post.isPublished) notFound();

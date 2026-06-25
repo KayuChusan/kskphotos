@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { SOURCE_MANAGED_IDS } from "@/lib/source-managed-services";
 import { ServicesManager } from "./services-manager";
 
 export const metadata: Metadata = {
@@ -17,9 +18,10 @@ export default async function AdminServicesPage() {
         <h1 className="text-2xl font-bold">料金・メニュー</h1>
         <p className="text-sm text-muted-foreground">
           ここで登録・編集した内容が公開ページ /services と依頼フォームのプラン選択に反映されます。
+          撮影・サイト制作・保守はコード（services-data.ts）で管理しており、ここでは編集できません。
         </p>
       </div>
-      <ServicesManager services={services} />
+      <ServicesManager services={services} lockedIds={SOURCE_MANAGED_IDS} />
     </div>
   );
 }

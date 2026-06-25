@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2 } from "lucide-react";
+import { Lock, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -128,7 +128,13 @@ function ServiceFields({ service }: { service?: Service }) {
   );
 }
 
-export function ServicesManager({ services }: { services: Service[] }) {
+export function ServicesManager({
+  services,
+  lockedIds = [],
+}: {
+  services: Service[];
+  lockedIds?: string[];
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const createRef = useRef<HTMLFormElement>(null);
@@ -195,47 +201,85 @@ export function ServicesManager({ services }: { services: Service[] }) {
         </div>
       ) : (
         <div className="space-y-2">
-          {services.map((service) => (
-            <details key={service.id} className="rounded-lg border p-3">
-              <summary className="flex cursor-pointer items-center gap-3">
-                <span className="min-w-0 flex-1 truncate font-medium">
-                  {service.title}
-                  {!service.isActive && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      （非公開）
+          {services.map((service) => {
+            const priceLabel =
+              service.price > 0
+                ? `¥${service.price.toLocaleString()}${service.priceNote ?? ""}`
+                : service.priceNote ?? "要相談";
+
+            // ソース管理(撮影/制作/保守): コードで一元管理しデプロイで上書き同期するため、
+            // ここでは編集・削除させず読み取り専用で表示する。
+            if (lockedIds.includes(service.id)) {
+              return (
+                <div
+                  key={service.id}
+                  className="rounded-lg border border-dashed p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">
+                      {service.title}
+                      {!service.isActive && (
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          （非公開）
+                        </span>
+                      )}
                     </span>
-                  )}
-                </span>
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  {CATEGORY_LABELS[service.category] ?? service.category} ・{" "}
-                  {service.price > 0
-                    ? `¥${service.price.toLocaleString()}${service.priceNote ?? ""}`
-                    : service.priceNote ?? "要相談"}
-                </span>
-              </summary>
-              <form
-                onSubmit={(e) => handleUpdate(service.id, e)}
-                className="mt-4 space-y-4"
-              >
-                <ServiceFields service={service} />
-                <div className="flex gap-2">
-                  <Button type="submit" size="sm" disabled={busy}>
-                    保存
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(service)}
-                    className="text-destructive hover:bg-destructive/10"
-                  >
-                    <Trash2 className="mr-1 size-4" />
-                    削除
-                  </Button>
+                    <span className="flex shrink-0 items-center gap-1 rounded bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                      <Lock className="size-3" />
+                      ソース管理
+                    </span>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {CATEGORY_LABELS[service.category] ?? service.category} ・{" "}
+                      {priceLabel}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    料金・納品ポリシーはコード（services-data.ts）で管理しています。変更はソースを編集してデプロイしてください（ここで編集してもデプロイ時に上書きされます）。
+                  </p>
                 </div>
-              </form>
-            </details>
-          ))}
+              );
+            }
+
+            return (
+              <details key={service.id} className="rounded-lg border p-3">
+                <summary className="flex cursor-pointer items-center gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">
+                    {service.title}
+                    {!service.isActive && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        （非公開）
+                      </span>
+                    )}
+                  </span>
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    {CATEGORY_LABELS[service.category] ?? service.category} ・{" "}
+                    {priceLabel}
+                  </span>
+                </summary>
+                <form
+                  onSubmit={(e) => handleUpdate(service.id, e)}
+                  className="mt-4 space-y-4"
+                >
+                  <ServiceFields service={service} />
+                  <div className="flex gap-2">
+                    <Button type="submit" size="sm" disabled={busy}>
+                      保存
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(service)}
+                      className="text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="mr-1 size-4" />
+                      削除
+                    </Button>
+                  </div>
+                </form>
+              </details>
+            );
+          })}
         </div>
       )}
     </div>
