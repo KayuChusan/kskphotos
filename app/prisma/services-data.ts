@@ -14,6 +14,11 @@ export const SERVICES = [
   { id: "seed-svc-it", title: "政治・選挙の IT サポート", description: "公式サイト・運用保守・SNS 運用の支援。", price: 0, priceNote: "要相談", duration: "サイト・SNS 環境", category: "IT_SUPPORT" as const, isPopular: false, features: ["公式サイト・後援会サイトの構築", "公開後のサイト運用・保守の継続サポート", "SNS 運用環境の整備・素材供給", "撮影とセットでの一括支援が可能", "事務所スタッフ向けレクチャー対応"], sortOrder: 7 },
 ];
 
+// ソース管理メニュー: 料金・納品ポリシーをコード側で一元管理する撮影/制作/保守。
+// createOnly（既存は触らない）でも、この3件だけは常に services-data.ts の内容で
+// 上書き同期する（admin 編集ではなくソースが正）。それ以外は従来どおり createOnly。
+export const SOURCE_MANAGED_IDS = ["seed-svc-photo", "seed-svc-web", "seed-svc-maint"];
+
 // 時間制1本化に伴い廃止した旧・撮影メニュー（個別ジャンル）。
 // createOnly でも確実に消えるよう、seedServices 内で isActive=false にする。
 export const RETIRED_SERVICE_IDS = [
@@ -28,7 +33,8 @@ export const RETIRED_SERVICE_IDS = [
 /**
  * Service を投入する。
  * - 既定(createOnly)は「無ければ作成、有れば触らない」= admin の編集を上書きしない（本番向け）。
- * - overwrite=true で既存も初期内容に揃える（ローカル/デモ向け）。
+ * - ただし SOURCE_MANAGED_IDS（撮影/制作/保守）は createOnly でも常にソース内容で上書き同期する。
+ * - overwrite=true で全件を初期内容に揃える（ローカル/デモ向け）。
  * - いずれの場合も、廃止した旧・撮影メニュー(RETIRED_SERVICE_IDS)は非公開化する。
  */
 export async function seedServices(
@@ -36,9 +42,10 @@ export async function seedServices(
   { overwrite = false }: { overwrite?: boolean } = {}
 ) {
   for (const s of SERVICES) {
+    const force = overwrite || SOURCE_MANAGED_IDS.includes(s.id);
     await prisma.service.upsert({
       where: { id: s.id },
-      update: overwrite ? { ...s, isActive: true } : {},
+      update: force ? { ...s, isActive: true } : {},
       create: { ...s, isActive: true },
     });
   }
