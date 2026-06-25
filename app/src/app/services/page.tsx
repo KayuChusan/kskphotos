@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { JaText } from "@/components/ui/ja-text";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -178,7 +179,7 @@ export default async function ServicesPage() {
                   {INCLUDED.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm">
                       <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                      {f}
+                      <JaText>{f}</JaText>
                     </li>
                   ))}
                 </ul>
@@ -279,7 +280,7 @@ export default async function ServicesPage() {
                 <Icon className="size-5 text-safelight" />
                 <h3 className="mt-3 font-heading text-lg font-medium">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {body}
+                  <JaText>{body}</JaText>
                 </p>
               </CardContent>
             </Card>
@@ -343,7 +344,7 @@ export default async function ServicesPage() {
                     {item.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm">
                         <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                        {f}
+                        <JaText>{f}</JaText>
                       </li>
                     ))}
                   </ul>

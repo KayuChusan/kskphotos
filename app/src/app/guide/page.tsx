@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { pageSeo } from "@/lib/seo";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { JaText } from "@/components/ui/ja-text";
 import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -254,9 +255,11 @@ function FlowGrid({ steps }: { steps: { no: string; title: string; body: string 
             <CardContent className="flex gap-4">
               <span className="exif-text shrink-0 text-safelight">{step.no}</span>
               <div>
-                <h4 className="font-heading text-base font-medium">{step.title}</h4>
+                <h4 className="font-heading text-base font-medium">
+                  <JaText>{step.title}</JaText>
+                </h4>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                  {step.body}
+                  <JaText>{step.body}</JaText>
                 </p>
               </div>
             </CardContent>
@@ -281,9 +284,11 @@ function FeatureGrid({
         <Card key={title}>
           <CardContent>
             <Icon className="size-5 text-safelight" />
-            <h4 className="mt-3 font-heading text-base font-medium">{title}</h4>
+            <h4 className="mt-3 font-heading text-base font-medium">
+              <JaText>{title}</JaText>
+            </h4>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              {body}
+              <JaText>{body}</JaText>
             </p>
           </CardContent>
         </Card>
