@@ -102,6 +102,14 @@ p { text-wrap: pretty; }
 ### 3.6 FOUT 対策
 和文 Web フォントは `preload: false`。読込中は上記フォールバック連鎖のシステム和文で自然に表示されるため、連鎖を壊さないこと。
 
+### 3.7 和文の改行（文節折り）【重要・再発防止】
+日本語はデフォルトでほぼ任意の文字位置で改行され、狭い幅（カード・モバイル）では「ポートフォリオ」等のカタカナ語や複合語が**文節の途中で割れる**。CSS の `word-break: auto-phrase` は Chromium 限定で **iOS Safari では効かない**ため、CSS だけに頼らない。
+
+- **カード・ラベルなど狭い幅で折り返す和文本文は `JaText`（`@/components/ui/ja-text`）で囲む**。BudouX で文節分割し、境界に `<wbr>` を挿入したうえで `break-keep`（`word-break: keep-all`）を当て、**文節境界でのみ改行**させる（全ブラウザで有効・サーバー側処理でクライアントJS増なし）。
+  - 例: `<p className="text-xs ..."><JaText>{body}</JaText></p>`
+- 新規で和文の説明文・特徴リスト・カード本文を追加するときは原則 `JaText` を通す。長い英数字（URL・レンズ名）は body の `overflow-wrap: anywhere` で従来どおり折れる。
+- 見出し(h1/h2…)は `text-wrap: balance/pretty` 済みのため通常は不要。固有名詞が割れて気になる短い見出し・ラベルのみ `JaText` を検討。
+
 ---
 
 ## 4. コンポーネント

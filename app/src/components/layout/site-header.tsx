@@ -18,6 +18,8 @@ export function SiteHeader() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+  // モバイルメニュー(Sheet)の開閉。リンクをタップしたら閉じる。
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -86,7 +88,7 @@ export function SiteHeader() {
         </nav>
 
         {/* Mobile nav */}
-        <Sheet>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon" }),
@@ -105,6 +107,7 @@ export function SiteHeader() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => setMenuOpen(false)}
                   className={cn(
                     "flex items-baseline gap-3 py-2 transition-colors hover:text-foreground",
                     pathname === item.href
