@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { excludeLockedPhotos } from "@/lib/photo-visibility";
+import { BLOG_ENABLED } from "@/lib/feature-flags";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kskworks.jp";
 
@@ -31,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/guide",
     "/booking",
     "/about",
-    ...(posts.length > 0 ? ["/blog"] : []),
+    ...(BLOG_ENABLED && posts.length > 0 ? ["/blog"] : []),
     "/contact",
     "/privacy",
   ];
@@ -53,10 +54,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return entries;
   });
 
-  const postRoutes: MetadataRoute.Sitemap = posts.map((p) => ({
-    url: `${siteUrl}/blog/${p.slug}`,
-    lastModified: p.updatedAt,
-  }));
+  const postRoutes: MetadataRoute.Sitemap = BLOG_ENABLED
+    ? posts.map((p) => ({
+        url: `${siteUrl}/blog/${p.slug}`,
+        lastModified: p.updatedAt,
+      }))
+    : [];
 
   const collectionRoutes: MetadataRoute.Sitemap = collections.map((c) => ({
     url: `${siteUrl}/collections/${c.slug}`,

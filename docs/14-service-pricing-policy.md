@@ -52,4 +52,8 @@
 | トップの「つくる」運用範囲 | `app/src/app/page.tsx` | `WEB_SCOPE`（運用・保守） |
 | 予約フローの納品ステップ | `app/src/components/home/booking-flow.tsx` | `STEPS`（現像・納品） |
 
-> `services-data.ts` の Service は seed の既定が createOnly（既存は上書きしない）。ただし撮影/制作/保守の3件は `SOURCE_MANAGED_IDS` に登録され、**createOnly でも毎デプロイで services-data.ts の内容に上書き同期**される（料金・納品ポリシーはソースが正）。そのためこの3件は管理画面 `/admin/services` で編集してもデプロイで元に戻る点に注意。他のサービス（政治・商用・リニューアル・IT等）は従来どおり createOnly で admin 編集を尊重する。
+> `services-data.ts` の Service は seed の既定が createOnly（既存は上書きしない）。ただし撮影/制作/保守の3件は `SOURCE_MANAGED_IDS`（定義: `app/src/lib/source-managed-services.ts`）に登録され、**createOnly でも毎デプロイで services-data.ts の内容に上書き同期**される（料金・納品ポリシーはソースが正）。他のサービス（政治・商用・リニューアル・IT等）は従来どおり createOnly で admin 編集を尊重する。
+
+### 手編集ロック（管理画面）
+
+ソース管理の3件はデプロイで上書きされ手編集が無効化されて紛らわしいため、`/admin/services` では**読み取り専用（「ソース管理」表示）**にして編集・削除フォームを出さない。サーバー側 `actions.ts` の `updateService` / `deleteService` も `SOURCE_MANAGED_IDS` を弾く二重ガード。価格・文言の変更は `services-data.ts` を編集してデプロイする。

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { SOURCE_MANAGED_IDS } from "@/lib/source-managed-services";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -95,6 +96,12 @@ export async function updateService(
 ): Promise<ActionResult> {
   const session = await auth();
   if (!session) return { ok: false, error: "Unauthorized" };
+  if (SOURCE_MANAGED_IDS.includes(id)) {
+    return {
+      ok: false,
+      error: "このメニューはコード管理のため編集できません（services-data.ts を編集してデプロイ）",
+    };
+  }
   const parsed = parse(formData);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0].message };
@@ -112,6 +119,12 @@ export async function updateService(
 export async function deleteService(id: string): Promise<ActionResult> {
   const session = await auth();
   if (!session) return { ok: false, error: "Unauthorized" };
+  if (SOURCE_MANAGED_IDS.includes(id)) {
+    return {
+      ok: false,
+      error: "このメニューはコード管理のため削除できません",
+    };
+  }
   try {
     // Booking.serviceId は任意リレーション(onDelete: SetNull)のため予約は残る
     await prisma.service.delete({ where: { id } });

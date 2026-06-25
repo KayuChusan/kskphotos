@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { pageSeo } from "@/lib/seo";
 import Link from "next/link";
 import { Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { BLOG_ENABLED } from "@/lib/feature-flags";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
@@ -20,6 +22,7 @@ function formatDate(d: Date | null) {
 }
 
 export default async function BlogPage() {
+  if (!BLOG_ENABLED) notFound();
   const posts = await prisma.blogPost.findMany({
     where: { isPublished: true },
     orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
