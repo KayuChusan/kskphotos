@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // EXIF（撮影設定）は全写真で会員限定のため、説明文・OGP には出さない（クローラ＝非会員）。
   const locked = photo.collection?.isLocked ?? false;
   const description =
-    photo.description?.trim() || `${photo.title} — Sony α7R VI で撮影`;
+    photo.description?.trim() || `${photo.title} — KSK Works の出張撮影作品`;
   return {
     title: photo.title,
     description,

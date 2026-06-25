@@ -120,7 +120,7 @@ export default async function ServicesPage() {
         <h1 className="mt-3 font-heading text-5xl font-medium">料金・メニュー</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           <JaText>
-            撮影は時間制で明朗会計。Sony α7R VI で撮影、Lightroom で丁寧にレタッチ。
+            撮影は時間制で明朗会計。Lightroom で丁寧にレタッチして仕上げます。
           </JaText>
         </p>
       </div>
