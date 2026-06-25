@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { pageSeo } from "@/lib/seo";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, Clock, Globe, Layers } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import {
   Card,
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   ...pageSeo({ path: "/services" }),
   title: "料金・メニュー",
   description:
-    "撮影料金 — 時間制で明朗会計。1時間 ¥11,000、撮影時間に応じてセレクト納品（1時間あたり約20枚）、レタッチは撮影1時間につき10枚込み。政治・選挙、商用、Web 制作・IT サポートにも対応。",
+    "撮影料金 — 時間制で明朗会計。1時間 ¥11,000、撮影時間に応じてセレクト納品（1時間あたり約20枚）。Web 制作は規模別（¥88,000〜、作り込み・候補者/法人は¥150,000〜目安）。料金の考え方と各サービスの案内も掲載。",
 };
 
 // 静的生成 + 管理画面の更新時にオンデマンド再検証
@@ -47,6 +47,34 @@ const ADDONS = [
   { label: "印刷入稿用データ調整", price: "+¥5,000〜（ポスター・チラシ等）" },
   { label: "お急ぎ納品（3日以内）", price: "レタッチ1枚につき +¥500" },
   { label: "出張費", price: "実費（運賃／車は距離換算・お見積り時に明示）" },
+];
+
+// 料金の考え方（価格の根拠）
+const PRICING_POLICY = [
+  {
+    icon: Clock,
+    title: "撮影は時間制",
+    body: "ジャンルで分けず、撮影時間で料金が決まります。全カットではなく、撮影時間に応じた枚数をセレクトして納品します。",
+  },
+  {
+    icon: Globe,
+    title: "Web は規模別",
+    body: "¥88,000〜が目安。テンプレート流用の格安制作（数万円）とは品質カテゴリが別です。作り込み・候補者/法人サイトは ¥150,000〜が目安。",
+  },
+  {
+    icon: Layers,
+    title: "まとめてお得",
+    body: "撮影と Web をまとめてご依頼いただくと、それぞれ個別に頼むより割安なセット価格でご提供します。",
+  },
+];
+
+// 料金の考え方の参考リンク（詳細は /guide）
+const POLICY_LINKS = [
+  { href: "/guide#web", label: "Web 制作の進め方・つくるサイト" },
+  { href: "/guide", label: "標準で入る品質・動く実例" },
+  { href: "/guide#photo", label: "撮影のご利用案内" },
+  { href: "/guide#it", label: "IT サポートについて" },
+  { href: "/guide#notes", label: "お支払い・納品・著作権" },
 ];
 
 function formatPrice(s: { price: number; priceNote: string | null }) {
@@ -235,6 +263,52 @@ export default async function ServicesPage() {
         </p>
       </div>
 
+      {/* 料金の考え方（価格の根拠＋参考リンク） */}
+      <section className="mb-20">
+        <div className="mb-8 text-center">
+          <p className="eyebrow">Pricing policy</p>
+          <h2 className="mt-3 font-heading text-3xl font-medium">料金の考え方</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            テンプレートに流し込む作業ではなく、一つひとつ設計してつくります。価格は「設計・独自実装・運用品質」に対するものです。
+          </p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          {PRICING_POLICY.map(({ icon: Icon, title, body }) => (
+            <Card key={title}>
+              <CardContent>
+                <Icon className="size-5 text-safelight" />
+                <h3 className="mt-3 font-heading text-lg font-medium">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {body}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card className="mx-auto mt-6 max-w-2xl">
+          <CardContent>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              正確な金額は、ご要望をうかがったうえでお見積りをご提示します。
+              <span className="text-foreground">
+                開業準備期間の実績づくり特別価格
+              </span>
+              や、撮影とのセット割もご相談ください。詳しくは：
+            </p>
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              {POLICY_LINKS.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                >
+                  {label} →
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
       {/* Web 制作・IT サポート */}
       {web.length > 0 && (
         <section className="mt-20">
@@ -243,8 +317,9 @@ export default async function ServicesPage() {
             <h2 className="mt-3 font-heading text-3xl font-medium">
               サイト制作・IT サポート
             </h2>
-            <p className="mt-3 text-sm text-muted-foreground">
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               現役インフラエンジニアとして、撮影だけでなく Web まわりも一括で支援します。
+              サイト制作は規模により異なります（¥88,000〜、作り込み・候補者/法人サイトは ¥150,000〜目安）。
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
