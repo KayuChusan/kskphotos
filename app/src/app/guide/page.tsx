@@ -4,10 +4,18 @@ import {
   Blocks,
   Camera,
   Check,
+  Clock,
   Cloud,
   Globe,
+  Landmark,
+  LifeBuoy,
+  MapPin,
   RefreshCw,
   Search,
+  Server,
+  Share2,
+  ShieldCheck,
+  Sparkles,
   Wrench,
   Zap,
 } from "lucide-react";
@@ -21,9 +29,80 @@ export const metadata: Metadata = {
   ...pageSeo({ path: "/guide" }),
   title: "ご利用案内",
   description:
-    "撮影とWebサイトをまとめて任せられるワンストップ対応。制作の流れ、SEO・高速表示・拡張性など標準で入る品質、料金の考え方・お支払い・納品について。新規制作から運用・引き継ぎ・リニューアルまで。",
+    "写真撮影・Web制作・ITサポートのご利用案内。撮影の流れと納品、Web制作の進め方とSEO・高速表示・拡張性など標準で入る品質、料金の考え方やお支払いについて。",
 };
 
+// 目的別の入口（撮影 / Web / IT へジャンプ）
+const CHOOSE = [
+  {
+    icon: Camera,
+    title: "写真撮影について",
+    desc: "撮影の流れ・こだわり・納品",
+    href: "#photo",
+  },
+  {
+    icon: Globe,
+    title: "Web 制作について",
+    desc: "進め方・つくるサイト・実例",
+    href: "#web",
+  },
+  {
+    icon: Wrench,
+    title: "IT サポートについて",
+    desc: "運用・サーバー・困りごと",
+    href: "#it",
+  },
+];
+
+// 撮影の流れ
+const PHOTO_FLOW = [
+  {
+    no: "01",
+    title: "ご相談・お問い合わせ",
+    body: "撮影内容・ご希望日・場所をお知らせください。内容を確認し、2営業日以内にご連絡します。",
+  },
+  {
+    no: "02",
+    title: "お打ち合わせ・お見積り",
+    body: "ご要望をうかがい、プランと料金をご提案。日程と撮影場所を一緒に決めていきます。",
+  },
+  {
+    no: "03",
+    title: "撮影当日",
+    body: "ご指定の場所へ出張。Sony α7R VI で、その場の空気ごと、自然な表情を撮影します。",
+  },
+  {
+    no: "04",
+    title: "現像・納品",
+    body: "Lightroom で丁寧にレタッチ。撮影時間に応じた枚数（1時間あたり約20枚）をセレクトし、2週間以内にデータでお渡しします。",
+  },
+];
+
+// 撮影のこだわり
+const PHOTO_FEATURES = [
+  {
+    icon: MapPin,
+    title: "出張撮影",
+    body: "ご指定の場所へうかがって撮影。屋外ロケーションから式典・イベント会場まで対応します。",
+  },
+  {
+    icon: Clock,
+    title: "時間制で明朗会計",
+    body: "ジャンルで分けず、撮影時間で料金が決まります。分かりやすく、ごまかしません。",
+  },
+  {
+    icon: Sparkles,
+    title: "RAW から丁寧に現像",
+    body: "撮影後は Lightroom で一枚ずつレタッチ。色と光を整え、見栄えよく仕上げます。",
+  },
+  {
+    icon: ShieldCheck,
+    title: "生成 AI 不使用・EXIF 保持",
+    body: "撮ったままの真正な記録。撮影制作物に生成 AI は使っていません。",
+  },
+];
+
+// Web の対応範囲
 const WEB_SCOPE = [
   {
     icon: Globe,
@@ -43,7 +122,7 @@ const WEB_SCOPE = [
 ];
 
 // Web 制作の進め方（誰にでも分かる流れ）
-const FLOW = [
+const WEB_FLOW = [
   {
     no: "01",
     title: "ご相談・ヒアリング",
@@ -110,6 +189,41 @@ const STANDARD = [
   "落ちにくく低コストなクラウド運用 — アクセスがなければ自動で休み、増えれば自動で増強。無駄なく安定",
 ];
 
+const SHOWCASE_LINKS = [
+  { href: "/gallery", label: "地図ギャラリーを見る" },
+  { href: "/dashboard", label: "EXIF ダッシュボードを見る" },
+  { href: "/collections", label: "コレクションを見る" },
+];
+
+// IT サポート（撮影・Web 以外の「ITまわり」全般）
+const IT_SUPPORT = [
+  {
+    icon: Wrench,
+    title: "サイトの運用・保守",
+    body: "公開後の更新代行、改善、障害時の一次対応まで継続でサポートします。",
+  },
+  {
+    icon: Server,
+    title: "ドメイン・サーバー・メール",
+    body: "取得・設定・移管から、メールや SSL の管理・トラブル対応まで引き受けます。",
+  },
+  {
+    icon: LifeBuoy,
+    title: "PC・ツールの困りごと",
+    body: "「なんだか動かない」を気軽に相談できる、頼れる一次窓口になります。",
+  },
+  {
+    icon: Share2,
+    title: "SNS 運用環境の整備",
+    body: "アカウントの整備や、投稿に使う素材の供給体制づくりをお手伝いします。",
+  },
+  {
+    icon: Landmark,
+    title: "政治・選挙の IT サポート",
+    body: "公式・後援会サイトの構築、SNS 運用環境の整備や素材供給まで一括で支援します。",
+  },
+];
+
 // ご利用にあたっての取り決め
 const DETAILS = [
   {
@@ -130,31 +244,88 @@ const DETAILS = [
   },
 ];
 
-const SHOWCASE_LINKS = [
-  { href: "/gallery", label: "地図ギャラリーを見る" },
-  { href: "/dashboard", label: "EXIF ダッシュボードを見る" },
-  { href: "/collections", label: "コレクションを見る" },
-];
+// 流れの番号付きカード（撮影・Web 共通）
+function FlowGrid({ steps }: { steps: { no: string; title: string; body: string }[] }) {
+  return (
+    <ol className="mt-6 grid gap-4 sm:grid-cols-2">
+      {steps.map((step) => (
+        <li key={step.no}>
+          <Card className="h-full">
+            <CardContent className="flex gap-4">
+              <span className="exif-text shrink-0 text-safelight">{step.no}</span>
+              <div>
+                <h4 className="font-heading text-base font-medium">{step.title}</h4>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                  {step.body}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+// アイコン付き特徴カードのグリッド
+function FeatureGrid({
+  items,
+  cols = "sm:grid-cols-2",
+}: {
+  items: { icon: React.ElementType; title: string; body: string }[];
+  cols?: string;
+}) {
+  return (
+    <div className={cn("mt-6 grid gap-4", cols)}>
+      {items.map(({ icon: Icon, title, body }) => (
+        <Card key={title}>
+          <CardContent>
+            <Icon className="size-5 text-safelight" />
+            <h4 className="mt-3 font-heading text-base font-medium">{title}</h4>
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              {body}
+            </p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
 
 export default function GuidePage() {
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
       {/* Header */}
-      <div className="mb-12">
+      <div className="mb-10">
         <p className="eyebrow">Guide</p>
         <h1 className="mt-2 font-heading text-5xl font-medium">ご利用案内</h1>
         <p className="mt-4 max-w-2xl text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
-          KSK Works は、<strong className="text-foreground">写真撮影と Web サイト</strong>
-          をまとめてお任せいただけるのが強みです。撮影で生まれた写真素材を、そのまま活きるかたちでサイトに落とし込む——
-          <strong className="text-foreground">
-            素材づくりからサイトの公開・運用までを一元化
-          </strong>
-          できます。
+          <strong className="text-foreground">写真撮影・Web 制作・IT サポート</strong>
+          を一人の窓口でお引き受けします。ご検討中の項目から、お進みください。
         </p>
       </div>
 
+      {/* 目的別の入口 */}
+      <nav aria-label="目的から探す" className="grid gap-3 sm:grid-cols-3">
+        {CHOOSE.map(({ icon: Icon, title, desc, href }) => (
+          <a
+            key={href}
+            href={href}
+            className="group rounded-xl ring-1 ring-foreground/10 transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="flex items-center gap-3 p-5">
+              <Icon className="size-5 shrink-0 text-safelight" />
+              <span className="min-w-0">
+                <span className="block text-sm font-medium">{title}</span>
+                <span className="block text-xs text-muted-foreground">{desc}</span>
+              </span>
+            </span>
+          </a>
+        ))}
+      </nav>
+
       {/* ワンストップの価値 */}
-      <Card className="border-safelight/40 bg-safelight/5">
+      <Card className="mt-10 border-safelight/40 bg-safelight/5">
         <CardHeader>
           <p className="eyebrow">
             <span className="text-safelight">One-stop</span> / 撮影 × Web
@@ -189,96 +360,69 @@ export default function GuidePage() {
 
       <Separator className="my-12" />
 
-      {/* Web の対応範囲 */}
-      <section>
-        <p className="eyebrow">Scope</p>
+      {/* 写真撮影について */}
+      <section id="photo" className="scroll-mt-24">
+        <p className="eyebrow">Photography</p>
         <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
-          Web の対応範囲
+          写真撮影について
         </h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
-          {WEB_SCOPE.map(({ icon: Icon, title, body }) => (
-            <Card key={title}>
-              <CardContent>
-                <Icon className="size-5 text-safelight" />
-                <h3 className="mt-3 font-heading text-base font-medium">
-                  {title}
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  {body}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+        <p className="mt-3 text-sm leading-loose text-muted-foreground">
+          ポートレート・ファミリー・イベントから、政治・選挙、商用・法人まで。ジャンルを問わず
+          <strong className="text-foreground">時間制</strong>
+          でお引き受けします。出張で現場へうかがい、RAW から丁寧に仕上げてお渡しします。
+        </p>
+
+        <h3 className="mt-8 font-heading text-lg font-medium">撮影の流れ</h3>
+        <FlowGrid steps={PHOTO_FLOW} />
+
+        <h3 className="mt-8 font-heading text-lg font-medium">撮影のこだわり</h3>
+        <FeatureGrid items={PHOTO_FEATURES} />
+
+        <div className="mt-6">
+          <Link
+            href="/services"
+            className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          >
+            撮影料金（時間制）を見る →
+          </Link>
         </div>
       </section>
 
       <Separator className="my-12" />
 
-      {/* サイトができるまで */}
-      <section>
-        <p className="eyebrow">How we build</p>
+      {/* Web 制作について */}
+      <section id="web" className="scroll-mt-24">
+        <p className="eyebrow">Web</p>
         <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
-          サイトができるまで
+          Web 制作について
         </h2>
         <p className="mt-3 text-sm leading-loose text-muted-foreground">
-          ご相談から公開・運用まで、一人の窓口で進めます。専門用語はかみ砕いてご説明するので、はじめての方でも安心してお任せください。
+          新規制作から運用・引き継ぎ・リニューアルまで。テンプレートの流用ではなく、用途に合わせて一つひとつ設計してつくります。
         </p>
-        <ol className="mt-6 grid gap-4 sm:grid-cols-2">
-          {FLOW.map((step) => (
-            <li key={step.no}>
-              <Card className="h-full">
-                <CardContent className="flex gap-4">
-                  <span className="exif-text shrink-0 text-safelight">
-                    {step.no}
-                  </span>
-                  <div>
-                    <h3 className="font-heading text-base font-medium">
-                      {step.title}
-                    </h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                      {step.body}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </li>
-          ))}
-        </ol>
-      </section>
 
-      <Separator className="my-12" />
+        <h3 className="mt-8 font-heading text-lg font-medium">Web の対応範囲</h3>
+        <FeatureGrid items={WEB_SCOPE} cols="sm:grid-cols-3" />
 
-      {/* どんなサイトをつくるか */}
-      <section>
-        <p className="eyebrow">What you get</p>
-        <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
+        <h3 className="mt-8 font-heading text-lg font-medium">サイトができるまで</h3>
+        <p className="mt-2 text-sm leading-loose text-muted-foreground">
+          ご相談から公開・運用まで、一人の窓口で進めます。専門用語はかみ砕いてご説明するので、はじめての方でも安心です。
+        </p>
+        <FlowGrid steps={WEB_FLOW} />
+
+        <h3 className="mt-8 font-heading text-lg font-medium">
           どんなサイトをつくるか
-        </h2>
-        <p className="mt-3 text-sm leading-loose text-muted-foreground">
+        </h3>
+        <p className="mt-2 text-sm leading-loose text-muted-foreground">
           安く見せるためのテンプレート流用ではありません。検索・速度・安全・拡張性まで、長く使えるサイトの土台をはじめから作り込みます。
         </p>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {SITE_FEATURES.map(({ icon: Icon, title, body }) => (
-            <Card key={title}>
-              <CardContent>
-                <Icon className="size-5 text-safelight" />
-                <h3 className="mt-3 font-heading text-base font-medium">
-                  {title}
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  {body}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <FeatureGrid items={SITE_FEATURES} />
 
         {/* 標準で入っているもの */}
         <Card className="mt-4">
           <CardHeader>
-            <h3 className="font-heading text-base font-medium">
+            <h4 className="font-heading text-base font-medium">
               すべてのサイトに標準で入っているもの
-            </h3>
+            </h4>
             <p className="text-xs leading-relaxed text-muted-foreground">
               追加料金のオプションではなく、最初から含めて作ります（このサイト自身でも使っている仕組みです）。
             </p>
@@ -297,47 +441,69 @@ export default function GuidePage() {
             </ul>
           </CardContent>
         </Card>
+
+        {/* このサイト自体が見本 */}
+        <Card className="mt-8 border-safelight/40 bg-safelight/5">
+          <CardHeader>
+            <p className="eyebrow">
+              <span className="text-safelight">Showcase</span> / 動いている実例
+            </p>
+            <h3 className="mt-2 font-heading text-xl font-medium md:text-2xl">
+              このサイト自体が、つくれるものの見本です。
+            </h3>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm leading-loose text-muted-foreground">
+              いまご覧いただいているこのサイトは、すべて手づくり。
+              <strong className="text-foreground">
+                地図から写真をたどる「地図ギャラリー」、撮影データを自動でグラフ化する「EXIF
+                ダッシュボード」、現像前後を見比べる「ビフォーアフター」、合言葉で限定公開する「会員ページ」
+              </strong>
+              ——こうした仕組みも、ご要望に応じてあなたのサイトに組み込めます。カタログではなく、実際に動くものでご判断いただけます。
+            </p>
+            <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              {SHOWCASE_LINKS.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                >
+                  {label} →
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
       <Separator className="my-12" />
 
-      {/* このサイト自体が見本 */}
-      <Card className="border-safelight/40 bg-safelight/5">
-        <CardHeader>
-          <p className="eyebrow">
-            <span className="text-safelight">Showcase</span> / 動いている実例
-          </p>
-          <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
-            このサイト自体が、つくれるものの見本です。
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm leading-loose text-muted-foreground">
-            いまご覧いただいているこのサイトは、すべて手づくり。
-            <strong className="text-foreground">
-              地図から写真をたどる「地図ギャラリー」、撮影データを自動でグラフ化する「EXIF
-              ダッシュボード」、現像前後を見比べる「ビフォーアフター」、合言葉で限定公開する「会員ページ」
-            </strong>
-            ——こうした仕組みも、ご要望に応じてあなたのサイトに組み込めます。カタログではなく、実際に動くものでご判断いただけます。
-          </p>
-          <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-            {SHOWCASE_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-              >
-                {label} →
-              </Link>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {/* IT サポート */}
+      <section id="it" className="scroll-mt-24">
+        <p className="eyebrow">IT Support</p>
+        <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
+          その他、IT まわりもお任せください
+        </h2>
+        <p className="mt-3 text-sm leading-loose text-muted-foreground">
+          撮影や Web 制作だけでなく、<strong className="text-foreground">現役インフラエンジニア</strong>
+          として日々の「ちょっと困った」も引き受けます。サーバーやメールの設定から、PC・ツールのトラブル、SNS
+          まわりの整備まで。どこに頼めばいいか分からないことこそ、まずはご相談ください。
+        </p>
+        <FeatureGrid items={IT_SUPPORT} cols="sm:grid-cols-2 lg:grid-cols-3" />
+        <div className="mt-6">
+          <Link
+            href="/contact"
+            className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          >
+            IT のご相談はこちら →
+          </Link>
+        </div>
+      </section>
 
       <Separator className="my-12" />
 
       {/* 料金の考え方・取り決め */}
-      <section>
+      <section id="notes" className="scroll-mt-24">
         <p className="eyebrow">Notes</p>
         <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
           ご利用にあたって
