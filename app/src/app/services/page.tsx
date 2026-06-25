@@ -109,7 +109,9 @@ export default async function ServicesPage() {
         <p className="eyebrow">Menu &amp; Pricing</p>
         <h1 className="mt-3 font-heading text-5xl font-medium">料金・メニュー</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          撮影は時間制で明朗会計。Sony α7R VI で撮影、Lightroom で丁寧にレタッチ。
+          <JaText>
+            撮影は時間制で明朗会計。Sony α7R VI で撮影、Lightroom で丁寧にレタッチ。
+          </JaText>
         </p>
       </div>
 
@@ -119,10 +121,12 @@ export default async function ServicesPage() {
           <span className="mr-1.5">●</span> 開業準備期間 特別価格
         </p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          現在は実績づくりの期間として、相場より抑えた特別価格でご案内しています。
-          掲載作例への使用にご協力いただける場合は、さらにご相談に応じます。
-          <br className="hidden sm:block" />
-          ※ 価格は予告なく改定する場合があります。早めのご依頼がお得です。
+          <JaText>
+            現在は実績づくりの期間として、相場より抑えた特別価格でご案内しています。
+            掲載作例への使用にご協力いただける場合は、さらにご相談に応じます。
+            <br className="hidden sm:block" />
+            ※ 価格は予告なく改定する場合があります。早めのご依頼がお得です。
+          </JaText>
         </p>
       </div>
 
@@ -132,8 +136,10 @@ export default async function ServicesPage() {
           <p className="eyebrow">Photography</p>
           <h2 className="mt-3 font-heading text-3xl font-medium">撮影料金（時間制）</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            ジャンルで分けず、撮影時間で料金が決まります。
-            ポートレートも家族写真もイベントも、同じ時間単価。分かりやすく、ごまかしません。
+            <JaText>
+              ジャンルで分けず、撮影時間で料金が決まります。
+              ポートレートも家族写真もイベントも、同じ時間単価。分かりやすく、ごまかしません。
+            </JaText>
           </p>
         </div>
 
@@ -222,11 +228,13 @@ export default async function ServicesPage() {
               政治・選挙写真
             </CardTitle>
             <CardDescription>
-              議員・候補者のプロフィールから選挙ポスター、街宣・集会の記録まで。
-              政治活動を撮り続けているフォトグラファーが、現場を分かったうえで撮影します。
-              <strong className="text-foreground">料金は上記の時間制と同じ</strong>
-              。ポスターは印刷入稿用データの調整に対応し、継続契約（撮影同行・SNS
-              素材供給）もご相談いただけます。
+              <JaText>
+                議員・候補者のプロフィールから選挙ポスター、街宣・集会の記録まで。
+                政治活動を撮り続けているフォトグラファーが、現場を分かったうえで撮影します。
+                <strong className="text-foreground">料金は上記の時間制と同じ</strong>
+                。ポスターは印刷入稿用データの調整に対応し、継続契約（撮影同行・SNS
+                素材供給）もご相談いただけます。
+              </JaText>
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -258,9 +266,11 @@ export default async function ServicesPage() {
       <div className="mx-auto mb-20 max-w-2xl border border-border/60 px-6 py-5 text-center">
         <p className="font-heading text-lg font-medium">商用・法人撮影</p>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          企業・店舗・商品の撮影も撮影単価は同じ時間制です。打ち合わせ・修正・関係者調整が入るため
-          <strong className="text-foreground">最低2時間〜</strong>
-          、内容により別途お見積りします。商用利用 OK・請求書発行に対応。
+          <JaText>
+            企業・店舗・商品の撮影も撮影単価は同じ時間制です。打ち合わせ・修正・関係者調整が入るため
+            <strong className="text-foreground">最低2時間〜</strong>
+            、内容により別途お見積りします。商用利用 OK・請求書発行に対応。
+          </JaText>
         </p>
       </div>
 
@@ -270,7 +280,9 @@ export default async function ServicesPage() {
           <p className="eyebrow">Pricing policy</p>
           <h2 className="mt-3 font-heading text-3xl font-medium">料金の考え方</h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            テンプレートに流し込む作業ではなく、一つひとつ設計してつくります。価格は「設計・独自実装・運用品質」に対するものです。
+            <JaText>
+              テンプレートに流し込む作業ではなく、一つひとつ設計してつくります。価格は「設計・独自実装・運用品質」に対するものです。
+            </JaText>
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
@@ -289,20 +301,22 @@ export default async function ServicesPage() {
         <Card className="mx-auto mt-6 max-w-2xl">
           <CardContent>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              正確な金額は、ご要望をうかがったうえでお見積りをご提示します。
-              <span className="text-foreground">
-                開業準備期間の実績づくり特別価格
-              </span>
-              や、撮影とのセット割もご相談ください。詳しくは：
+              <JaText>
+                正確な金額は、ご要望をうかがったうえでお見積りをご提示します。
+                <span className="text-foreground">
+                  開業準備期間の実績づくり特別価格
+                </span>
+                や、撮影とのセット割もご相談ください。詳しくは：
+              </JaText>
             </p>
-            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            <div className="mt-4 flex flex-col gap-2.5 text-sm">
               {POLICY_LINKS.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                  className="w-fit text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
                 >
-                  {label} →
+                  <JaText>{label}</JaText> →
                 </Link>
               ))}
             </div>
@@ -319,8 +333,10 @@ export default async function ServicesPage() {
               サイト制作・IT サポート
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              現役インフラエンジニアとして、撮影だけでなく Web まわりも一括で支援します。
-              サイト制作は規模により異なります（¥88,000〜、作り込み・候補者/法人サイトは ¥150,000〜目安）。
+              <JaText>
+                現役インフラエンジニアとして、撮影だけでなく Web まわりも一括で支援します。
+                サイト制作は規模により異なります（¥88,000〜、作り込み・候補者/法人サイトは ¥150,000〜目安）。
+              </JaText>
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
