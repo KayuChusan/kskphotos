@@ -13,6 +13,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
+import { JaText } from "@/components/ui/ja-text";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -189,15 +190,19 @@ export default async function WorksPage() {
             <ul className="grid gap-4 text-sm sm:grid-cols-3">
               <li className="flex items-start gap-2">
                 <FileCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-                請求書・領収書の発行に対応（政治資金からのお支払いも処理しやすい明朗会計）
+                <JaText>
+                  お支払いは柔軟に対応（請求書・領収書の発行可。政治資金からのお支払いも処理しやすい明朗会計）
+                </JaText>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
-                全国どこでも出張撮影（神奈川拠点・その他エリアもご相談ください）
+                <JaText>
+                  全国どこでも出張撮影（神奈川拠点・その他エリアもご相談ください）
+                </JaText>
               </li>
               <li className="flex items-start gap-2">
                 <Clock className="mt-0.5 size-4 shrink-0 text-primary" />
-                撮影後、Lightroom レタッチのうえ 2 週間以内に納品
+                <JaText>撮影後、Lightroom レタッチのうえ 2 週間以内に納品</JaText>
               </li>
             </ul>
           </CardContent>
