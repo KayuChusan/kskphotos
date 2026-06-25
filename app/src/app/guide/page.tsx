@@ -484,14 +484,14 @@ export default function GuidePage() {
                 ——こうした仕組みも、ご要望に応じてあなたのサイトに組み込めます。カタログではなく、実際に動くものでご判断いただけます。
               </JaText>
             </p>
-            <div className="mt-6 flex flex-col gap-2.5 text-sm">
+            <div className="mt-6 flex flex-wrap gap-2.5">
               {SHOWCASE_LINKS.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="w-fit text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
                 >
-                  <JaText>{label}</JaText> →
+                  {label}
                 </Link>
               ))}
             </div>

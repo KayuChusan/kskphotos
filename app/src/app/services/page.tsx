@@ -1,7 +1,17 @@
 import type { Metadata } from "next";
 import { pageSeo } from "@/lib/seo";
 import Link from "next/link";
-import { Check, Clock, Globe, Layers } from "lucide-react";
+import {
+  Camera,
+  Check,
+  ChevronRight,
+  Clock,
+  FileText,
+  Globe,
+  Layers,
+  Sparkles,
+  Wrench,
+} from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import {
   Card,
@@ -71,11 +81,11 @@ const PRICING_POLICY = [
 
 // 料金の考え方の参考リンク（詳細は /guide）
 const POLICY_LINKS = [
-  { href: "/guide#web", label: "Web 制作の進め方・つくるサイト" },
-  { href: "/guide", label: "標準で入る品質・動く実例" },
-  { href: "/guide#photo", label: "撮影のご利用案内" },
-  { href: "/guide#it", label: "IT サポートについて" },
-  { href: "/guide#notes", label: "お支払い・納品・著作権" },
+  { href: "/guide#web", label: "Web 制作の進め方・つくるサイト", icon: Globe },
+  { href: "/guide", label: "標準で入る品質・動く実例", icon: Sparkles },
+  { href: "/guide#photo", label: "撮影のご利用案内", icon: Camera },
+  { href: "/guide#it", label: "IT サポートについて", icon: Wrench },
+  { href: "/guide#notes", label: "お支払い・納品・著作権", icon: FileText },
 ];
 
 function formatPrice(s: { price: number; priceNote: string | null }) {
@@ -306,21 +316,34 @@ export default async function ServicesPage() {
                 <span className="text-foreground">
                   開業準備期間の実績づくり特別価格
                 </span>
-                や、撮影とのセット割もご相談ください。詳しくは：
+                や、撮影とのセット割もご相談ください。
               </JaText>
             </p>
-            <div className="mt-4 flex flex-col gap-2.5 text-sm">
-              {POLICY_LINKS.map(({ href, label }) => (
+          </CardContent>
+          {/* 料金の根拠を詳しく知るための導線（ご利用案内の各セクションへ） */}
+          <nav aria-label="料金・サービスの詳細" className="border-t border-border/60">
+            <p className="px-(--card-spacing) pt-4 text-xs font-medium text-muted-foreground">
+              料金・サービスの詳細
+            </p>
+            <div className="mt-1">
+              {POLICY_LINKS.map(({ href, label, icon: Icon }, i) => (
                 <Link
                   key={href}
                   href={href}
-                  className="w-fit text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                  className={cn(
+                    "flex items-center gap-3 px-(--card-spacing) py-3 text-sm transition-colors hover:bg-muted/40",
+                    i > 0 && "border-t border-border/60"
+                  )}
                 >
-                  <JaText>{label}</JaText> →
+                  <Icon className="size-4 shrink-0 text-safelight" />
+                  <span className="flex-1 text-muted-foreground">
+                    <JaText>{label}</JaText>
+                  </span>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground/60" />
                 </Link>
               ))}
             </div>
-          </CardContent>
+          </nav>
         </Card>
       </section>
 
