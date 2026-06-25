@@ -8,8 +8,7 @@ export interface NavItem {
   href: string;
 }
 
-// 来訪者の動線順: 見る → 実績 → 料金 → 読む → 知る
-// ブログは BLOG_ENABLED が false の間は非表示。
+// 来訪者の動線順: 見る → 実績 → 料金 → 案内 → 知る（ブログは BLOG_ENABLED が false の間は非表示）
 export const mainNav: NavItem[] = [
   { title: "ギャラリー", en: "Gallery", href: "/gallery" },
   { title: "実績", en: "Works", href: "/works" },
@@ -17,6 +16,7 @@ export const mainNav: NavItem[] = [
   ...(BLOG_ENABLED
     ? [{ title: "ブログ", en: "Journal", href: "/blog" }]
     : []),
+  { title: "ご利用案内", en: "Guide", href: "/guide" },
   { title: "プロフィール", en: "About", href: "/about" },
 ];
 
