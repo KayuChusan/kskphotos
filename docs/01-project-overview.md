@@ -167,4 +167,5 @@ kskphotos/                     ← プロジェクトルート（git root）
 - [11. データベース運用ガイド (Prisma)](./11-database-operations.md)
 - [12. ギャラリー3本柱 機能ディープダイブ](./12-gallery-features.md)
 - [13. 会員解錠（コレクション単位）](./13-member-unlock.md)
+- [14. サービス料金・納品ポリシー](./14-service-pricing-policy.md)
 - [ADR（アーキテクチャ意思決定記録）](./adr/README.md)

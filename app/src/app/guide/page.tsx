@@ -21,7 +21,7 @@ const WEB_SCOPE = [
   {
     icon: Wrench,
     title: "運用・保守",
-    body: "公開後の更新作業、ドメイン・サーバー・SSL の管理、障害時の一次対応まで継続でサポート。",
+    body: "公開後の更新作業、ドメイン・サーバー・SSL の管理、障害時の一次対応まで継続でサポート。当社制作のサイトは、制作から運用への移行で最初の3ヶ月を無償サポート（軽微な更新・修正を月2回まで。新規ページ追加・デザイン刷新・機能追加は別途お見積り）。",
   },
   {
     icon: RefreshCw,
@@ -133,7 +133,7 @@ export default function GuidePage() {
           <h2 className="text-lg font-semibold">納品</h2>
           <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
             <li>
-              撮影データ: 撮影後おおむね 1〜3 週間（プラン・カット数により前後します）
+              撮影データ: 撮影後おおむね 1〜3 週間。全カットではなく、撮影時間に応じた枚数（1時間あたり約20枚、うちレタッチ仕上げ10枚）をセレクトしてお渡しします
             </li>
             <li>
               Web サイト: 規模により異なります。お見積り時にスケジュールをご提示します

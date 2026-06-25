@@ -12,7 +12,7 @@ export const metadata: Metadata = pageSeo({ path: "/" });
 // 「つくる」セクションの Web 対応範囲（幅広さの訴求）
 const WEB_SCOPE = [
   { title: "新規制作", desc: "構成・デザインから実装・公開まで一括で。" },
-  { title: "運用・保守", desc: "公開後の更新代行・改善・トラブル対応。" },
+  { title: "運用・保守", desc: "公開後の更新代行・改善・トラブル対応。当社制作なら移行後3ヶ月無償（月2回まで）。" },
   { title: "引き継ぎ", desc: "他社で作ったサイトの移管・保守も歓迎。" },
   { title: "リニューアル", desc: "既存サイトの作り替え・再設計。" },
 ] as const;

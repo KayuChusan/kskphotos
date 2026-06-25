@@ -19,25 +19,25 @@ export const metadata: Metadata = {
   ...pageSeo({ path: "/services" }),
   title: "料金・メニュー",
   description:
-    "撮影料金 — 時間制で明朗会計。1時間 ¥11,000、全データ込み、レタッチは撮影1時間につき10枚込み。政治・選挙、商用、Web 制作・IT サポートにも対応。",
+    "撮影料金 — 時間制で明朗会計。1時間 ¥11,000、撮影時間に応じてセレクト納品（1時間あたり約20枚）、レタッチは撮影1時間につき10枚込み。政治・選挙、商用、Web 制作・IT サポートにも対応。",
 };
 
 // 静的生成 + 管理画面の更新時にオンデマンド再検証
 export const revalidate = 3600;
 
-// 撮影料金（時間制）の早見表。撮影1時間につきレタッチ10枚込み。
+// 撮影料金（時間制）の早見表。撮影1時間につき約20枚（うちレタッチ仕上げ10枚）を納品。
 const RATE_TABLE = [
-  { time: "1時間", price: "¥11,000", retouch: "10枚", note: "プロフィール・宣材1カット" },
-  { time: "2時間", price: "¥21,000", retouch: "20枚", note: "ファミリー・カップル" },
-  { time: "半日（4時間）", price: "¥41,000", retouch: "40枚", note: "イベント・選挙ポスター一式" },
-  { time: "1日（8時間）", price: "¥81,000", retouch: "80枚", note: "終日イベント・密着" },
+  { time: "1時間", price: "¥11,000", deliver: "約20枚", retouch: "10枚", note: "プロフィール・宣材1カット" },
+  { time: "2時間", price: "¥21,000", deliver: "約40枚", retouch: "20枚", note: "ファミリー・カップル" },
+  { time: "半日（4時間）", price: "¥41,000", deliver: "約80枚", retouch: "40枚", note: "イベント・選挙ポスター一式" },
+  { time: "1日（8時間）", price: "¥81,000", deliver: "約160枚", retouch: "80枚", note: "終日イベント・密着" },
 ];
 
 // 料金に含まれるもの
 const INCLUDED = [
   "出張撮影（出張費は別途実費）",
-  "撮影した全カットのデータ納品",
-  "レタッチ仕上げ（撮影1時間につき10枚）",
+  "撮影時間に応じたセレクト納品（1時間あたり約20枚）",
+  "うちレタッチ仕上げ（撮影1時間につき10枚）",
 ];
 
 // オプション・追加料金
@@ -112,12 +112,13 @@ export default async function ServicesPage() {
           <CardContent className="pt-6">
             {/* 早見表 */}
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[480px] border-collapse text-sm">
+              <table className="w-full min-w-[560px] border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-muted-foreground">
                     <th className="py-2 pr-4 font-medium">撮影時間</th>
                     <th className="py-2 pr-4 font-medium">料金（税込）</th>
-                    <th className="py-2 pr-4 font-medium">レタッチ込み</th>
+                    <th className="py-2 pr-4 font-medium">納品枚数</th>
+                    <th className="py-2 pr-4 font-medium">うちレタッチ</th>
                     <th className="py-2 font-medium">目安</th>
                   </tr>
                 </thead>
@@ -127,6 +128,9 @@ export default async function ServicesPage() {
                       <td className="py-3 pr-4 font-medium">{r.time}</td>
                       <td className="py-3 pr-4 font-heading text-xl font-medium">
                         {r.price}
+                      </td>
+                      <td className="py-3 pr-4 text-muted-foreground">
+                        {r.deliver}
                       </td>
                       <td className="py-3 pr-4 text-muted-foreground">
                         {r.retouch}
@@ -168,6 +172,7 @@ export default async function ServicesPage() {
           </CardContent>
           <CardFooter className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
+              全カット納品ではなく、撮影時間に応じた枚数（1時間あたり約20枚）をセレクトしてお渡しします。
               延長は当日でも対応可。レタッチ枚数・納期はご相談ください。請求書・領収書の発行に対応。
             </p>
             <Link href="/booking" className={cn(buttonVariants(), "shrink-0")}>
