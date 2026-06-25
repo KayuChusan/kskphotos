@@ -52,4 +52,4 @@
 | トップの「つくる」運用範囲 | `app/src/app/page.tsx` | `WEB_SCOPE`（運用・保守） |
 | 予約フローの納品ステップ | `app/src/components/home/booking-flow.tsx` | `STEPS`（現像・納品） |
 
-> `services-data.ts` の Service は seed の既定が createOnly（既存は上書きしない）。本番DBの既存レコードに反映するには `overwrite` 投入または管理画面 `/admin/services` での編集が必要。
+> `services-data.ts` の Service は seed の既定が createOnly（既存は上書きしない）。ただし撮影/制作/保守の3件は `SOURCE_MANAGED_IDS` に登録され、**createOnly でも毎デプロイで services-data.ts の内容に上書き同期**される（料金・納品ポリシーはソースが正）。そのためこの3件は管理画面 `/admin/services` で編集してもデプロイで元に戻る点に注意。他のサービス（政治・商用・リニューアル・IT等）は従来どおり createOnly で admin 編集を尊重する。
