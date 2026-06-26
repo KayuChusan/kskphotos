@@ -5,6 +5,7 @@ import Image from "next/image";
 import { FileCheck, MapPin, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { excludeLockedPhotos } from "@/lib/photo-visibility";
+import { CASE_STUDIES_ENABLED } from "@/lib/feature-flags";
 import {
   Card,
   CardHeader,
@@ -101,10 +102,13 @@ export default async function WorksPage() {
         blurDataUrl: true,
       },
     }),
-    prisma.caseStudy.findMany({
-      where: { isPublished: true },
-      orderBy: [{ date: "desc" }, { sortOrder: "asc" }],
-    }),
+    // それなりの件数が貯まるまで公開しない（CASE_STUDIES_ENABLED）。無効時はクエリも省略。
+    CASE_STUDIES_ENABLED
+      ? prisma.caseStudy.findMany({
+          where: { isPublished: true },
+          orderBy: [{ date: "desc" }, { sortOrder: "asc" }],
+        })
+      : Promise.resolve([]),
   ]);
 
   // ジャンル（カテゴリ）別にまとめる。写真のある順序カテゴリのみ表示
