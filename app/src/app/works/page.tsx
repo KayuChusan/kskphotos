@@ -69,22 +69,43 @@ const FIELDS = [
   },
 ];
 
+// 案件ログ（実績）の種別ラベルと色（撮影=琥珀 / Web=シアン / IT=中立）
+const CASE_TYPE = {
+  PHOTO: { label: "撮影", dot: "bg-safelight" },
+  WEB: { label: "Web 制作", dot: "bg-coolant" },
+  IT: { label: "IT サポート", dot: "bg-muted-foreground" },
+} as const;
+
+const dateFmt = new Intl.DateTimeFormat("ja-JP", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  // 日付は UTC 真夜中で保存しているため、サーバーTZに依らず UTC で整形（日付ズレ防止）
+  timeZone: "UTC",
+});
+
 export default async function WorksPage() {
   // 実績は公開写真のみ。会員限定コレクションの写真は除外する。
-  const photos = await prisma.photo.findMany({
-    where: { isPublished: true, ...excludeLockedPhotos },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-    select: {
-      id: true,
-      title: true,
-      category: true,
-      imageUrl: true,
-      thumbnailUrl: true,
-      imageWidth: true,
-      imageHeight: true,
-      blurDataUrl: true,
-    },
-  });
+  const [photos, caseStudies] = await Promise.all([
+    prisma.photo.findMany({
+      where: { isPublished: true, ...excludeLockedPhotos },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+      select: {
+        id: true,
+        title: true,
+        category: true,
+        imageUrl: true,
+        thumbnailUrl: true,
+        imageWidth: true,
+        imageHeight: true,
+        blurDataUrl: true,
+      },
+    }),
+    prisma.caseStudy.findMany({
+      where: { isPublished: true },
+      orderBy: [{ date: "desc" }, { sortOrder: "asc" }],
+    }),
+  ]);
 
   // ジャンル（カテゴリ）別にまとめる。写真のある順序カテゴリのみ表示
   const groups = CATEGORY_ORDER.map((cat) => ({
@@ -102,6 +123,64 @@ export default async function WorksPage() {
           政治・選挙写真からファミリーフォトまで、ジャンル別にご覧いただけます。
         </p>
       </div>
+
+      {/* お仕事の記録（案件ログのタイムライン） */}
+      {caseStudies.length > 0 && (
+        <section className="mx-auto mb-20 max-w-2xl">
+          <p className="eyebrow">Recent Work</p>
+          <h2 className="mt-2 font-heading text-2xl font-medium md:text-3xl">
+            お仕事の記録
+          </h2>
+          <ol className="mt-8 space-y-8 border-l border-border/60 pl-6">
+            {caseStudies.map((c) => {
+              const meta = CASE_TYPE[c.type];
+              return (
+                <li key={c.id} className="relative">
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "absolute -left-[1.72rem] top-1.5 size-2.5 rounded-full ring-4 ring-background",
+                      meta.dot
+                    )}
+                  />
+                  <p className="exif-text text-muted-foreground">
+                    {dateFmt.format(c.date)} ・ {meta.label}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed">
+                    <JaText>{c.title}</JaText>
+                  </p>
+                  {c.detail && (
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                      <JaText>{c.detail}</JaText>
+                    </p>
+                  )}
+                  {c.thumbnailUrl && (
+                    <div className="frame relative mt-3 aspect-[16/10] w-full max-w-sm overflow-hidden rounded-lg bg-muted">
+                      {/* 変種は作らないため next/image ではなく <img> で表示 */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={c.thumbnailUrl}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  )}
+                  {c.linkUrl && (
+                    <a
+                      href={c.linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link-cool mt-2 inline-block text-sm"
+                    >
+                      {c.linkLabel || "見る"} ↗
+                    </a>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      )}
 
       {/* ジャンル（カテゴリ）別の実績 */}
       {groups.length === 0 ? (

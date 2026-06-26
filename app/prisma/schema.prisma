@@ -198,6 +198,31 @@ enum ServiceCategory {
 }
 
 // ============================================
+// 実績（案件ログ）
+// ============================================
+
+model CaseStudy {
+  id           String        @id @default(cuid())
+  date         DateTime // 実施日（表示・並び替えの基準）
+  type         CaseStudyType
+  title        String // 一文の説明（公開文。匿名化はこの文面で行う）
+  detail       String? // 任意の補足
+  thumbnailUrl String? // サムネ1枚（任意）
+  linkUrl      String? // 任意リンク（制作サイト等）
+  linkLabel    String? // リンクの表示名
+  isPublished  Boolean       @default(true) // 公開可否（掲載許可の管理）
+  sortOrder    Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+enum CaseStudyType {
+  PHOTO
+  WEB
+  IT
+}
+
+// ============================================
 // 撮影依頼
 // ============================================
 

@@ -101,17 +101,20 @@ erDiagram
 
 > 補足：`PK` は主キー、`UK` は一意制約（unique）、`FK` は外部キー（他のモデルを指す参照）を表します。`Account` のように `PK` が 2 行あるのは、2 項目の組み合わせで 1 件を特定する「複合主キー」です。`BlogPost` と `ContactMessage` は他のモデルと直接の線で繋がっていません。これらは単独で完結する「独立したデータ」だからです。
 
-モデルは全部で **9 個** あります。役割ごとに 4 つのグループに分けて整理すると分かりやすくなります。
+モデルは全部で **10 個** あります。役割ごとに 4 つのグループに分けて整理すると分かりやすくなります。
 
 | グループ | モデル | 役割 |
 |---------|--------|------|
 | 認証（管理者ログイン） | `User` / `Account` / `Session` | 管理者だけがログインするための NextAuth.js 用 |
 | 写真 | `Collection` / `Photo` | ポートフォリオの中身。シリーズ単位の `Collection` と 1 枚ずつの `Photo` |
-| 商売 | `Service` / `Booking` | 撮影メニュー（`Service`）と、その依頼（`Booking`） |
+| 商売 | `Service` / `Booking` / `CaseStudy` | 撮影メニュー（`Service`）・依頼（`Booking`）・実績（`CaseStudy`） |
 | 読み物・連絡 | `BlogPost` / `ContactMessage` | ブログ記事と、お問い合わせメッセージ |
 | サイト設定 | `SiteProfile` | プロフィールページ（`/about`）の内容。サイト全体で 1 行だけ持つ |
 
-> 注：`docs/01-project-overview.md` では「8 モデル」と表記していますが、現在の `schema.prisma` には上記の通り 9 モデルが定義されています（認証 3 + 写真 2 + 商売 2 + 読み物・連絡 2）。
+> 注：`docs/01-project-overview.md` の旧表記は「8 モデル」ですが、現在の `schema.prisma` には 10 モデルあります。
+
+### CaseStudy（実績＝お仕事の記録）
+`/works` のタイムラインに出す案件ログ。`BlogPost` 同様、他モデルと線で繋がらない独立データ。主なフィールド：`date`（実施日）・`type`（`PHOTO`/`WEB`/`IT`）・`title`（一文の公開説明）・`thumbnailUrl`/`linkUrl`（任意）・`isPublished`（**掲載可否＝本人の掲載許可の管理**。未許可は非公開か匿名表記）。管理画面は `/admin/case-studies`、初期1件は `prisma/case-studies-data.ts` を createOnly でデプロイ時に投入。
 
 ---
 
