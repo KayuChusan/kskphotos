@@ -9,3 +9,8 @@ export const BLOG_ENABLED = false;
 //   それなりの件数が貯まるまでは false。管理画面 /admin/case-studies では引き続き追加でき、
 //   true に戻せば既存データがそのまま公開される（撮影作品のギャラリーは本フラグと無関係）。
 export const CASE_STUDIES_ENABLED = false;
+
+// WORKS_NAV_ENABLED: グローバルナビに「実績」(/works) を出すか。
+//   実績が充実するまで false でメニューから隠す（ヘッダー/モバイル/フッター）。
+//   ページ自体は残るので、true に戻せばメニューに復帰する。
+export const WORKS_NAV_ENABLED = false;
