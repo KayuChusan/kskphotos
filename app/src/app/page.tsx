@@ -286,8 +286,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 04 IT Support（暗室バンド — 明→暗→明のうねりの見せ場） */}
-      <section className="darkroom safelight-wash grain py-24">
+      {/* 04 IT Support（沈め面＋暖wash。02 の冷wash と温度を対にする） */}
+      <section className="safelight-wash bg-surface-sink py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             {/* ターミナル風パネル(後日現場写真に差し替え可) */}
