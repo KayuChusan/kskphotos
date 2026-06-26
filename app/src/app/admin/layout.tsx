@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   ImageIcon,
   Calendar,
+  FileSignature,
   FileText,
   LayoutDashboard,
   Layers,
@@ -26,6 +27,7 @@ const adminNav = [
   { title: "Bookings", href: "/admin/bookings", icon: Calendar },
   { title: "Messages", href: "/admin/messages", icon: MessageSquare },
   { title: "Blog", href: "/admin/blog", icon: FileText },
+  { title: "Contracts", href: "/admin/contracts", icon: FileSignature },
   { title: "Profile", href: "/admin/profile", icon: User },
 ];
 
@@ -39,8 +41,8 @@ export default async function AdminLayout({
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="mb-6 flex items-center justify-between">
-        <nav className="flex gap-1">
+      <div className="mb-6 flex items-center justify-between print:hidden">
+        <nav className="flex flex-wrap gap-1">
           {adminNav.map((item) => (
             <Link
               key={item.href}
