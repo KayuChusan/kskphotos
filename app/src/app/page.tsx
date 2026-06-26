@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { excludeLockedPhotos } from "@/lib/photo-visibility";
 import { HeroSection } from "@/components/home/hero-section";
 import { CountUp } from "@/components/count-up";
+import { SectionMark } from "@/components/ui/section-mark";
 
 export const metadata: Metadata = pageSeo({ path: "/" });
 
@@ -65,20 +66,18 @@ export default async function HomePage() {
     <>
       <HeroSection photos={heroPhoto ? [heroPhoto] : featured} />
 
-      {/* Introduction — 3本柱の宣言 */}
-      <section className="border-b">
+      {/* Introduction — 3本柱の宣言（生成り） */}
+      <section>
         <div className="container mx-auto px-4 py-24">
-          <p className="eyebrow mb-12">
-            <span className="text-safelight">01</span> / Introduction
-          </p>
+          <SectionMark no="01" label="Introduction" className="mb-12" />
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
-            <h2 className="tagline-jp text-4xl font-semibold leading-snug md:text-5xl md:leading-snug">
+            <h2 className="develop-text tagline-jp text-4xl font-semibold leading-snug md:text-5xl md:leading-snug">
               撮る、つくる、
               <br />
               ささえる。
             </h2>
             <div>
-              <p className="text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
+              <p className="text-sm leading-loose text-foreground-soft md:text-base md:leading-loose">
                 KSK Works は、出張撮影を軸に、Web サイト制作・運用代行、
                 IT サポートまでを一人で担う「フォトグラファー ×
                 インフラエンジニア」の事務所です。
@@ -104,18 +103,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 02 Photography — フィルムストリップ */}
-      <section className="border-b py-24">
+      {/* 02 Photography — フィルムストリップ（沈め面＋冷却灯wash） */}
+      <section className="coolant-wash bg-surface-sink py-24">
         <div className="container mx-auto px-4">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <p className="eyebrow">
-                <span className="text-safelight">02</span> / Photography
-              </p>
-              <h2 className="mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
+              <SectionMark no="02" label="Photography" />
+              <h2 className="develop-text mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
                 撮る
               </h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground-soft">
                 議員・候補者のポートレートから家族写真まで。
                 現場の空気ごと、その人らしさを記録します。
               </p>
@@ -138,7 +135,7 @@ export default async function HomePage() {
                 href={`/gallery/${photo.id}`}
                 className="group shrink-0 snap-start"
               >
-                <div className="viewfinder relative h-64 overflow-hidden md:h-80">
+                <div className="frame relative h-64 overflow-hidden md:h-80">
                   <Image
                     src={photo.thumbnailUrl ?? photo.imageUrl}
                     alt={photo.title}
@@ -176,15 +173,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 03 Web Production */}
-      <section className="border-b py-24">
+      {/* 03 Web Production（生成り） */}
+      <section className="py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div>
-              <p className="eyebrow">
-                <span className="text-safelight">03</span> / Web Production
-              </p>
-              <h2 className="mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
+              <SectionMark no="03" label="Web Production" />
+              <h2 className="develop-text mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
                 つくる
               </h2>
               <p className="mt-6 text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
@@ -219,7 +214,7 @@ export default async function HomePage() {
             <div className="flex items-center gap-3 sm:gap-5">
               {/* 撮った写真（素材） */}
               {mockupPhoto && (
-                <div className="viewfinder relative aspect-[3/4] w-24 shrink-0 overflow-hidden bg-muted sm:w-28">
+                <div className="frame relative aspect-[3/4] w-24 shrink-0 overflow-hidden bg-muted sm:w-28">
                   <Image
                     src={mockupPhoto.thumbnailUrl ?? mockupPhoto.imageUrl}
                     alt=""
@@ -276,7 +271,10 @@ export default async function HomePage() {
             <p className="eyebrow mb-6">対応範囲</p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {WEB_SCOPE.map((s) => (
-                <div key={s.title} className="border bg-card p-5">
+                <div
+                  key={s.title}
+                  className="rounded-lg bg-card-warm p-5 shadow-sm ring-1 ring-foreground/5"
+                >
                   <h3 className="font-heading text-lg font-medium">{s.title}</h3>
                   <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                     {s.desc}
@@ -288,8 +286,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 04 IT Support */}
-      <section className="border-b py-24">
+      {/* 04 IT Support（暗室バンド — 明→暗→明のうねりの見せ場） */}
+      <section className="darkroom safelight-wash grain py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             {/* ターミナル風パネル(後日現場写真に差し替え可) */}
@@ -331,10 +329,8 @@ export default async function HomePage() {
             </div>
 
             <div>
-              <p className="eyebrow">
-                <span className="text-safelight">04</span> / IT Support
-              </p>
-              <h2 className="mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
+              <SectionMark no="04" label="IT Support" />
+              <h2 className="develop-text mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
                 ささえる
               </h2>
               <p className="mt-6 text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
@@ -364,24 +360,22 @@ export default async function HomePage() {
       {/* Stats */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <p className="eyebrow mb-12">
-            <span className="text-safelight">05</span> / By the Numbers
-          </p>
+          <SectionMark no="05" label="By the Numbers" className="mb-12" />
           <div className="grid gap-12 text-center sm:grid-cols-3">
             <div>
-              <p className="font-heading text-7xl font-medium">
+              <p className="develop font-heading text-7xl font-medium">
                 {totalPhotos ? <CountUp value={totalPhotos} /> : "—"}
               </p>
               <p className="eyebrow-jp mt-3">掲載写真</p>
             </div>
             <div>
-              <p className="font-heading text-7xl font-medium">
+              <p className="develop font-heading text-7xl font-medium">
                 {lenses.length ? <CountUp value={lenses.length} /> : "—"}
               </p>
               <p className="eyebrow-jp mt-3">使用レンズ</p>
             </div>
             <div>
-              <p className="font-heading text-7xl font-medium">
+              <p className="develop font-heading text-7xl font-medium">
                 {locations.length ? <CountUp value={locations.length} /> : "—"}
               </p>
               <p className="eyebrow-jp mt-3">撮影場所</p>

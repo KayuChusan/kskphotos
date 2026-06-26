@@ -29,10 +29,10 @@ import { CountUp } from "@/components/count-up";
 type Dist = { name: string; count: number };
 type ScatterPoint = { focalLength: number; aperture: number; title: string };
 
-// アクセント(琥珀)はデータの「最重要1点」専用、それ以外は低彩度ニュートラルに寄せる
+// 二灯化: 琥珀=最重要1点(到達点/最頻)、シアン=データ系列の主役(過程/分布)
 const ACCENT = "var(--chart-1)"; // セーフライト琥珀 — 強調1点のみ
-const NEUTRAL = "var(--chart-3)"; // 低彩度ニュートラル — データ系列の主役
-// 円グラフ用の濃淡ランプ(先頭=最大スライスに琥珀、以降はニュートラル濃淡)
+const NEUTRAL = "var(--chart-2)"; // 現像液シアン — データ系列の主役
+// 円グラフ用の温度順ランプ(琥珀→シアン→青緑→黄→淡無彩 で系列を色相識別)
 const PIE_COLORS = [
   "var(--chart-1)",
   "var(--chart-2)",

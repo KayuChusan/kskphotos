@@ -18,6 +18,14 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  /* 本文3階調の中間トーン＋面の塗り分け（border 代替）＋現像液寄りの温かいカード */
+  --color-foreground-soft: var(--foreground-soft);
+  --color-surface-sink: var(--surface-sink);
+  --color-card-warm: var(--card-warm);
+  /* 第2アクセント（現像液シアン）を Tailwind ユーティリティに公開 */
+  --color-coolant: var(--coolant);
+  --color-coolant-line: var(--coolant-line);
+  --color-tide: var(--tide);
   --font-sans: var(--font-geist-sans), "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
   /* 見出しの和文は明朝にフォールバック（OS標準・追加DLなし）。本文はゴシック(--font-sans)のまま。
@@ -86,9 +94,15 @@
 /* 印画紙(生成り)を基調にした、やわらかいウォームライト */
 :root {
   --background: oklch(0.975 0.008 85);
-  --foreground: oklch(0.27 0.012 75);
-  --card: oklch(0.99 0.005 85);
-  --card-foreground: oklch(0.27 0.012 75);
+  --foreground: oklch(0.255 0.013 75);
+  /* 本文の中間トーン（導入・リード用／対背景 約8.6:1） */
+  --foreground-soft: oklch(0.4 0.016 72);
+  /* 沈めた面（border 代替の塗り分けでセクションの溜めを作る） */
+  --surface-sink: oklch(0.955 0.01 84);
+  --card: oklch(0.992 0.005 85);
+  /* 現像液寄りの温かいカード面 */
+  --card-warm: oklch(0.965 0.018 78);
+  --card-foreground: oklch(0.255 0.013 75);
   --popover: oklch(0.99 0.005 85);
   --popover-foreground: oklch(0.27 0.012 75);
   --primary: oklch(0.32 0.02 70);
@@ -100,17 +114,33 @@
   --accent: oklch(0.94 0.012 85);
   --accent-foreground: oklch(0.3 0.015 75);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.88 0.014 85);
+  --border: oklch(0.86 0.014 85);
   --input: oklch(0.88 0.014 85);
   --ring: oklch(0.68 0.12 70);
   /* セーフライト — ライト背景ではやや深めの琥珀 */
   --safelight: oklch(0.62 0.13 60);
-  /* 本文・nav active 用の AA 準拠セーフライト(印画紙背景で約 4.6:1) */
-  --safelight-strong: oklch(0.52 0.14 55);
+  /* 本文・nav active 用の AA 準拠セーフライト(印画紙背景で約 5.85:1) */
+  --safelight-strong: oklch(0.5 0.145 55);
+  /* アクセントの「面」用の極薄にじみ（非テキスト・写真に被せない） */
+  --safelight-wash: oklch(0.62 0.13 60 / 0.1);
+  /* .frame の常時罫（opacity 0.35 適用前提の純装飾罫） */
+  --frame-line: oklch(0.7 0.04 72);
+  /* 第2アクセント＝現像液シアン（暗室の冷却灯）。過程・参照・図・チャートに限る従色。
+     coolant(明・非テキスト/塗り) と coolant-strong(濃・テキスト/リンク AA 6.95:1) を使い分け */
+  --coolant: oklch(0.6 0.09 215);
+  --coolant-strong: oklch(0.44 0.085 218);
+  --coolant-wash: oklch(0.6 0.09 215 / 0.08);
+  --coolant-line: oklch(0.62 0.07 215);
+  /* 琥珀↔シアンを橋渡しする青緑（グラデ中継・チャート中間系列） */
+  --tide: oklch(0.55 0.07 160);
+  /* 縁グラデ/デュオトーン帯の停止色（装飾面専用・テキスト不可） */
+  --grad-warm: oklch(0.66 0.12 62);
+  --grad-deep: oklch(0.34 0.04 285);
+  /* チャートは色相で系列識別（琥珀→黄→青緑→シアン の温度順）。chart-1 は最重要1点の琥珀固定 */
   --chart-1: oklch(0.62 0.13 60);
-  --chart-2: oklch(0.45 0.03 75);
-  --chart-3: oklch(0.6 0.06 70);
-  --chart-4: oklch(0.72 0.04 80);
+  --chart-2: oklch(0.6 0.09 215);
+  --chart-3: oklch(0.55 0.07 160);
+  --chart-4: oklch(0.6 0.09 90);
   --chart-5: oklch(0.84 0.02 85);
   --radius: 0.625rem;
   --sidebar: oklch(0.96 0.01 85);
@@ -126,7 +156,10 @@
 .dark {
   --background: oklch(0.115 0.004 80);
   --foreground: oklch(0.95 0.005 85);
+  --foreground-soft: oklch(0.78 0.012 84);
+  --surface-sink: oklch(0.155 0.005 80);
   --card: oklch(0.15 0.005 80);
+  --card-warm: oklch(0.205 0.022 60);
   --card-foreground: oklch(0.95 0.005 85);
   --popover: oklch(0.15 0.005 80);
   --popover-foreground: oklch(0.95 0.005 85);
@@ -143,13 +176,22 @@
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.75 0.13 70);
   /* 暗室のセーフライト — 唯一の彩度あるアクセント */
-  --safelight: oklch(0.78 0.14 70);
-  /* 暗室では既に高コントラスト(約 9.9:1)のため同値 */
-  --safelight-strong: oklch(0.78 0.14 70);
+  --safelight: oklch(0.8 0.14 70);
+  /* 暗室では既に高コントラスト(約 10.7:1)のため同値 */
+  --safelight-strong: oklch(0.8 0.14 70);
+  --safelight-wash: oklch(0.8 0.14 70 / 0.14);
+  --frame-line: oklch(0.62 0.06 72);
+  --coolant: oklch(0.76 0.1 210);
+  --coolant-strong: oklch(0.76 0.1 210);
+  --coolant-wash: oklch(0.76 0.1 210 / 0.12);
+  --coolant-line: oklch(0.58 0.07 210);
+  --tide: oklch(0.7 0.09 160);
+  --grad-warm: oklch(0.78 0.13 70);
+  --grad-deep: oklch(0.22 0.04 290);
   --chart-1: oklch(0.78 0.14 70);
-  --chart-2: oklch(0.87 0.01 85);
-  --chart-3: oklch(0.6 0.06 70);
-  --chart-4: oklch(0.45 0.03 75);
+  --chart-2: oklch(0.76 0.1 210);
+  --chart-3: oklch(0.7 0.09 160);
+  --chart-4: oklch(0.8 0.1 95);
   --chart-5: oklch(0.32 0.01 80);
   /* 暗室テーマに合わせた暖色トーン(shadcn 既定の青紫/無彩色を除去) */
   --sidebar: oklch(0.15 0.005 80);
@@ -239,7 +281,7 @@
   right: -18vmax;
   background: radial-gradient(
     circle,
-    oklch(0.93 0.03 250 / 40%),
+    oklch(0.9 0.03 220 / 40%),
     transparent 62%
   );
   animation: aurora-drift-b 64s ease-in-out infinite alternate;
@@ -290,6 +332,22 @@
   .border-safelight {
     border-color: var(--safelight);
   }
+  /* 第2アクセント（現像液シアン）— 過程・参照・図に限る従色。
+     text/link は AA 準拠の濃いシアン、塗り/罫は明るいシアン。本文長文には使わない */
+  .text-coolant {
+    color: var(--coolant-strong);
+  }
+  .link-cool {
+    color: var(--coolant-strong);
+    text-decoration-line: underline;
+    text-underline-offset: 3px;
+  }
+  .bg-coolant {
+    background-color: var(--coolant);
+  }
+  .border-coolant {
+    border-color: var(--coolant-line);
+  }
   /* ファインダーのコーナーブラケット */
   .viewfinder {
     position: relative;
@@ -320,6 +378,107 @@
   .viewfinder:hover::before,
   .viewfinder:hover::after {
     opacity: 1;
+  }
+
+  /* FRAME — ファインダー枠を「常時うっすら見える額縁」に。hover/focus で点灯。
+     非ホバー・モバイル・ギャラリー奥でも写真メタファが必ず見える署名意匠 */
+  .frame {
+    position: relative;
+  }
+  .frame::before,
+  .frame::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    z-index: 10;
+    opacity: 0.45;
+    border-color: var(--frame-line);
+    transition:
+      opacity 0.3s ease,
+      border-color 0.3s ease;
+    pointer-events: none;
+  }
+  .frame::before {
+    top: 10px;
+    left: 10px;
+    border-top: 1.5px solid var(--frame-line);
+    border-left: 1.5px solid var(--frame-line);
+  }
+  .frame::after {
+    bottom: 10px;
+    right: 10px;
+    border-bottom: 1.5px solid var(--frame-line);
+    border-right: 1.5px solid var(--frame-line);
+  }
+  .frame:hover::before,
+  .frame:hover::after,
+  .frame:focus-within::before,
+  .frame:focus-within::after {
+    opacity: 1;
+    border-color: var(--safelight);
+  }
+
+  /* DARKROOM — 暗室バンド。内部の前景/背景トークンを局所再定義し、子要素が
+     自動で暗室配色を継承する（前景が沈む事故を防ぐ＝AA 死守の要）。各ページ1〜2枚厳守 */
+  .darkroom {
+    --background: oklch(0.13 0.006 70);
+    --foreground: oklch(0.95 0.005 85);
+    --foreground-soft: oklch(0.78 0.012 84);
+    --muted-foreground: oklch(0.66 0.01 85);
+    --card: oklch(0.17 0.008 65);
+    --card-warm: oklch(0.205 0.022 60);
+    --card-foreground: oklch(0.95 0.005 85);
+    --border: oklch(1 0 0 / 12%);
+    --primary: oklch(0.93 0.005 85);
+    --primary-foreground: oklch(0.14 0.004 80);
+    --safelight: oklch(0.8 0.14 70);
+    --safelight-strong: oklch(0.8 0.14 70);
+    --safelight-wash: oklch(0.8 0.14 70 / 0.14);
+    --frame-line: oklch(0.62 0.06 72);
+    --coolant: oklch(0.76 0.1 210);
+    --coolant-strong: oklch(0.76 0.1 210);
+    --coolant-wash: oklch(0.76 0.1 210 / 0.12);
+    --coolant-line: oklch(0.58 0.07 210);
+    background-color: var(--background);
+    color: var(--foreground);
+    position: relative;
+  }
+
+  /* SAFELIGHT WASH — アクセントを「点」から「面/にじみ」へ昇華する非テキスト帯。
+     1画面1箇所まで。本文には敷かない */
+  .safelight-wash {
+    position: relative;
+    isolation: isolate;
+  }
+  .safelight-wash::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      70% 90% at 85% 0%,
+      var(--safelight-wash),
+      transparent 70%
+    );
+  }
+  /* 冷却灯のにじみ — safelight-wash の対。別セクションに交互配置し温度をうねらせる */
+  .coolant-wash {
+    position: relative;
+    isolation: isolate;
+  }
+  .coolant-wash::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      70% 90% at 15% 0%,
+      var(--coolant-wash),
+      transparent 70%
+    );
   }
   /* View Transitions — ページ全体は素早くクロスフェード、共有要素はモーフ */
   ::view-transition-old(root),
@@ -359,21 +518,39 @@
 
   /* 「現像」エフェクト — ビューポート進入に同期して像を結ぶ
      (scroll-driven animations 対応ブラウザのみ。非対応はフェードのみ) */
-  @supports (animation-timeline: view()) {
-    .develop {
-      animation: develop linear both;
-      animation-timeline: view();
-      animation-range: entry 10% entry 90%;
-    }
-    @keyframes develop {
-      from {
-        filter: blur(14px) saturate(0.15) brightness(0.75);
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .develop {
+        animation: develop linear both;
+        animation-timeline: view();
+        animation-range: entry 10% entry 90%;
       }
-      60% {
-        filter: blur(4px) saturate(0.6) brightness(0.9);
+      @keyframes develop {
+        from {
+          filter: blur(14px) saturate(0.15) brightness(0.75);
+        }
+        60% {
+          filter: blur(4px) saturate(0.6) brightness(0.9);
+        }
+        to {
+          filter: blur(0) saturate(1) brightness(1);
+        }
       }
-      to {
-        filter: blur(0) saturate(1) brightness(1);
+      /* 見出し向けの軽量現像 — blur と不透明度のみ（彩度・明度は据置で可読性維持） */
+      .develop-text {
+        animation: develop-text linear both;
+        animation-timeline: view();
+        animation-range: entry 8% entry 60%;
+      }
+      @keyframes develop-text {
+        from {
+          filter: blur(12px);
+          opacity: 0.5;
+        }
+        to {
+          filter: blur(0);
+          opacity: 1;
+        }
       }
     }
   }
