@@ -1,0 +1,488 @@
+"use client";
+
+import { useState } from "react";
+import { Printer } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
+// 案件ごとの差し替え項目。初期値は「候補者サイト＋撮影」想定でプリセット。
+const DEFAULTS = {
+  date: "",
+  koName: "",
+  koAddress: "",
+  otsuName: "KSK Works",
+  otsuAddress: "",
+  fee: "111,000",
+  taxMode: "込み",
+  workPhoto: "出張撮影 2時間（プロフィール・活動カット）",
+  workWeb: "構成・デザイン・実装・公開設定（独自ドメイン・SSL 含む）",
+  workOther: "なし",
+  deposit: "委託料の50%を契約後7日以内",
+  balance: "納品（公開）後、当月末締め翌月末払い",
+  bankInfo: "",
+  delivery: "撮影データ＝撮影後1〜3週間／サイト＝打ち合わせで決定",
+  deliveryMethod:
+    "撮影データはオンラインストレージで、サイトは公開（本番反映）をもって納品",
+  inspectDays: "7",
+  copyright: "留保",
+  portfolio: "掲載できる",
+  hasOps: false,
+  opsMonthly: "5,000",
+  opsScope: "軽微な更新・修正を月2回まで",
+  opsTermStart: "公開日",
+  opsTermYears: "1",
+  hasPolitics: true,
+  court: "横浜地方裁判所",
+};
+
+type Form = typeof DEFAULTS;
+
+const or = (x: string, ph = "＿＿＿＿") => (x && x.trim() ? x : ph);
+
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <Label>{label}</Label>
+      {children}
+    </div>
+  );
+}
+
+const selectClass =
+  "block h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm";
+
+export function ContractGenerator() {
+  const [f, setF] = useState<Form>(DEFAULTS);
+  const set = <K extends keyof Form>(key: K, value: Form[K]) =>
+    setF((prev) => ({ ...prev, [key]: value }));
+
+  // 条項を条件に応じて組み立て（運用なしなら第7条・期間条を除外して自動採番）
+  const articles: { title: string; body: React.ReactNode }[] = [
+    {
+      title: "目的",
+      body: "甲は本業務を乙に委託し、乙はこれを受託する。本業務の具体的内容・範囲・納期・金額は、本契約および別紙「見積書」記載のとおりとする。本契約と見積書の内容に齟齬がある場合は、別途協議のうえ定める。",
+    },
+    {
+      title: "業務内容",
+      body: (
+        <ol className="list-decimal space-y-0.5 pl-5">
+          <li>写真撮影：{or(f.workPhoto)}</li>
+          <li>Web サイト制作：{or(f.workWeb)}</li>
+          {f.hasOps && <li>運用・ホスティング：公開後の維持・更新（第7条による）</li>}
+          <li>その他：{or(f.workOther)}</li>
+        </ol>
+      ),
+    },
+    {
+      title: "委託料・支払",
+      body: (
+        <ol className="list-decimal space-y-0.5 pl-5">
+          <li>
+            本業務の委託料は <strong>金 {or(f.fee)} 円（消費税{f.taxMode}）</strong>
+            とする。内訳は別紙見積書のとおり。
+          </li>
+          <li>出張に要する交通費等の実費は、委託料と別に甲の負担とする（事前に概算を提示する）。</li>
+          <li>
+            支払は次のとおりとする。お支払いは柔軟に対応し、基本は銀行振込とする。着手金＝
+            {or(f.deposit)}／残金＝{or(f.balance)}／振込先＝{or(f.bankInfo)}
+            （振込手数料は甲の負担）。
+          </li>
+          <li>乙は甲の求めに応じ、見積書・請求書・領収書を発行する。</li>
+        </ol>
+      ),
+    },
+    {
+      title: "納期・納品・検収",
+      body: (
+        <ol className="list-decimal space-y-0.5 pl-5">
+          <li>納期の目安：{or(f.delivery)}。具体日程は打ち合わせで定める。</li>
+          <li>納品方法：{or(f.deliveryMethod)}。</li>
+          <li>
+            甲は納品後 {or(f.inspectDays, "7")}{" "}
+            日以内に内容を確認し、異議がなければ検収完了とする。期間内に連絡がない場合は検収完了とみなす。
+          </li>
+        </ol>
+      ),
+    },
+    {
+      title: "写真の納品枚数・修正",
+      body: (
+        <ol className="list-decimal space-y-0.5 pl-5">
+          <li>
+            撮影データは全カットではなく、撮影時間に応じた枚数（1時間あたり約20枚、うちレタッチ仕上げ10枚）をセレクトして納品する。
+          </li>
+          <li>レタッチの追加、サイトの修正回数・追加ページ等は別紙見積書の範囲とし、超過分は別途見積りのうえ対応する。</li>
+        </ol>
+      ),
+    },
+    {
+      title: "著作権・利用範囲",
+      body: (
+        <ol className="list-decimal space-y-0.5 pl-5">
+          <li>
+            {f.copyright === "譲渡"
+              ? "納品物の著作権は、検収および委託料の支払い完了をもって甲に譲渡する（乙は著作者人格権を行使しない）。"
+              : "納品物の著作権は乙に留保し、甲は本件の用途の範囲で利用できる。"}
+          </li>
+          <li>甲は納品した写真を、ご依頼の用途の範囲で利用できる。商用・二次利用等の範囲は別途協議する。</li>
+          <li>乙は本撮影・制作物に生成 AI を使用しない（実際のカメラで撮影し、現像は RAW 現像のみ）。</li>
+          <li>
+            実績掲載：乙は本件を自己のポートフォリオ・実績として{f.portfolio}
+            （特別価格の場合は掲載・推薦のご協力を条件とする）。掲載可否・範囲は事前に甲乙協議する。
+          </li>
+        </ol>
+      ),
+    },
+    ...(f.hasOps
+      ? [
+          {
+            title: "ドメイン・サーバー・運用",
+            body: (
+              <ol className="list-decimal space-y-0.5 pl-5">
+                <li>ドメインは甲（本人／団体）名義で取得・保有する（乙が取得・管理を代行する場合も所有は甲）。</li>
+                <li>乙は公開後のサーバー・SSL・ドメインの維持管理および合意した範囲の更新を行う。</li>
+                <li>
+                  月額運用料：<strong>金 {or(f.opsMonthly)} 円／月</strong>。対応範囲＝
+                  {or(f.opsScope)}。新規ページ追加・デザイン刷新・機能追加は対象外（別途見積り）。
+                </li>
+                <li>無償サポート：乙制作のサイトを制作から運用へ移行する場合、最初の 3 ヶ月を無償でサポートする（上限は前項に準ずる）。</li>
+                <li>契約終了時、乙は甲にサイトデータおよび運用に必要な情報を引き渡す。</li>
+              </ol>
+            ),
+          },
+        ]
+      : []),
+    {
+      title: "キャンセル・中途解約",
+      body: "甲の都合により本業務がキャンセル・中止された場合、乙は進行状況に応じて既履行分の費用を請求できる（撮影日直前のキャンセル・制作着手後の中止を含む）。詳細は別途取り決めによる。",
+    },
+    {
+      title: "秘密保持",
+      body: "甲乙は、本業務を通じて知り得た相手方の非公開情報を、相手方の同意なく第三者に開示・漏えいせず、本業務以外に利用しない。本条は契約終了後も存続する。",
+    },
+    {
+      title: "個人情報",
+      body: "甲乙は、本業務で取り扱う個人情報を関係法令に従い適切に管理し、本業務の目的の範囲でのみ利用する。",
+    },
+    {
+      title: "反社会的勢力の排除",
+      body: "甲乙は、自らが反社会的勢力でないこと、これらと関係を持たないことを表明し保証する。違反が判明した場合、相手方は催告なく本契約を解除できる。",
+    },
+    {
+      title: "損害賠償・免責",
+      body: (
+        <ol className="list-decimal space-y-0.5 pl-5">
+          <li>甲乙は、本契約に違反し相手方に損害を与えた場合、その賠償の責を負う。</li>
+          <li>乙の責に帰すべき事由による賠償額は、特段の定めがない限り本業務の委託料を上限とする。</li>
+          <li>天災・通信障害・第三者サービス（クラウド等）の障害など、乙の責によらない事由による不履行・遅延について乙は責を負わない。</li>
+        </ol>
+      ),
+    },
+    ...(f.hasOps
+      ? [
+          {
+            title: "契約期間・更新",
+            body: `本契約のうち運用に関する部分の期間は、${or(
+              f.opsTermStart,
+              "公開日"
+            )}から ${or(
+              f.opsTermYears,
+              "1"
+            )} 年間とし、期間満了の1ヶ月前までに双方から申し出がなければ、同一条件でさらに同期間更新する。`,
+          },
+        ]
+      : []),
+    {
+      title: "協議・合意管轄",
+      body: `本契約に定めのない事項、解釈に疑義が生じた事項は、甲乙誠実に協議して解決する。本契約に関する紛争は、${or(
+        f.court,
+        "乙の住所地"
+      )}を第一審の専属的合意管轄裁判所とする。`,
+    },
+  ];
+
+  return (
+    <>
+      <style>{`@media print { @page { margin: 16mm; } }`}</style>
+      <div className="grid gap-8 lg:grid-cols-[380px_1fr] print:block">
+        {/* 入力フォーム（印刷時は非表示） */}
+        <div className="space-y-6 print:hidden">
+          <Button onClick={() => window.print()} className="w-full">
+            <Printer className="mr-1.5 size-4" />
+            印刷 / PDF 保存
+          </Button>
+
+          <section className="space-y-3">
+            <p className="text-sm font-semibold">基本</p>
+            <Field label="契約日">
+              <Input
+                value={f.date}
+                onChange={(e) => set("date", e.target.value)}
+                placeholder="2026年7月1日"
+              />
+            </Field>
+            <Field label="発注者（甲）名称">
+              <Input
+                value={f.koName}
+                onChange={(e) => set("koName", e.target.value)}
+                placeholder="◯◯後援会 / 氏名"
+              />
+            </Field>
+            <Field label="発注者（甲）住所">
+              <Input
+                value={f.koAddress}
+                onChange={(e) => set("koAddress", e.target.value)}
+              />
+            </Field>
+            <Field label="受注者（乙）名称">
+              <Input
+                value={f.otsuName}
+                onChange={(e) => set("otsuName", e.target.value)}
+              />
+            </Field>
+            <Field label="受注者（乙）住所">
+              <Input
+                value={f.otsuAddress}
+                onChange={(e) => set("otsuAddress", e.target.value)}
+              />
+            </Field>
+          </section>
+
+          <section className="space-y-3">
+            <p className="text-sm font-semibold">業務内容</p>
+            <Field label="写真撮影">
+              <Textarea
+                rows={2}
+                value={f.workPhoto}
+                onChange={(e) => set("workPhoto", e.target.value)}
+              />
+            </Field>
+            <Field label="Web サイト制作">
+              <Textarea
+                rows={2}
+                value={f.workWeb}
+                onChange={(e) => set("workWeb", e.target.value)}
+              />
+            </Field>
+            <Field label="その他">
+              <Input
+                value={f.workOther}
+                onChange={(e) => set("workOther", e.target.value)}
+              />
+            </Field>
+          </section>
+
+          <section className="space-y-3">
+            <p className="text-sm font-semibold">料金・支払</p>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="委託料（円）">
+                <Input
+                  value={f.fee}
+                  onChange={(e) => set("fee", e.target.value)}
+                  placeholder="111,000"
+                />
+              </Field>
+              <Field label="消費税">
+                <select
+                  className={selectClass}
+                  value={f.taxMode}
+                  onChange={(e) => set("taxMode", e.target.value)}
+                >
+                  <option value="込み">込み</option>
+                  <option value="別">別</option>
+                </select>
+              </Field>
+            </div>
+            <Field label="着手金">
+              <Input
+                value={f.deposit}
+                onChange={(e) => set("deposit", e.target.value)}
+              />
+            </Field>
+            <Field label="残金の条件">
+              <Input
+                value={f.balance}
+                onChange={(e) => set("balance", e.target.value)}
+              />
+            </Field>
+            <Field label="振込先（銀行・支店・種別・口座・名義）">
+              <Textarea
+                rows={2}
+                value={f.bankInfo}
+                onChange={(e) => set("bankInfo", e.target.value)}
+              />
+            </Field>
+          </section>
+
+          <section className="space-y-3">
+            <p className="text-sm font-semibold">納品・権利</p>
+            <Field label="納期">
+              <Input
+                value={f.delivery}
+                onChange={(e) => set("delivery", e.target.value)}
+              />
+            </Field>
+            <Field label="納品方法">
+              <Input
+                value={f.deliveryMethod}
+                onChange={(e) => set("deliveryMethod", e.target.value)}
+              />
+            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="検収（日数）">
+                <Input
+                  value={f.inspectDays}
+                  onChange={(e) => set("inspectDays", e.target.value)}
+                />
+              </Field>
+              <Field label="著作権">
+                <select
+                  className={selectClass}
+                  value={f.copyright}
+                  onChange={(e) => set("copyright", e.target.value)}
+                >
+                  <option value="留保">乙に留保（甲は利用可）</option>
+                  <option value="譲渡">甲へ譲渡</option>
+                </select>
+              </Field>
+            </div>
+            <Field label="実績掲載">
+              <select
+                className={selectClass}
+                value={f.portfolio}
+                onChange={(e) => set("portfolio", e.target.value)}
+              >
+                <option value="掲載できる">掲載できる</option>
+                <option value="掲載できない">掲載できない</option>
+              </select>
+            </Field>
+            <Field label="合意管轄裁判所">
+              <Input
+                value={f.court}
+                onChange={(e) => set("court", e.target.value)}
+              />
+            </Field>
+          </section>
+
+          <section className="space-y-3">
+            <p className="text-sm font-semibold">運用・ホスティング</p>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={f.hasOps}
+                onChange={(e) => set("hasOps", e.target.checked)}
+              />
+              運用・ホスティング条項を含める
+            </label>
+            {f.hasOps && (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="月額運用料（円）">
+                    <Input
+                      value={f.opsMonthly}
+                      onChange={(e) => set("opsMonthly", e.target.value)}
+                    />
+                  </Field>
+                  <Field label="契約期間（年）">
+                    <Input
+                      value={f.opsTermYears}
+                      onChange={(e) => set("opsTermYears", e.target.value)}
+                    />
+                  </Field>
+                </div>
+                <Field label="対応範囲">
+                  <Input
+                    value={f.opsScope}
+                    onChange={(e) => set("opsScope", e.target.value)}
+                  />
+                </Field>
+                <Field label="期間の起算日">
+                  <Input
+                    value={f.opsTermStart}
+                    onChange={(e) => set("opsTermStart", e.target.value)}
+                  />
+                </Field>
+              </>
+            )}
+          </section>
+
+          <section className="space-y-2">
+            <p className="text-sm font-semibold">特約</p>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={f.hasPolitics}
+                onChange={(e) => set("hasPolitics", e.target.checked)}
+              />
+              政治・選挙に関する特約を付ける
+            </label>
+          </section>
+        </div>
+
+        {/* プレビュー（印刷対象） */}
+        <div className="contract-paper mx-auto w-full max-w-3xl bg-white p-8 text-[13px] leading-relaxed text-neutral-900 ring-1 ring-black/10 print:max-w-none print:p-0 print:ring-0">
+          <h2 className="text-center text-xl font-bold tracking-wide">
+            業務委託契約書
+          </h2>
+          <p className="mt-6">
+            発注者 <strong>{or(f.koName)}</strong>（以下「甲」という）と、受注者{" "}
+            <strong>{or(f.otsuName, "KSK Works")}</strong>
+            （以下「乙」という）は、乙が甲に提供する制作・撮影等の業務（以下「本業務」という）に関し、次のとおり業務委託契約（以下「本契約」という）を締結する。
+          </p>
+
+          {articles.map((a, i) => (
+            <section key={a.title} className="mt-4">
+              <h3 className="font-semibold">
+                第{i + 1}条（{a.title}）
+              </h3>
+              <div className="mt-1">{a.body}</div>
+            </section>
+          ))}
+
+          {f.hasPolitics && (
+            <section className="mt-6">
+              <h3 className="font-semibold">政治・選挙に関する特約</h3>
+              <ol className="mt-1 list-decimal space-y-0.5 pl-5">
+                <li>乙は、本業務の遂行にあたり公職選挙法その他関係法令を順守する。</li>
+                <li>
+                  選挙運動用の文書図画の掲載・更新は、選挙の告示（公示）日から投票日の前日までに限り、投票日当日の更新は行わない。平常時の政治活動用サイトの制作・更新はこの限りでない。
+                </li>
+                <li>甲は、サイトに掲載する内容（経歴・政策・写真等）の正確性・適法性について責任を負う。</li>
+                <li>政治団体・後援会等からの支払いについて、乙は請求書・領収書を適切に発行し、甲の収支報告に資する形で対応する。</li>
+              </ol>
+            </section>
+          )}
+
+          <section className="mt-8">
+            <p>
+              本契約の成立を証するため本書 2 通を作成し、甲乙各 1 通を保有する。
+            </p>
+            <p className="mt-3">契約日：{or(f.date)}</p>
+            <div className="mt-4 grid grid-cols-2 gap-6">
+              <div>
+                <p className="font-semibold">甲（発注者）</p>
+                <p className="mt-2">住所：{or(f.koAddress)}</p>
+                <p className="mt-6">氏名／名称：{or(f.koName)}　　　㊞</p>
+              </div>
+              <div>
+                <p className="font-semibold">乙（受注者）</p>
+                <p className="mt-2">住所：{or(f.otsuAddress)}</p>
+                <p className="mt-6">
+                  氏名／名称：{or(f.otsuName, "KSK Works")}　　　㊞
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </>
+  );
+}

@@ -168,4 +168,5 @@ kskphotos/                     ← プロジェクトルート（git root）
 - [12. ギャラリー3本柱 機能ディープダイブ](./12-gallery-features.md)
 - [13. 会員解錠（コレクション単位）](./13-member-unlock.md)
 - [14. サービス料金・納品ポリシー](./14-service-pricing-policy.md)
+- [15. 管理画面：業務委託契約書ジェネレータ](./15-admin-contract-generator.md)
 - [ADR（アーキテクチャ意思決定記録）](./adr/README.md)
