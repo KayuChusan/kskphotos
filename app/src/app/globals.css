@@ -303,6 +303,19 @@
   }
 }
 
+/* ホームのみ: セクション境界へやさしくスナップ(proximity)。スクロールは奪わず、
+   止めた位置が近ければ境界へ吸い付く。reduced-motion では無効。
+   html.snap-page はトップで <SnapScroll> が付与/除去する。sticky ヘッダ分のオフセット付き。 */
+@media (prefers-reduced-motion: no-preference) {
+  html.snap-page {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 4rem;
+  }
+  html.snap-page [data-snap] {
+    scroll-snap-align: start;
+  }
+}
+
 @layer utilities {
   /* セクションラベル — カメラHUD風のモノスペース表記 */
   .eyebrow {

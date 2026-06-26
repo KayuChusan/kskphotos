@@ -5,6 +5,7 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { excludeLockedPhotos } from "@/lib/photo-visibility";
 import { HeroSection } from "@/components/home/hero-section";
+import { SnapScroll } from "@/components/home/snap-scroll";
 import { CountUp } from "@/components/count-up";
 import { SectionMark } from "@/components/ui/section-mark";
 
@@ -64,10 +65,11 @@ export default async function HomePage() {
 
   return (
     <>
+      <SnapScroll />
       <HeroSection photos={heroPhoto ? [heroPhoto] : featured} />
 
       {/* Introduction — 3本柱の宣言（生成り） */}
-      <section>
+      <section data-snap>
         <div className="container mx-auto px-4 py-24">
           <SectionMark no="01" label="Introduction" className="mb-12" />
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
@@ -104,7 +106,7 @@ export default async function HomePage() {
       </section>
 
       {/* 02 Photography — フィルムストリップ（沈め面＋冷却灯wash） */}
-      <section className="coolant-wash bg-surface-sink py-24">
+      <section data-snap className="coolant-wash bg-surface-sink py-24">
         <div className="container mx-auto px-4">
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -174,7 +176,7 @@ export default async function HomePage() {
       </section>
 
       {/* 03 Web Production（生成り） */}
-      <section className="py-24">
+      <section data-snap className="py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div>
@@ -287,7 +289,7 @@ export default async function HomePage() {
       </section>
 
       {/* 04 IT Support（沈め面＋暖wash。02 の冷wash と温度を対にする） */}
-      <section className="safelight-wash bg-surface-sink py-24">
+      <section data-snap className="safelight-wash bg-surface-sink py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             {/* ターミナル風パネル(後日現場写真に差し替え可) */}
@@ -358,7 +360,7 @@ export default async function HomePage() {
       </section>
 
       {/* Stats */}
-      <section className="py-20">
+      <section data-snap className="py-20">
         <div className="container mx-auto px-4">
           <SectionMark no="05" label="By the Numbers" className="mb-12" />
           <div className="grid gap-12 text-center sm:grid-cols-3">
