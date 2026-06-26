@@ -27,6 +27,9 @@ const DEFAULTS = {
     "撮影データはオンラインストレージで、サイトは公開（本番反映）をもって納品",
   inspectDays: "7",
   copyright: "留保",
+  licenseScope: "公式サイト・SNS・選挙広報物等での利用",
+  exclusive: "非独占",
+  credit: "不要",
   portfolio: "掲載できる",
   hasOps: false,
   opsMonthly: "5,000",
@@ -127,12 +130,22 @@ export function ContractGenerator() {
       title: "著作権・利用範囲",
       body: (
         <ol className="list-decimal space-y-0.5 pl-5">
+          {f.copyright === "譲渡" ? (
+            <li>
+              納品物の著作権（著作権法第27条・第28条の二次的著作物に関する権利を含む）は、検収および委託料の支払い完了をもって甲に譲渡する。著作者人格権は譲渡できないため、乙はこれを行使しない。
+            </li>
+          ) : (
+            <li>
+              納品物の著作権は乙に留保し、甲は本件において次の範囲で著作物を利用できる（{f.exclusive}的利用許諾）。利用範囲：
+              {or(f.licenseScope)}（複製・公衆送信・展示・印刷物への使用等のうち本範囲に限り、範囲外の利用は別途協議する）。
+            </li>
+          )}
           <li>
-            {f.copyright === "譲渡"
-              ? "納品物の著作権は、検収および委託料の支払い完了をもって甲に譲渡する（乙は著作者人格権を行使しない）。"
-              : "納品物の著作権は乙に留保し、甲は本件の用途の範囲で利用できる。"}
+            甲による写真のトリミング・明るさ等の軽微な調整は妨げないが、本人の意に反する大幅な改変・合成は事前に乙と協議する（著作者人格権・同一性保持への配慮）。
           </li>
-          <li>甲は納品した写真を、ご依頼の用途の範囲で利用できる。商用・二次利用等の範囲は別途協議する。</li>
+          <li>
+            撮影クレジット（撮影：{or(f.otsuName, "KSK Works")}）の表示は{f.credit}とする。
+          </li>
           <li>乙は本撮影・制作物に生成 AI を使用しない（実際のカメラで撮影し、現像は RAW 現像のみ）。</li>
           <li>
             実績掲載：乙は本件を自己のポートフォリオ・実績として{f.portfolio}
@@ -163,6 +176,10 @@ export function ContractGenerator() {
     {
       title: "キャンセル・中途解約",
       body: "甲の都合により本業務がキャンセル・中止された場合、乙は進行状況に応じて既履行分の費用を請求できる（撮影日直前のキャンセル・制作着手後の中止を含む）。詳細は別途取り決めによる。",
+    },
+    {
+      title: "契約の解除",
+      body: "甲または乙が本契約に違反し、相当の期間を定めた催告後もこれを是正しないときは、相手方は本契約を解除できる。継続的役務（運用等）に関する解除の効力は、過去にさかのぼらず将来に向かって生じる。",
     },
     {
       title: "秘密保持",
@@ -200,6 +217,14 @@ export function ContractGenerator() {
           },
         ]
       : []),
+    {
+      title: "権利義務の譲渡制限",
+      body: "甲乙は、相手方の書面による承諾なく、本契約上の地位および本契約から生じる権利義務（著作物の利用権を含む）を第三者に譲渡・承継させてはならない。",
+    },
+    {
+      title: "契約内容の変更",
+      body: "本契約の内容の変更は、甲乙の書面（電磁的記録を含む）による合意によってのみ行うことができる。",
+    },
     {
       title: "協議・合意管轄",
       body: `本契約に定めのない事項、解釈に疑義が生じた事項は、甲乙誠実に協議して解決する。本契約に関する紛争は、${or(
@@ -354,6 +379,37 @@ export function ContractGenerator() {
                 </select>
               </Field>
             </div>
+            {f.copyright === "留保" && (
+              <>
+                <Field label="写真の利用範囲（著作権を留保する場合）">
+                  <Textarea
+                    rows={2}
+                    value={f.licenseScope}
+                    onChange={(e) => set("licenseScope", e.target.value)}
+                  />
+                </Field>
+                <Field label="独占／非独占">
+                  <select
+                    className={selectClass}
+                    value={f.exclusive}
+                    onChange={(e) => set("exclusive", e.target.value)}
+                  >
+                    <option value="非独占">非独占（既定）</option>
+                    <option value="独占">独占</option>
+                  </select>
+                </Field>
+              </>
+            )}
+            <Field label="撮影クレジット表記">
+              <select
+                className={selectClass}
+                value={f.credit}
+                onChange={(e) => set("credit", e.target.value)}
+              >
+                <option value="不要">不要</option>
+                <option value="要">要（撮影：名義を表示）</option>
+              </select>
+            </Field>
             <Field label="実績掲載">
               <select
                 className={selectClass}
