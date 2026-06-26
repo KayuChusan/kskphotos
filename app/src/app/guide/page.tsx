@@ -94,8 +94,8 @@ const PHOTO_FEATURES = [
   },
   {
     icon: Sparkles,
-    title: "RAW から丁寧に現像",
-    body: "撮影後は Lightroom で一枚ずつレタッチ。色と光を整え、見栄えよく仕上げます。",
+    title: "撮影データから丁寧に仕上げ",
+    body: "撮影後は専用ソフトで一枚ずつ、色と明るさを整えて見栄えよく仕上げます。",
   },
   {
     icon: ShieldCheck,
@@ -360,7 +360,7 @@ export default function GuidePage() {
             className="mt-6"
             nodes={[
               { label: "撮影", sub: "出張", tone: "process" },
-              { label: "写真素材", sub: "RAW 現像", tone: "process" },
+              { label: "写真素材", sub: "色・明るさ調整", tone: "process" },
               { label: "Web サイト", sub: "制作・公開", tone: "process" },
               { label: "運用", sub: "保守・更新", tone: "goal" },
             ]}
@@ -380,7 +380,7 @@ export default function GuidePage() {
           <JaText>
             ポートレート・ファミリー・イベントから、政治・選挙、商用・法人まで。ジャンルを問わず
             <strong className="text-foreground">時間制</strong>
-            でお引き受けします。出張で現場へうかがい、RAW から丁寧に仕上げてお渡しします。
+            でお引き受けします。出張で現場へうかがい、撮影データを一枚ずつ丁寧に仕上げてお渡しします。
           </JaText>
         </p>
 
