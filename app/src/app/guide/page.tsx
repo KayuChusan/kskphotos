@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { pageSeo } from "@/lib/seo";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { FlowDiagram } from "@/components/diagram/flow-diagram";
 import { JaText } from "@/components/ui/ja-text";
 import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
@@ -354,18 +355,16 @@ export default function GuidePage() {
               でご提供します（内容に応じてお見積り）。
             </JaText>
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
-            <Camera className="size-4 text-safelight" />
-            <span>撮影</span>
-            <span className="text-muted-foreground/40">→</span>
-            <span>写真素材</span>
-            <span className="text-muted-foreground/40">→</span>
-            <Globe className="size-4 text-safelight" />
-            <span>Web サイト</span>
-            <span className="text-muted-foreground/40">→</span>
-            <Wrench className="size-4 text-safelight" />
-            <span>運用</span>
-          </div>
+          <FlowDiagram
+            ariaLabel="撮影から写真素材・Web サイト・運用までの一貫した流れ"
+            className="mt-6"
+            nodes={[
+              { label: "撮影", sub: "出張", tone: "process" },
+              { label: "写真素材", sub: "RAW 現像", tone: "process" },
+              { label: "Web サイト", sub: "制作・公開", tone: "process" },
+              { label: "運用", sub: "保守・更新", tone: "goal" },
+            ]}
+          />
         </CardContent>
       </Card>
 
