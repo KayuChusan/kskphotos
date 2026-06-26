@@ -17,7 +17,7 @@ export const DEFAULT_PROFILE = {
   id: PROFILE_ID,
   name: "ksk",
   tagline: "フォトグラファー",
-  bio: "神奈川を拠点に活動するフォトグラファー。ポートレート、風景、ストリートスナップを中心に、出張撮影は全国対応。Sony α7R VI の高解像度を活かした描写と、Lightroom での丁寧なRAW現像にこだわっています。",
+  bio: "神奈川を拠点に活動するフォトグラファー。ポートレート、風景、ストリートスナップを中心に、出張撮影は全国対応。Sony α7R VI の高解像度を活かした描写と、撮影データを一枚ずつ丁寧に仕上げることにこだわっています。",
   profileImage: null as string | null,
   profileBlur: null as string | null,
   gearBody: ["Sony α7R VI (ILCE-7RM6) | 61MP フルサイズ"],
@@ -30,12 +30,12 @@ export const DEFAULT_PROFILE = {
     "FE 85mm F1.4 GM | 中望遠単焦点",
   ],
   gearSoftware: [
-    "Adobe Lightroom Classic | RAW 現像",
+    "Adobe Lightroom Classic | 写真の調整・仕上げ",
     "Adobe Photoshop | レタッチ",
   ],
   policyBadge: "No Generative AI",
   policy:
-    "当サイトに掲載するすべての写真は、実際のカメラ（Sony α7R VI）で撮影したものです。現像は Adobe Lightroom での RAW 現像（露出・色調整・トリミング）のみを行い、生成AIによる画像の生成・合成・要素の追加や削除は一切行っていません。各写真の詳細ページでは撮影機材・撮影日などの来歴を、Before / After ページでは現像の過程をそのまま公開しています。",
+    "当サイトに掲載するすべての写真は、実際のカメラ（Sony α7R VI）で撮影したものです。編集は Adobe Lightroom での明るさ・色の調整やトリミングのみで、生成AIによる画像の生成・合成・要素の追加や削除は一切行っていません。各写真の詳細ページでは撮影機材・撮影日などの来歴を、Before / After ページでは仕上げ前後の違いをそのまま公開しています。",
 };
 
 export type ProfileContent = Pick<

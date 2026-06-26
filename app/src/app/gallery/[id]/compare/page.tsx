@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!photo) return { title: "Not Found" };
   return {
     title: `Before & After — ${photo.title}`,
-    description: `${photo.title} のレタッチ前後を比較。RAW現像の過程をご覧いただけます。`,
+    description: `${photo.title} の仕上げ前後を比較。撮影データから仕上げる過程をご覧いただけます。`,
     ...(photo.collection?.isLocked
       ? { robots: { index: false, follow: false } }
       : {}),
