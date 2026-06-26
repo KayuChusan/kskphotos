@@ -422,13 +422,14 @@
   /* DARKROOM — 暗室バンド。内部の前景/背景トークンを局所再定義し、子要素が
      自動で暗室配色を継承する（前景が沈む事故を防ぐ＝AA 死守の要）。各ページ1〜2枚厳守 */
   .darkroom {
-    --background: oklch(0.13 0.006 70);
-    --foreground: oklch(0.95 0.005 85);
-    --foreground-soft: oklch(0.78 0.012 84);
-    --muted-foreground: oklch(0.66 0.01 85);
-    --card: oklch(0.17 0.008 65);
-    --card-warm: oklch(0.205 0.022 60);
-    --card-foreground: oklch(0.95 0.005 85);
+    /* 真っ黒でなく「暖かいエスプレッソの闇」。生成りページから浮かない深い褐色 */
+    --background: oklch(0.225 0.026 55);
+    --foreground: oklch(0.96 0.006 80);
+    --foreground-soft: oklch(0.82 0.014 80);
+    --muted-foreground: oklch(0.73 0.012 80);
+    --card: oklch(0.27 0.024 55);
+    --card-warm: oklch(0.3 0.03 55);
+    --card-foreground: oklch(0.96 0.006 80);
     --border: oklch(1 0 0 / 12%);
     --primary: oklch(0.93 0.005 85);
     --primary-foreground: oklch(0.14 0.004 80);
