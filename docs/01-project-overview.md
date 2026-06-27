@@ -170,4 +170,5 @@ kskphotos/                     ← プロジェクトルート（git root）
 - [14. サービス料金・納品ポリシー](./14-service-pricing-policy.md)
 - [15. 管理画面：業務委託契約書ジェネレータ](./15-admin-contract-generator.md)
 - [16. ビジュアル刷新（FRAME＋二灯化＋図解）](./16-visual-refresh.md)
+- [17. 管理画面：保守運用契約書ジェネレータ](./17-admin-maintenance-contract.md)
 - [ADR（アーキテクチャ意思決定記録）](./adr/README.md)
