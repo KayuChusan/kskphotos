@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Tag,
   User,
+  Wrench,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -30,6 +31,7 @@ const adminNav = [
   { title: "Messages", href: "/admin/messages", icon: MessageSquare },
   { title: "Blog", href: "/admin/blog", icon: FileText },
   { title: "Contracts", href: "/admin/contracts", icon: FileSignature },
+  { title: "保守運用", href: "/admin/maintenance", icon: Wrench },
   { title: "Profile", href: "/admin/profile", icon: User },
 ];
 
