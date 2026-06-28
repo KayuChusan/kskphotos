@@ -171,4 +171,5 @@ kskphotos/                     ← プロジェクトルート（git root）
 - [15. 管理画面：業務委託契約書ジェネレータ](./15-admin-contract-generator.md)
 - [16. ビジュアル刷新（FRAME＋二灯化＋図解）](./16-visual-refresh.md)
 - [17. 管理画面：保守運用契約書ジェネレータ](./17-admin-maintenance-contract.md)
+- [18. 独自ドメインメール（iCloud+ Custom Email Domain）](./18-custom-domain-email.md)
 - [ADR（アーキテクチャ意思決定記録）](./adr/README.md)
