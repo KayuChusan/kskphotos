@@ -96,8 +96,11 @@ Google が自動で証明書発行（通常 15分〜1時間、最大 24h）。`h
 ## Phase 3: 仕上げ（任意・公開後でも可）
 
 - 👤 **実写真投入**: 現状サンプル（picsum）→ 本物へ。/admin から登録。
+- **独自ドメインメール（iCloud+ Custom Email Domain）**（任意）: `contact@kskworks.jp` 等を送受信。手順は [18 章](./18-custom-domain-email.md)。お名前.com に MX×2・SPF(`v=spf1 include:icloud.com ~all`)・DKIM CNAME・apple-domain TXT を追加（既存 SPF は無いので新規追加でOK／`google-site-verification` は残す）。
 - **Resend メール通知**（任意）:
-  1. 👤 Resend でアカウント＋API キー、送信元 `kskworks.jp` のドメイン認証（SPF/DKIM を お名前.com に追加。※既存 `v=spf1 -all` は Resend を含む値へ要変更）。
+  1. 👤 Resend でアカウント＋API キー、送信元 `kskworks.jp` のドメイン認証（SPF/DKIM を お名前.com に追加）。
+     - **SPF は1本に統合**：iCloud を先に入れている場合は `v=spf1 include:icloud.com include:_spf.resend.com ~all` のように **include を追記**（SPF TXT を2本にしない）。iCloud 未導入なら `v=spf1 include:_spf.resend.com ~all`。
+     - **MX は iCloud のまま**（Resend は受信に root MX を使わない）。DKIM はセレクタが別（iCloud=`sig1._domainkey` / Resend=`resend._domainkey`）なので衝突しない。
   2. 🤖 Secret 作成: `gcloud secrets create kskphotos-resend-api-key`（値は 👤 が投入）。
   3. 🤖 `terraform.tfvars` に `notification_email=...` ＋ `enable_resend=true` → `-target` apply。
 - 👤 **法務**: privacy に事業者情報、特商法表記（撮影料金を取るなら推奨）。運営者名/住所/電話の公開レベルを決めたら 🤖 がページ化。
