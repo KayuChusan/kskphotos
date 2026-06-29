@@ -14,6 +14,7 @@ const DEFAULTS = {
   koAddress: "",
   otsuName: "KSK Works",
   otsuAddress: "",
+  projectType: "both", // "photo" | "web" | "both"
   fee: "111,000",
   taxMode: "込み",
   workPhoto: "出張撮影 2時間（プロフィール・活動カット）",
@@ -22,9 +23,10 @@ const DEFAULTS = {
   deposit: "委託料の50%を契約後7日以内",
   balance: "納品（公開）後、当月末締め翌月末払い",
   bankInfo: "",
-  delivery: "撮影データ＝撮影後1〜3週間／サイト＝打ち合わせで決定",
-  deliveryMethod:
-    "撮影データはオンラインストレージで、サイトは公開（本番反映）をもって納品",
+  deliveryPhoto: "撮影後1〜3週間",
+  deliveryWeb: "打ち合わせで決定",
+  deliveryMethodPhoto: "撮影データはオンラインストレージで納品",
+  deliveryMethodWeb: "サイトは公開（本番反映）をもって納品",
   inspectDays: "7",
   copyright: "留保",
   licenseScope: "公式サイト・SNS・選挙広報物等での利用",
@@ -67,6 +69,26 @@ export function ContractGenerator() {
   const set = <K extends keyof Form>(key: K, value: Form[K]) =>
     setF((prev) => ({ ...prev, [key]: value }));
 
+  // 案件種別: 撮影のみ / Web制作のみ / 両方。契約した側の条項だけ出す。
+  const hasPhoto = f.projectType !== "web";
+  const hasWeb = f.projectType !== "photo";
+
+  // 納期・納品方法は契約したサービス分だけを組み立てる（他方の条件を混ぜない）
+  const deliveryText =
+    [
+      hasPhoto && `撮影データ＝${or(f.deliveryPhoto, "撮影後1〜3週間")}`,
+      hasWeb && `サイト＝${or(f.deliveryWeb, "打ち合わせで決定")}`,
+    ]
+      .filter(Boolean)
+      .join("／") || "＿＿＿＿";
+  const deliveryMethodText =
+    [
+      hasPhoto && or(f.deliveryMethodPhoto, "撮影データはオンラインストレージで納品"),
+      hasWeb && or(f.deliveryMethodWeb, "サイトは公開（本番反映）をもって納品"),
+    ]
+      .filter(Boolean)
+      .join("、") || "＿＿＿＿";
+
   // 条項を条件に応じて組み立て（運用なしなら第7条・期間条を除外して自動採番）
   const articles: { title: string; body: React.ReactNode }[] = [
     {
@@ -77,9 +99,11 @@ export function ContractGenerator() {
       title: "業務内容",
       body: (
         <ol className="list-decimal space-y-0.5 pl-5">
-          <li>写真撮影：{or(f.workPhoto)}</li>
-          <li>Web サイト制作：{or(f.workWeb)}</li>
-          {f.hasOps && <li>運用・ホスティング：公開後の維持・更新（第7条による）</li>}
+          {hasPhoto && <li>写真撮影：{or(f.workPhoto)}</li>}
+          {hasWeb && <li>Web サイト制作：{or(f.workWeb)}</li>}
+          {hasWeb && f.hasOps && (
+            <li>運用・ホスティング：公開後の維持・更新（本契約の運用・ホスティング条による）</li>
+          )}
           <li>その他：{or(f.workOther)}</li>
         </ol>
       ),
@@ -92,7 +116,9 @@ export function ContractGenerator() {
             本業務の委託料は <strong>金 {or(f.fee)} 円（消費税{f.taxMode}）</strong>
             とする。内訳は別紙見積書のとおり。
           </li>
-          <li>出張に要する交通費等の実費は、委託料と別に甲の負担とする（事前に概算を提示する）。</li>
+          {hasPhoto && (
+            <li>出張に要する交通費等の実費は、委託料と別に甲の負担とする（事前に概算を提示する）。</li>
+          )}
           <li>
             支払は次のとおりとする。お支払いは柔軟に対応し、基本は銀行振込とする。着手金＝
             {or(f.deposit)}／残金＝{or(f.balance)}／振込先＝{or(f.bankInfo)}
@@ -106,8 +132,8 @@ export function ContractGenerator() {
       title: "納期・納品・検収",
       body: (
         <ol className="list-decimal space-y-0.5 pl-5">
-          <li>納期の目安：{or(f.delivery)}。具体日程は打ち合わせで定める。</li>
-          <li>納品方法：{or(f.deliveryMethod)}。</li>
+          <li>納期の目安：{deliveryText}。具体日程は打ち合わせで定める。</li>
+          <li>納品方法：{deliveryMethodText}。</li>
           <li>
             甲は納品後 {or(f.inspectDays, "7")}{" "}
             日以内に内容を確認し、異議がなければ検収完了とする。期間内に連絡がない場合は検収完了とみなす。
@@ -116,13 +142,21 @@ export function ContractGenerator() {
       ),
     },
     {
-      title: "写真の納品枚数・修正",
+      title: hasPhoto ? "写真の納品枚数・修正" : "修正・追加対応",
       body: (
         <ol className="list-decimal space-y-0.5 pl-5">
+          {hasPhoto && (
+            <li>
+              撮影データは全カットではなく、撮影時間に応じた枚数（1時間あたり約20枚、うちレタッチ仕上げ10枚）をセレクトして納品する。
+            </li>
+          )}
           <li>
-            撮影データは全カットではなく、撮影時間に応じた枚数（1時間あたり約20枚、うちレタッチ仕上げ10枚）をセレクトして納品する。
+            {hasPhoto && hasWeb
+              ? "レタッチの追加、サイトの修正回数・追加ページ等は別紙見積書の範囲とし、超過分は別途見積りのうえ対応する。"
+              : hasPhoto
+                ? "レタッチの追加等は別紙見積書の範囲とし、超過分は別途見積りのうえ対応する。"
+                : "サイトの修正回数・追加ページ等は別紙見積書の範囲とし、超過分は別途見積りのうえ対応する。"}
           </li>
-          <li>レタッチの追加、サイトの修正回数・追加ページ等は別紙見積書の範囲とし、超過分は別途見積りのうえ対応する。</li>
         </ol>
       ),
     },
@@ -140,13 +174,19 @@ export function ContractGenerator() {
               {or(f.licenseScope)}（複製・公衆送信・展示・印刷物への使用等のうち本範囲に限り、範囲外の利用は別途協議する）。
             </li>
           )}
-          <li>
-            甲による写真のトリミング・明るさ等の軽微な調整は妨げないが、本人の意に反する大幅な改変・合成は事前に乙と協議する（著作者人格権・同一性保持への配慮）。
-          </li>
-          <li>
-            撮影クレジット（撮影：{or(f.otsuName, "KSK Works")}）の表示は{f.credit}とする。
-          </li>
-          <li>乙は本撮影・制作物に生成 AI を使用しない（実際のカメラで撮影し、編集は明るさ・色の調整やトリミングのみ）。</li>
+          {hasPhoto && (
+            <li>
+              甲による写真のトリミング・明るさ等の軽微な調整は妨げないが、本人の意に反する大幅な改変・合成は事前に乙と協議する（著作者人格権・同一性保持への配慮）。
+            </li>
+          )}
+          {hasPhoto && (
+            <li>
+              撮影クレジット（撮影：{or(f.otsuName, "KSK Works")}）の表示は{f.credit}とする。
+            </li>
+          )}
+          {hasPhoto && (
+            <li>乙は本撮影・制作物に生成 AI を使用しない（実際のカメラで撮影し、編集は明るさ・色の調整やトリミングのみ）。</li>
+          )}
           <li>
             実績掲載：乙は本件を自己のポートフォリオ・実績として{f.portfolio}
             （特別価格の場合は掲載・推薦のご協力を条件とする）。掲載可否・範囲は事前に甲乙協議する。
@@ -154,20 +194,40 @@ export function ContractGenerator() {
         </ol>
       ),
     },
-    ...(f.hasOps
+    ...(hasWeb
+      ? [
+          {
+            title: "サイトの権利帰属・契約終了時の取扱い",
+            body: (
+              <ol className="list-decimal space-y-0.5 pl-5">
+                <li>本サイトのドメイン、甲が提供した素材・情報、および甲名義のアカウント・サーバー等は甲に帰属する（乙が取得・管理を代行する場合も所有は甲）。制作物（サイトの著作物）の著作権の扱いは「著作権・利用範囲」条による。</li>
+                <li>
+                  本契約が終了（完了・解約・解除）した場合、乙は甲に対し、本サイトのデータおよび運用に必要な情報（ドメイン・サーバーの管理情報、公開に必要なファイル等）を引き渡す。引き渡しに相当の作業を要する場合の費用・方法は別途協議する。
+                </li>
+                <li>制作途中での解約時の既履行分の精算は、別途定める「キャンセル・中途解約」の条項による。</li>
+                <li>
+                  公開後の継続的な保守・運用は
+                  {f.hasOps
+                    ? "本契約の「ドメイン・サーバー・運用」条の定めによる。"
+                    : "本契約に含まず、別途「保守運用業務委託契約」による。"}
+                </li>
+              </ol>
+            ),
+          },
+        ]
+      : []),
+    ...(hasWeb && f.hasOps
       ? [
           {
             title: "ドメイン・サーバー・運用",
             body: (
               <ol className="list-decimal space-y-0.5 pl-5">
-                <li>ドメインは甲（本人／団体）名義で取得・保有する（乙が取得・管理を代行する場合も所有は甲）。</li>
                 <li>乙は公開後のサーバー・SSL・ドメインの維持管理および合意した範囲の更新を行う。</li>
                 <li>
                   月額運用料：<strong>金 {or(f.opsMonthly)} 円／月</strong>。対応範囲＝
                   {or(f.opsScope)}。新規ページ追加・デザイン刷新・機能追加は対象外（別途見積り）。
                 </li>
                 <li>無償サポート：乙制作のサイトを制作から運用へ移行する場合、最初の 3 ヶ月を無償でサポートする（上限は前項に準ずる）。</li>
-                <li>契約終了時、乙は甲にサイトデータおよび運用に必要な情報を引き渡す。</li>
               </ol>
             ),
           },
@@ -175,7 +235,12 @@ export function ContractGenerator() {
       : []),
     {
       title: "キャンセル・中途解約",
-      body: "甲の都合により本業務がキャンセル・中止された場合、乙は進行状況に応じて既履行分の費用を請求できる（撮影日直前のキャンセル・制作着手後の中止を含む）。詳細は別途取り決めによる。",
+      body: `甲の都合により本業務がキャンセル・中止された場合、乙は進行状況に応じて既履行分の費用を請求できる（${[
+        hasPhoto && "撮影日直前のキャンセル",
+        hasWeb && "制作着手後の中止",
+      ]
+        .filter(Boolean)
+        .join("・")}を含む）。詳細は別途取り決めによる。`,
     },
     {
       title: "契約の解除",
@@ -203,7 +268,7 @@ export function ContractGenerator() {
         </ol>
       ),
     },
-    ...(f.hasOps
+    ...(hasWeb && f.hasOps
       ? [
           {
             title: "契約期間・更新",
@@ -283,20 +348,35 @@ export function ContractGenerator() {
 
           <section className="space-y-3">
             <p className="text-sm font-semibold">業務内容</p>
-            <Field label="写真撮影">
-              <Textarea
-                rows={2}
-                value={f.workPhoto}
-                onChange={(e) => set("workPhoto", e.target.value)}
-              />
+            <Field label="案件種別（契約した側の条項だけ出力）">
+              <select
+                className={selectClass}
+                value={f.projectType}
+                onChange={(e) => set("projectType", e.target.value)}
+              >
+                <option value="both">撮影＋Web</option>
+                <option value="photo">撮影のみ</option>
+                <option value="web">Web制作のみ</option>
+              </select>
             </Field>
-            <Field label="Web サイト制作">
-              <Textarea
-                rows={2}
-                value={f.workWeb}
-                onChange={(e) => set("workWeb", e.target.value)}
-              />
-            </Field>
+            {hasPhoto && (
+              <Field label="写真撮影">
+                <Textarea
+                  rows={2}
+                  value={f.workPhoto}
+                  onChange={(e) => set("workPhoto", e.target.value)}
+                />
+              </Field>
+            )}
+            {hasWeb && (
+              <Field label="Web サイト制作">
+                <Textarea
+                  rows={2}
+                  value={f.workWeb}
+                  onChange={(e) => set("workWeb", e.target.value)}
+                />
+              </Field>
+            )}
             <Field label="その他">
               <Input
                 value={f.workOther}
@@ -349,18 +429,38 @@ export function ContractGenerator() {
 
           <section className="space-y-3">
             <p className="text-sm font-semibold">納品・権利</p>
-            <Field label="納期">
-              <Input
-                value={f.delivery}
-                onChange={(e) => set("delivery", e.target.value)}
-              />
-            </Field>
-            <Field label="納品方法">
-              <Input
-                value={f.deliveryMethod}
-                onChange={(e) => set("deliveryMethod", e.target.value)}
-              />
-            </Field>
+            {hasPhoto && (
+              <Field label="納期（撮影）">
+                <Input
+                  value={f.deliveryPhoto}
+                  onChange={(e) => set("deliveryPhoto", e.target.value)}
+                />
+              </Field>
+            )}
+            {hasWeb && (
+              <Field label="納期（サイト）">
+                <Input
+                  value={f.deliveryWeb}
+                  onChange={(e) => set("deliveryWeb", e.target.value)}
+                />
+              </Field>
+            )}
+            {hasPhoto && (
+              <Field label="納品方法（撮影）">
+                <Input
+                  value={f.deliveryMethodPhoto}
+                  onChange={(e) => set("deliveryMethodPhoto", e.target.value)}
+                />
+              </Field>
+            )}
+            {hasWeb && (
+              <Field label="納品方法（サイト）">
+                <Input
+                  value={f.deliveryMethodWeb}
+                  onChange={(e) => set("deliveryMethodWeb", e.target.value)}
+                />
+              </Field>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <Field label="検収（日数）">
                 <Input
@@ -400,16 +500,18 @@ export function ContractGenerator() {
                 </Field>
               </>
             )}
-            <Field label="撮影クレジット表記">
-              <select
-                className={selectClass}
-                value={f.credit}
-                onChange={(e) => set("credit", e.target.value)}
-              >
-                <option value="不要">不要</option>
-                <option value="要">要（撮影：名義を表示）</option>
-              </select>
-            </Field>
+            {hasPhoto && (
+              <Field label="撮影クレジット表記">
+                <select
+                  className={selectClass}
+                  value={f.credit}
+                  onChange={(e) => set("credit", e.target.value)}
+                >
+                  <option value="不要">不要</option>
+                  <option value="要">要（撮影：名義を表示）</option>
+                </select>
+              </Field>
+            )}
             <Field label="実績掲載">
               <select
                 className={selectClass}
@@ -428,6 +530,7 @@ export function ContractGenerator() {
             </Field>
           </section>
 
+          {hasWeb && (
           <section className="space-y-3">
             <p className="text-sm font-semibold">運用・ホスティング</p>
             <label className="flex items-center gap-2 text-sm">
@@ -469,6 +572,7 @@ export function ContractGenerator() {
               </>
             )}
           </section>
+          )}
 
           <section className="space-y-2">
             <p className="text-sm font-semibold">特約</p>
@@ -491,7 +595,13 @@ export function ContractGenerator() {
           <p className="mt-6">
             発注者 <strong>{or(f.koName)}</strong>（以下「甲」という）と、受注者{" "}
             <strong>{or(f.otsuName, "KSK Works")}</strong>
-            （以下「乙」という）は、乙が甲に提供する制作・撮影等の業務（以下「本業務」という）に関し、次のとおり業務委託契約（以下「本契約」という）を締結する。
+            （以下「乙」という）は、乙が甲に提供する
+            {hasPhoto && hasWeb
+              ? "制作・撮影等の業務"
+              : hasPhoto
+                ? "写真撮影等の業務"
+                : "Web サイト制作等の業務"}
+            （以下「本業務」という）に関し、次のとおり業務委託契約（以下「本契約」という）を締結する。
           </p>
 
           {articles.map((a, i) => (
@@ -508,10 +618,12 @@ export function ContractGenerator() {
               <h3 className="font-semibold">政治・選挙に関する特約</h3>
               <ol className="mt-1 list-decimal space-y-0.5 pl-5">
                 <li>乙は、本業務の遂行にあたり公職選挙法その他関係法令を順守する。</li>
-                <li>
-                  選挙運動用の文書図画の掲載・更新は、選挙の告示（公示）日から投票日の前日までに限り、投票日当日の更新は行わない。平常時の政治活動用サイトの制作・更新はこの限りでない。
-                </li>
-                <li>甲は、サイトに掲載する内容（経歴・政策・写真等）の正確性・適法性について責任を負う。</li>
+                {hasWeb && (
+                  <li>
+                    選挙運動用の文書図画の掲載・更新は、選挙の告示（公示）日から投票日の前日までに限り、投票日当日の更新は行わない。平常時の政治活動用サイトの制作・更新はこの限りでない。
+                  </li>
+                )}
+                <li>甲は、公開・使用する内容（経歴・政策・写真等）の正確性・適法性について責任を負う。</li>
                 <li>政治団体・後援会等からの支払いについて、乙は請求書・領収書を適切に発行し、甲の収支報告に資する形で対応する。</li>
               </ol>
             </section>
