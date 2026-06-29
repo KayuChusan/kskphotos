@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { mainNav, secondaryNav } from "./nav-config";
 
@@ -7,9 +8,13 @@ export function SiteFooter() {
       <div className="container mx-auto px-4 py-16">
         <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
           <div>
-            <p className="font-heading text-3xl font-medium tracking-wide">
-              KSK Works
-            </p>
+            <Image
+              src="/ksk-works-logo-dark.png"
+              alt="KSK Works"
+              width={960}
+              height={168}
+              className="h-9 w-auto"
+            />
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               出張撮影・ポートレート。
               <br />
