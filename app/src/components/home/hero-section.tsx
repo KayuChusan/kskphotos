@@ -255,7 +255,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
                 width={960}
                 height={168}
                 priority
-                className="h-auto w-[244px] drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:w-[400px] lg:w-[480px]"
+                className="h-auto w-[300px] drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:w-[480px] lg:w-[580px]"
               />
             </motion.h1>
           </motion.div>
