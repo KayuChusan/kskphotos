@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
@@ -42,11 +43,17 @@ export function SiteHeader() {
       )}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link
-          href="/"
-          className="font-heading text-2xl font-medium tracking-wide"
-        >
-          KSK Works
+        <Link href="/" className="flex items-center" aria-label="KSK Works ホーム">
+          <Image
+            src={transparent ? "/ksk-works-logo-light.png" : "/ksk-works-logo-dark.png"}
+            alt="KSK Works"
+            width={960}
+            height={168}
+            className={cn(
+              "h-7 w-auto",
+              transparent && "drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]"
+            )}
+          />
         </Link>
 
         {/* Desktop nav — 日本語主 + 英字サブの二段 */}
@@ -99,8 +106,14 @@ export function SiteHeader() {
             <span className="sr-only">メニュー</span>
           </SheetTrigger>
           <SheetContent side="right">
-            <SheetTitle className="text-left font-heading text-2xl font-medium">
-              KSK Works
+            <SheetTitle className="text-left">
+              <Image
+                src="/ksk-works-logo-dark.png"
+                alt="KSK Works"
+                width={960}
+                height={168}
+                className="h-7 w-auto"
+              />
             </SheetTitle>
             <nav className="mt-10 flex flex-col gap-6">
               {[...mainNav, ...secondaryNav].map((item) => (

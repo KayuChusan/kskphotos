@@ -248,11 +248,15 @@ export function HeroSection({ photos }: HeroSectionProps) {
               <span className="absolute bottom-0 left-0 h-5 w-5 border-b-[1.5px] border-l-[1.5px] border-[oklch(0.80_0.13_70/0.85)]" />
               <span className="absolute bottom-0 right-0 h-5 w-5 border-b-[1.5px] border-r-[1.5px] border-[oklch(0.80_0.13_70/0.85)]" />
             </motion.div>
-            <motion.h1
-              variants={develop}
-              className="bg-gradient-to-br from-white via-white to-[oklch(0.82_0.13_70)] bg-clip-text font-heading text-6xl font-medium tracking-wide text-transparent md:text-8xl lg:text-9xl"
-            >
-              KSK Works
+            <motion.h1 variants={develop} className="m-0 leading-none">
+              <Image
+                src="/ksk-works-logo-light.png"
+                alt="KSK Works"
+                width={960}
+                height={168}
+                priority
+                className="h-auto w-[244px] drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:w-[400px] lg:w-[480px]"
+              />
             </motion.h1>
           </motion.div>
 
