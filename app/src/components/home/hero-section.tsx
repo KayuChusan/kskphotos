@@ -153,9 +153,9 @@ export function HeroSection({ photos }: HeroSectionProps) {
         </motion.div>
       )}
 
-      {/* Scroll-reactive dark overlay */}
+      {/* Scroll-reactive dark overlay — ロゴ土台色の濃紺（写真層の黒は維持し、被せ面だけ青へ） */}
       <motion.div
-        className="absolute inset-0 bg-black"
+        className="absolute inset-0 bg-[oklch(0.16_0.045_262)]"
         style={reduce ? { opacity: 0.35 } : { opacity: overlayOpacity }}
       />
 

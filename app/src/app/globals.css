@@ -22,9 +22,11 @@
   --color-foreground-soft: var(--foreground-soft);
   --color-surface-sink: var(--surface-sink);
   --color-card-warm: var(--card-warm);
-  /* 第2アクセント（現像液シアン）を Tailwind ユーティリティに公開 */
+  /* 第2アクセント（ブランド・エレクトリックブルー）を Tailwind ユーティリティに公開 */
   --color-coolant: var(--coolant);
   --color-coolant-line: var(--coolant-line);
+  /* ロゴ純青（大要素・マーク・署名青のみ。本文テキスト不可） */
+  --color-brand-blue: var(--brand-blue);
   --color-tide: var(--tide);
   --font-sans: var(--font-geist-sans), "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
@@ -125,12 +127,14 @@
   --safelight-wash: oklch(0.62 0.13 60 / 0.1);
   /* .frame の常時罫（opacity 0.35 適用前提の純装飾罫） */
   --frame-line: oklch(0.7 0.04 72);
-  /* 第2アクセント＝現像液シアン（暗室の冷却灯）。過程・参照・図・チャートに限る従色。
-     coolant(明・非テキスト/塗り) と coolant-strong(濃・テキスト/リンク AA 6.95:1) を使い分け */
-  --coolant: oklch(0.6 0.09 215);
-  --coolant-strong: oklch(0.44 0.085 218);
-  --coolant-wash: oklch(0.6 0.09 215 / 0.08);
-  --coolant-line: oklch(0.62 0.07 215);
+  /* 第2アクセント＝ブランド・エレクトリックブルー（ロゴ差し色 hue262）。Web/IT・過程・参照・図・チャートに限る従色。
+     テキスト/リンクは彩度を抑えた coolant-strong（cream 上 約6.5:1・AA）／塗り・罫は coolant／
+     ロゴ純青 brand-blue は大要素・マーク限定（cream 上の本文/小文字に使うと約3.8:1で不合格） */
+  --coolant: oklch(0.58 0.16 262);
+  --coolant-strong: oklch(0.46 0.13 262);
+  --coolant-wash: oklch(0.58 0.16 262 / 0.08);
+  --coolant-line: oklch(0.6 0.12 262);
+  --brand-blue: oklch(0.6 0.19 262);
   /* 琥珀↔シアンを橋渡しする青緑（グラデ中継・チャート中間系列） */
   --tide: oklch(0.55 0.07 160);
   /* 縁グラデ/デュオトーン帯の停止色（装飾面専用・テキスト不可） */
@@ -138,7 +142,7 @@
   --grad-deep: oklch(0.34 0.04 285);
   /* チャートは色相で系列識別（琥珀→黄→青緑→シアン の温度順）。chart-1 は最重要1点の琥珀固定 */
   --chart-1: oklch(0.62 0.13 60);
-  --chart-2: oklch(0.6 0.09 215);
+  --chart-2: oklch(0.58 0.16 262);
   --chart-3: oklch(0.55 0.07 160);
   --chart-4: oklch(0.6 0.09 90);
   --chart-5: oklch(0.84 0.02 85);
@@ -181,15 +185,16 @@
   --safelight-strong: oklch(0.8 0.14 70);
   --safelight-wash: oklch(0.8 0.14 70 / 0.14);
   --frame-line: oklch(0.62 0.06 72);
-  --coolant: oklch(0.76 0.1 210);
-  --coolant-strong: oklch(0.76 0.1 210);
-  --coolant-wash: oklch(0.76 0.1 210 / 0.12);
-  --coolant-line: oklch(0.58 0.07 210);
+  --coolant: oklch(0.74 0.15 262);
+  --coolant-strong: oklch(0.74 0.15 262);
+  --coolant-wash: oklch(0.74 0.15 262 / 0.12);
+  --coolant-line: oklch(0.58 0.1 262);
+  --brand-blue: oklch(0.7 0.18 262);
   --tide: oklch(0.7 0.09 160);
   --grad-warm: oklch(0.78 0.13 70);
   --grad-deep: oklch(0.22 0.04 290);
   --chart-1: oklch(0.78 0.14 70);
-  --chart-2: oklch(0.76 0.1 210);
+  --chart-2: oklch(0.74 0.15 262);
   --chart-3: oklch(0.7 0.09 160);
   --chart-4: oklch(0.8 0.1 95);
   --chart-5: oklch(0.32 0.01 80);
@@ -450,10 +455,55 @@
     --safelight-strong: oklch(0.8 0.14 70);
     --safelight-wash: oklch(0.8 0.14 70 / 0.14);
     --frame-line: oklch(0.62 0.06 72);
-    --coolant: oklch(0.76 0.1 210);
-    --coolant-strong: oklch(0.76 0.1 210);
-    --coolant-wash: oklch(0.76 0.1 210 / 0.12);
-    --coolant-line: oklch(0.58 0.07 210);
+    /* 暗室内の冷却灯（ブランド青を暗褐面でAAが出る明度へ） */
+    --coolant: oklch(0.74 0.15 262);
+    --coolant-strong: oklch(0.74 0.15 262);
+    --coolant-wash: oklch(0.74 0.15 262 / 0.12);
+    --coolant-line: oklch(0.58 0.1 262);
+    background-color: var(--background);
+    color: var(--foreground);
+    position: relative;
+  }
+
+  /* BLUEHOUR — 濃紺バンド（ロゴ土台色）。Web/IT セクション専用の暗い面。
+     .darkroom（暖色の暗室＝写真用）とは別物として温存し、ここはエンジニアリング文脈の冷たい面。
+     全トークンを局所補完し（ライト値の漏れ＝AA破綻を防ぐ）、子要素が濃紺配色を継承する。各ページ1枚厳守 */
+  .bluehour {
+    --background: oklch(0.16 0.045 262);
+    --foreground: oklch(0.95 0.01 262);
+    --foreground-soft: oklch(0.82 0.018 262);
+    --surface-sink: oklch(0.185 0.045 262);
+    --muted: oklch(0.22 0.03 262);
+    --muted-foreground: oklch(0.72 0.02 262);
+    --card: oklch(0.2 0.04 262);
+    --card-warm: oklch(0.235 0.05 262);
+    --card-foreground: oklch(0.95 0.01 262);
+    --popover: oklch(0.18 0.04 262);
+    --popover-foreground: oklch(0.95 0.01 262);
+    --secondary: oklch(0.24 0.04 262);
+    --secondary-foreground: oklch(0.95 0.01 262);
+    --accent: oklch(0.24 0.04 262);
+    --accent-foreground: oklch(0.95 0.01 262);
+    --primary: oklch(0.93 0.01 262);
+    --primary-foreground: oklch(0.16 0.04 262);
+    --border: oklch(1 0 0 / 12%);
+    --input: oklch(1 0 0 / 13%);
+    --ring: oklch(0.7 0.12 262);
+    --frame-line: oklch(0.6 0.08 262);
+    /* 濃紺面で AA が出る明度へ持ち上げた灯（青テキスト約7.2:1／琥珀テキスト約7.6:1） */
+    --safelight: oklch(0.8 0.14 70);
+    --safelight-strong: oklch(0.7 0.14 62);
+    --safelight-wash: oklch(0.8 0.14 70 / 0.14);
+    --coolant: oklch(0.7 0.16 262);
+    --coolant-strong: oklch(0.7 0.16 262);
+    --coolant-wash: oklch(0.7 0.16 262 / 0.14);
+    --coolant-line: oklch(0.55 0.1 262);
+    --brand-blue: oklch(0.72 0.18 262);
+    --chart-1: oklch(0.8 0.14 70);
+    --chart-2: oklch(0.7 0.16 262);
+    --chart-3: oklch(0.7 0.09 160);
+    --chart-4: oklch(0.8 0.1 95);
+    --chart-5: oklch(0.6 0.02 262);
     background-color: var(--background);
     color: var(--foreground);
     position: relative;
