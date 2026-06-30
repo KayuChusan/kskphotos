@@ -19,39 +19,79 @@ export function SiteHeader() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+  // ヘッダー直下のセクションが暗い面(data-header-dark)か。暗い面では白ロゴ・濃紺ヘッダーへ追従。
+  const [overDark, setOverDark] = useState(isHome);
   // モバイルメニュー(Sheet)の開閉。リンクをタップしたら閉じる。
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
+    const HEADER_H = 64;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      setScrolled(window.scrollY > 24);
+      // ヘッダーのすぐ下(y=HEADER_H)を跨ぐ「暗い面」があれば overDark
+      let dark = false;
+      document
+        .querySelectorAll<HTMLElement>("[data-header-dark]")
+        .forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.top <= HEADER_H && r.bottom > HEADER_H) dark = true;
+        });
+      setOverDark(dark);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [pathname]);
 
-  // トップはヒーローに重ねる透過ヘッダー、スクロールでブラー背景へ
-  const transparent = isHome && !scrolled;
+  // トップ(ヒーロー最上部)は透過ヘッダー。スクロール後はセクションの明暗に追従。
+  const transparentTop = isHome && !scrolled;
+  // 暗い面に重なるときの局所トークン（白文字・CTAは明色ボタン・濃紺ヘッダー）。透過トップ時は背景なし。
+  const darkVars = {
+    "--foreground": "oklch(0.95 0.01 262)",
+    "--muted-foreground": "oklch(0.78 0.02 262)",
+    "--primary": "oklch(0.95 0.01 262)",
+    "--primary-foreground": "oklch(0.18 0.04 262)",
+    "--border": "oklch(1 0 0 / 0.12)",
+  } as React.CSSProperties;
+  const headerStyle: React.CSSProperties | undefined = overDark
+    ? transparentTop
+      ? darkVars
+      : { ...darkVars, backgroundColor: "oklch(0.16 0.045 262 / 0.82)" }
+    : undefined;
 
   return (
     <header
+      style={headerStyle}
       className={cn(
         "z-50 w-full transition-all duration-500",
         isHome ? "fixed top-0" : "sticky top-0",
-        transparent
+        transparentTop
           ? "border-b border-transparent bg-transparent"
-          : "border-b border-border/60 bg-background/75 backdrop-blur-md"
+          : overDark
+            ? "border-b border-white/10 backdrop-blur-md"
+            : "border-b border-border/60 bg-background/75 backdrop-blur-md"
       )}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center" aria-label="KSK Works ホーム">
           <Image
-            src={transparent ? "/ksk-works-logo-light.png" : "/ksk-works-logo-dark.png"}
+            src={overDark ? "/ksk-works-logo-light.png" : "/ksk-works-logo-dark.png"}
             alt="KSK Works"
             width={960}
             height={168}
             className={cn(
               "h-7 w-auto",
-              transparent && "drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]"
+              transparentTop && "drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]"
             )}
           />
         </Link>

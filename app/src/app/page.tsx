@@ -300,7 +300,7 @@ export default async function HomePage() {
       </section>
 
       {/* 04 IT Support — 濃紺バンド（ささえる＝Web/IT・機械の面）。03 の薄明から夜へ降りる。フッターまで地続き */}
-      <section data-snap className="bluehour grain py-24">
+      <section data-snap data-header-dark className="bluehour grain py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             {/* ターミナル風パネル(後日現場写真に差し替え可) */}

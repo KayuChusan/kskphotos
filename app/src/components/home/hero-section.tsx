@@ -118,6 +118,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
   return (
     <section
       ref={containerRef}
+      data-header-dark
       className="grain relative flex min-h-screen items-center justify-center overflow-hidden bg-black text-white"
     >
       {/* Parallax photo（スクロール視差）＋ 入場は露光フェード */}
