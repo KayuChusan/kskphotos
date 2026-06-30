@@ -509,6 +509,44 @@
     position: relative;
   }
 
+  /* DAWN — 薄明の寒色ライト面。写真(暖クリーム)とWeb/IT(濃紺)の橋渡し用の中間トーン。
+     明るい面のまま“寒色側”へ寄せ、前景は暖色ライトの黒文字を維持（AA安全）。
+     ＝「つくる（撮影×Web の合わせ技）」セクション専用。暖→寒→濃紺の温度推移を作る */
+  .dawn {
+    --background: oklch(0.95 0.02 258);
+    /* 前景・アクセントは光モードの値を明示固定（ダークモード下でも明るい面のまま＝低コントラスト事故防止） */
+    --foreground: oklch(0.255 0.013 75);
+    --foreground-soft: oklch(0.4 0.016 72);
+    --muted-foreground: oklch(0.49 0.018 75);
+    --surface-sink: oklch(0.93 0.022 258);
+    --card: oklch(0.97 0.014 258);
+    --card-warm: oklch(0.95 0.026 262);
+    --card-foreground: oklch(0.255 0.013 75);
+    --popover: oklch(0.97 0.012 258);
+    --popover-foreground: oklch(0.255 0.013 75);
+    --muted: oklch(0.91 0.02 258);
+    --secondary: oklch(0.91 0.02 258);
+    --secondary-foreground: oklch(0.3 0.015 75);
+    --accent: oklch(0.91 0.02 258);
+    --accent-foreground: oklch(0.3 0.015 75);
+    --primary: oklch(0.32 0.02 70);
+    --primary-foreground: oklch(0.98 0.005 85);
+    --border: oklch(0.85 0.025 260);
+    --input: oklch(0.86 0.025 260);
+    --ring: oklch(0.55 0.14 262);
+    --frame-line: oklch(0.7 0.05 260);
+    --safelight: oklch(0.62 0.13 60);
+    --safelight-strong: oklch(0.5 0.145 55);
+    --safelight-wash: oklch(0.62 0.13 60 / 0.1);
+    --coolant: oklch(0.58 0.16 262);
+    --coolant-strong: oklch(0.46 0.13 262);
+    --coolant-wash: oklch(0.58 0.16 262 / 0.08);
+    --coolant-line: oklch(0.6 0.12 262);
+    background-color: var(--background);
+    color: var(--foreground);
+    position: relative;
+  }
+
   /* SAFELIGHT WASH — アクセントを「点」から「面/にじみ」へ昇華する非テキスト帯。
      1画面1箇所まで。本文には敷かない */
   .safelight-wash {
