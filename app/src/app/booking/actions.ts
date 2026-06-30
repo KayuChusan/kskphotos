@@ -1,8 +1,12 @@
 "use server";
 
+import { headers } from "next/headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { sendNotification } from "@/lib/mail";
+import { sendNotification, sendAutoReply } from "@/lib/mail";
+import { checkRateLimit, clientIpFromForwardedFor } from "@/lib/rate-limit";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kskworks.jp";
 
 export type BookingState = {
   status: "idle" | "success" | "error";
@@ -28,6 +32,20 @@ export async function submitBooking(
   _prev: BookingState,
   formData: FormData
 ): Promise<BookingState> {
+  // ハニーポット: 隠しフィールドに値が入っていれば bot とみなし黙って成功扱いで破棄。
+  if ((formData.get("company") as string)?.trim()) {
+    return { status: "success", message: "ご相談を受け付けました。" };
+  }
+
+  // IP 単位の簡易レート制限（スパム / メールコスト DoS の抑止）
+  const ip = clientIpFromForwardedFor((await headers()).get("x-forwarded-for"));
+  if (!checkRateLimit(`booking:${ip}`, 5, 60_000)) {
+    return {
+      status: "error",
+      message: "送信が続いています。しばらく時間をおいて再度お試しください。",
+    };
+  }
+
   const parsed = schema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -73,13 +91,18 @@ export async function submitBooking(
       },
     });
     await sendNotification({
-      subject: `【撮影依頼】${d.name} 様 / ${service.title}`,
-      text: `お名前: ${d.name}\nメール: ${d.email}\n電話: ${d.phone ?? "-"}\nプラン: ${service.title}\n希望日: ${d.date ?? "-"}\n場所: ${d.location ?? "-"}\n\n${composedMessage}`,
+      subject: `【撮影のご相談】${d.name} 様 / ${service.title}`,
+      text: `お名前: ${d.name}\nメール: ${d.email}\n電話: ${d.phone ?? "-"}\nプラン: ${service.title}\n希望日: ${d.date ?? "-"}\n場所: ${d.location ?? "-"}\n\n${composedMessage}\n\n管理画面: ${siteUrl}/admin/bookings`,
       replyTo: d.email,
+    });
+    await sendAutoReply({
+      to: d.email,
+      subject: "【KSK Works】撮影のご相談を受け付けました",
+      text: `${d.name} 様\n\nこの度はお問い合わせいただきありがとうございます。\n以下の内容で受け付けました。2営業日以内にご連絡いたします。\nお見積り・お打ち合わせのうえで撮影が確定します。\n\nプラン: ${service.title}\n希望日: ${d.date ?? "-"}\n場所: ${d.location ?? "-"}\n\n※本メールは自動送信です。お心当たりがない場合は破棄してください。\n\nKSK Works`,
     });
     return {
       status: "success",
-      message: "ご依頼を受け付けました。2営業日以内にご連絡いたします。",
+      message: "ご相談を受け付けました。2営業日以内にご連絡いたします。",
     };
   } catch (err) {
     console.error("submitBooking error:", err);

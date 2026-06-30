@@ -16,6 +16,10 @@ RUN npx prisma generate
 # ISR ページが generateStaticParams で DB を参照するため、ビルド時に DB 接続が必要
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
+# GA4 計測ID。NEXT_PUBLIC_* はビルド時にバンドルへインライン化されるため build-arg で渡す。
+# 未指定なら空 → アプリは計測スクリプトを一切出力しない。
+ARG NEXT_PUBLIC_GA_ID
+ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
 RUN npm run build
 
 # --- Production ---

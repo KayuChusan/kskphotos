@@ -23,6 +23,29 @@ export function SiteFooter() {
             <p className="exif-text mt-5 text-muted-foreground/50">
               <span className="text-safelight">●</span> RAW · Lightroom
             </p>
+
+            {/* 運営者情報（最小限の信頼性表示。住所・電話は出さず連絡導線に集約） */}
+            <dl className="mt-6 space-y-1 text-xs leading-relaxed text-muted-foreground/80">
+              <div className="flex gap-2">
+                <dt className="w-12 shrink-0 text-muted-foreground/50">運営者</dt>
+                <dd>KSK Works</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="w-12 shrink-0 text-muted-foreground/50">拠点</dt>
+                <dd>神奈川（全国出張対応）</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="w-12 shrink-0 text-muted-foreground/50">連絡先</dt>
+                <dd>
+                  <a
+                    href="mailto:info@kskworks.jp"
+                    className="transition-colors hover:text-foreground"
+                  >
+                    info@kskworks.jp
+                  </a>
+                </dd>
+              </div>
+            </dl>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -58,12 +81,20 @@ export function SiteFooter() {
           <p className="exif-text text-muted-foreground">
             &copy; {new Date().getFullYear()} KSK Works. All rights reserved.
           </p>
-          <Link
-            href="/privacy"
-            className="text-xs text-muted-foreground transition-colors hover:text-foreground"
-          >
-            プライバシーポリシー
-          </Link>
+          <div className="flex items-center gap-5">
+            <Link
+              href="/contact"
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              お問い合わせ
+            </Link>
+            <Link
+              href="/privacy"
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              プライバシーポリシー
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

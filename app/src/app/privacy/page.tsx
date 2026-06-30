@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "プライバシーポリシー — KSK Works における個人情報の取り扱いについて。",
 };
 
-const LAST_UPDATED = "2026年6月20日";
+const LAST_UPDATED = "2026年6月30日";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -92,12 +92,47 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold">6. Cookie の使用</h2>
+          <h2 className="text-lg font-semibold">
+            6. Cookie とアクセス解析（外部送信について）
+          </h2>
           <p className="text-sm text-muted-foreground">
-            当サイトでは、管理者のログイン状態を保持する目的で Cookie
-            を使用します。現在、第三者によるアクセス解析・広告目的の Cookie
-            は使用していません。今後導入する場合は、本ポリシーを改定のうえお知らせします。
-            なお、Cookie はブラウザの設定により拒否することが可能です。
+            当サイトでは、管理者のログイン状態を保持する目的のほか、サイトの利用状況を把握し
+            サービスを改善する目的で、Google LLC が提供するアクセス解析ツール「Google
+            Analytics 4」を利用しています。同ツールは Cookie
+            を用いて利用者の閲覧情報を収集します。
+          </p>
+          <p className="text-sm text-muted-foreground">
+            電気通信事業法（外部送信規律）に基づき、利用者の端末から外部へ送信される情報を
+            以下のとおり公表します。
+          </p>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+            <li>送信先: Google LLC（Google Analytics 4）</li>
+            <li>
+              送信される情報: Cookie 識別子、閲覧したページの URL・参照元、IP
+              アドレス、ブラウザ・端末・OS の種類、おおよその地域、アクセス日時など
+            </li>
+            <li>利用目的: サイトの利用状況の分析およびサービスの改善</li>
+          </ul>
+          <p className="text-sm text-muted-foreground">
+            収集された情報は Google のプライバシーポリシーに基づき管理されます（
+            <a
+              href="https://policies.google.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-foreground underline underline-offset-4"
+            >
+              policies.google.com/privacy
+            </a>
+            ）。Cookie はブラウザの設定により拒否でき、また「
+            <a
+              href="https://tools.google.com/dlpage/gaoptout"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-foreground underline underline-offset-4"
+            >
+              Google アナリティクス オプトアウト アドオン
+            </a>
+            」により Google Analytics による収集を無効化できます。
           </p>
         </section>
 

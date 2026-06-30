@@ -26,6 +26,8 @@ export function BookingForm({ services }: { services: ServiceOption[] }) {
       <div className="rounded-lg border border-safelight/40 bg-safelight/5 p-6 text-center">
         <p className="font-heading text-lg">{state.message}</p>
         <p className="mt-2 text-sm text-muted-foreground">
+          内容を確認のうえご連絡します。お見積り・お打ち合わせのうえで撮影が確定します。
+          <br />
           お急ぎの場合は info@kskworks.jp までご連絡ください。
         </p>
       </div>
@@ -34,6 +36,17 @@ export function BookingForm({ services }: { services: ServiceOption[] }) {
 
   return (
     <form action={formAction} className="space-y-6">
+      {/* ハニーポット: 人間には見えない。bot が埋めると送信は破棄される（aria-hidden / tabIndex -1） */}
+      <div aria-hidden className="pointer-events-none absolute left-[-9999px] h-0 w-0 overflow-hidden">
+        <label htmlFor="company">会社名（入力不要）</label>
+        <input
+          id="company"
+          name="company"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="name">お名前 *</Label>
@@ -99,7 +112,7 @@ export function BookingForm({ services }: { services: ServiceOption[] }) {
       )}
 
       <Button type="submit" size="lg" className="w-full" disabled={pending}>
-        {pending ? "送信中…" : "この内容で依頼する"}
+        {pending ? "送信中…" : "この内容で相談する"}
       </Button>
     </form>
   );

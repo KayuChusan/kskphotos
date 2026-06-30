@@ -1,0 +1,18 @@
+# 既知脆弱性・古い依存の検知。週次で PR を作成（npm = app/、GitHub Actions）。
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      # マイナー/パッチはまとめて 1 PR に（レビュー負荷を抑える）
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

@@ -15,6 +15,8 @@ import { maskPhotoImage, redactShootingMeta } from "@/lib/photo-visibility";
 import { LockedTile } from "@/components/gallery/locked-tile";
 import { MemberGate } from "@/components/member-gate";
 import { NoteGateButton } from "@/components/note-gate-button";
+import { JsonLd } from "@/components/json-ld";
+import { breadcrumbSchema } from "@/lib/structured-data";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -96,6 +98,16 @@ export default async function PhotoDetailPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* パンくず構造化データ。会員限定（noindex）コレクションには出さない。 */}
+      {!lockedCollection && (
+        <JsonLd
+          data={breadcrumbSchema([
+            { name: "ホーム", path: "/" },
+            { name: "ギャラリー", path: "/gallery" },
+            { name: photo.title, path: `/gallery/${photo.id}` },
+          ])}
+        />
+      )}
       <Link
         href="/gallery"
         className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
