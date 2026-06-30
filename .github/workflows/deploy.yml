@@ -59,7 +59,7 @@ jobs:
       # ISR が新フィールドを参照するため、ビルド前に同期が必要）。
       # 追加のみ(非破壊)の変更を db push で同期。--accept-data-loss は付けず、
       # 破壊的変更は意図的に失敗させる（誤ってデータを落とさないガード）。
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
