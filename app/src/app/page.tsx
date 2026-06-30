@@ -105,8 +105,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 02 Photography — フィルムストリップ（沈め面＋冷却灯wash） */}
-      <section data-snap className="coolant-wash bg-surface-sink py-24">
+      {/* 02 Photography — フィルムストリップ（沈め面＋暖wash。写真＝暖色） */}
+      <section data-snap className="safelight-wash bg-surface-sink py-24">
         <div className="container mx-auto px-4">
           <div className="mb-10 flex items-end justify-between">
             <div>
@@ -288,8 +288,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 04 IT Support（沈め面＋暖wash。02 の冷wash と温度を対にする） */}
-      <section data-snap className="safelight-wash bg-surface-sink py-24">
+      {/* 04 IT Support — 濃紺バンド（ロゴ土台色＝Web/IT・機械の面）。ページ唯一の bluehour */}
+      <section data-snap className="bluehour grain py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             {/* ターミナル風パネル(後日現場写真に差し替え可) */}
@@ -304,26 +304,26 @@ export default async function HomePage() {
               </div>
               <div className="space-y-2 p-6 font-mono text-xs leading-relaxed text-muted-foreground md:text-sm">
                 <p>
-                  <span className="text-safelight">$</span> whoami
+                  <span className="text-coolant">$</span> whoami
                 </p>
                 <p className="text-foreground">
                   infrastructure engineer / photographer
                 </p>
                 <p className="pt-2">
-                  <span className="text-safelight">$</span> systemctl status
+                  <span className="text-coolant">$</span> systemctl status
                   website
                 </p>
                 <p className="text-foreground">
-                  <span className="text-safelight">●</span> active (running) —
+                  <span className="text-coolant">●</span> active (running) —
                   サイトは止めない
                 </p>
                 <p className="pt-2">
-                  <span className="text-safelight">$</span> support --request
+                  <span className="text-coolant">$</span> support --request
                   &quot;なんでも&quot;
                 </p>
                 <p className="text-foreground">
                   → 機材選定からトラブルまで、まずはご相談を
-                  <span className="ml-1 inline-block w-2 animate-pulse bg-safelight">
+                  <span className="ml-1 inline-block w-2 animate-pulse bg-coolant">
                     &nbsp;
                   </span>
                 </p>
