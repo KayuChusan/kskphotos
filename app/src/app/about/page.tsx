@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getProfile, parseGearItem } from "@/lib/profile";
+import { JsonLd } from "@/components/json-ld";
+import { personSchema, breadcrumbSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/about" }),
@@ -47,6 +49,19 @@ export default async function AboutPage() {
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8">
+      <JsonLd
+        data={[
+          personSchema({
+            name: profile.name,
+            image: profile.profileImage,
+            knowsAbout: ["ポートレート撮影", "出張撮影", "Web制作"],
+          }),
+          breadcrumbSchema([
+            { name: "ホーム", path: "/" },
+            { name: "プロフィール", path: "/about" },
+          ]),
+        ]}
+      />
       <div className="mb-10">
         <p className="eyebrow">Profile</p>
         <h1 className="mt-2 font-heading text-5xl font-medium">プロフィール</h1>

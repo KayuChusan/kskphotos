@@ -25,6 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { JaText } from "@/components/ui/ja-text";
 import { cn } from "@/lib/utils";
+import { JsonLd } from "@/components/json-ld";
+import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/services" }),
@@ -115,6 +117,19 @@ export default async function ServicesPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
+      <JsonLd
+        data={[
+          serviceSchema({
+            name: "出張撮影・Web制作",
+            price: 11000,
+            offerDescription: "撮影1時間あたり（約20枚セレクト納品）",
+          }),
+          breadcrumbSchema([
+            { name: "ホーム", path: "/" },
+            { name: "料金・メニュー", path: "/services" },
+          ]),
+        ]}
+      />
       <div className="mb-14 text-center">
         <p className="eyebrow">Menu &amp; Pricing</p>
         <h1 className="mt-3 font-heading text-5xl font-medium">料金・メニュー</h1>

@@ -25,6 +25,17 @@ export function ContactForm() {
 
   return (
     <form action={formAction} className="space-y-4">
+      {/* ハニーポット: 人間には見えない。bot が埋めると送信は破棄される（aria-hidden / tabIndex -1） */}
+      <div aria-hidden className="pointer-events-none absolute left-[-9999px] h-0 w-0 overflow-hidden">
+        <label htmlFor="company">会社名（入力不要）</label>
+        <input
+          id="company"
+          name="company"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="name">お名前 *</Label>

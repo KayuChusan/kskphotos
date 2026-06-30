@@ -5,6 +5,9 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { MotionProvider } from "@/components/motion-provider";
 import { SpeculationRules } from "@/components/speculation-rules";
+import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { JsonLd } from "@/components/json-ld";
+import { siteGraph } from "@/lib/structured-data";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -82,30 +85,6 @@ export const metadata: Metadata = {
   },
 };
 
-// 出張撮影＝地域ビジネスのローカルSEO向け構造化データ
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: "KSK Works",
-  description: siteDescription,
-  url: siteUrl,
-  image: `${siteUrl}/opengraph-image`,
-  email: "info@kskworks.jp",
-  // 居住地は神奈川、出張撮影は全国対応
-  address: {
-    "@type": "PostalAddress",
-    addressRegion: "神奈川県",
-    addressCountry: "JP",
-  },
-  areaServed: ["日本"],
-  serviceType: [
-    "出張撮影",
-    "ポートレート撮影",
-    "イベント撮影",
-    "Web制作・IT サポート",
-  ],
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -118,12 +97,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
       >
         <body className="flex min-h-full flex-col">
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-          />
+          <JsonLd data={siteGraph()} />
           <div aria-hidden className="bg-aurora" />
           <SpeculationRules />
+          <GoogleAnalytics />
           <MotionProvider>
             <SiteHeader />
             <main className="flex-1">{children}</main>

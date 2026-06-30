@@ -32,7 +32,9 @@ export default async function BookingPage() {
         <p className="eyebrow">Reservation</p>
         <h1 className="mt-3 font-heading text-5xl font-medium">撮影のご依頼</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          撮影のご依頼はこちらから。2営業日以内にご連絡いたします。
+          撮影のご相談・お見積りはこちらから。2営業日以内にご連絡いたします。
+          <br className="hidden sm:block" />
+          お見積り・お打ち合わせのうえで撮影が確定します。
         </p>
       </div>
 
