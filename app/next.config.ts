@@ -28,6 +28,8 @@ const csp = [
   "font-src 'self'",
   // maplibre-gl は blob: の Web Worker を生成するため許可（地図ビュー）
   "worker-src 'self' blob:",
+  // プラグイン（<object>/<embed>）を無効化
+  "object-src 'none'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
