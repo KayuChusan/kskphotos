@@ -21,24 +21,28 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   // ヘッダー直下のセクションが暗い面(data-header-dark)か。暗い面では白ロゴ・濃紺ヘッダーへ追従。
   const [overDark, setOverDark] = useState(isHome);
+  // ヘッダー直下が薄明面(data-header-dawn = 03 つくる)か。寒色ライトのヘッダーへ。
+  const [overDawn, setOverDawn] = useState(false);
   // モバイルメニュー(Sheet)の開閉。リンクをタップしたら閉じる。
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const HEADER_H = 64;
     let raf = 0;
+    const spans = (sel: string) => {
+      let hit = false;
+      document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top <= HEADER_H && r.bottom > HEADER_H) hit = true;
+      });
+      return hit;
+    };
     const update = () => {
       raf = 0;
       setScrolled(window.scrollY > 24);
-      // ヘッダーのすぐ下(y=HEADER_H)を跨ぐ「暗い面」があれば overDark
-      let dark = false;
-      document
-        .querySelectorAll<HTMLElement>("[data-header-dark]")
-        .forEach((el) => {
-          const r = el.getBoundingClientRect();
-          if (r.top <= HEADER_H && r.bottom > HEADER_H) dark = true;
-        });
-      setOverDark(dark);
+      // ヘッダーのすぐ下(y=HEADER_H)を跨ぐ面の明暗で追従
+      setOverDark(spans("[data-header-dark]"));
+      setOverDawn(spans("[data-header-dawn]"));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -55,7 +59,7 @@ export function SiteHeader() {
 
   // トップ(ヒーロー最上部)は透過ヘッダー。スクロール後はセクションの明暗に追従。
   const transparentTop = isHome && !scrolled;
-  // 暗い面に重なるときの局所トークン（白文字・CTAは明色ボタン・濃紺ヘッダー）。透過トップ時は背景なし。
+  // 暗い面に重なるときの局所トークン（白文字・CTAは明色ボタン・濃紺ヘッダー）。
   const darkVars = {
     "--foreground": "oklch(0.95 0.01 262)",
     "--muted-foreground": "oklch(0.78 0.02 262)",
@@ -63,11 +67,19 @@ export function SiteHeader() {
     "--primary-foreground": "oklch(0.18 0.04 262)",
     "--border": "oklch(1 0 0 / 0.12)",
   } as React.CSSProperties;
-  const headerStyle: React.CSSProperties | undefined = overDark
-    ? transparentTop
+  // 背景に合わせて 濃紺 / 薄明(寒色ライト) / 生成り(暖) を出し分け。透過トップは背景なし。
+  const headerBg = overDark
+    ? "oklch(0.16 0.045 262 / 0.82)"
+    : overDawn
+      ? "oklch(0.95 0.02 258 / 0.82)"
+      : "oklch(0.975 0.008 85 / 0.75)";
+  const headerStyle: React.CSSProperties | undefined = transparentTop
+    ? overDark
       ? darkVars
-      : { ...darkVars, backgroundColor: "oklch(0.16 0.045 262 / 0.82)" }
-    : undefined;
+      : undefined
+    : overDark
+      ? { ...darkVars, backgroundColor: headerBg }
+      : { backgroundColor: headerBg };
 
   return (
     <header
@@ -79,7 +91,7 @@ export function SiteHeader() {
           ? "border-b border-transparent bg-transparent"
           : overDark
             ? "border-b border-white/10 backdrop-blur-md"
-            : "border-b border-border/60 bg-background/75 backdrop-blur-md"
+            : "border-b border-border/60 backdrop-blur-md"
       )}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">

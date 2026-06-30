@@ -187,7 +187,7 @@ export default async function HomePage() {
 
       {/* 03 Web Production — 薄明の寒色ライト面（つくる＝撮影×Web の橋渡し）。
           暖クリーム(02)→寒色ライト(03)→濃紺(04) の温度推移。04 との境界も明暗で明確に */}
-      <section data-snap className="dawn py-24">
+      <section data-snap data-header-dawn className="dawn py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div>
