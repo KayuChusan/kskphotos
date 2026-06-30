@@ -8,6 +8,7 @@ import { HeroSection } from "@/components/home/hero-section";
 import { SnapScroll } from "@/components/home/snap-scroll";
 import { CountUp } from "@/components/count-up";
 import { SectionMark } from "@/components/ui/section-mark";
+import { HOME_STATS_ENABLED } from "@/lib/feature-flags";
 
 export const metadata: Metadata = pageSeo({ path: "/" });
 
@@ -30,28 +31,37 @@ export default async function HomePage() {
     ...excludeLockedPhotos,
   };
 
-  const [featured, heroCount, totalPhotos, lenses, locations] =
-    await Promise.all([
-      prisma.photo.findMany({
-        where: { isPublished: true, isPortfolio: true, ...excludeLockedPhotos },
-        orderBy: { createdAt: "desc" },
-        take: 6,
-      }),
-      // ヒーロー候補（管理画面で Hero 指定した写真）の件数。全件は読み込まない
-      prisma.photo.count({ where: heroWhere }),
-      // 撮影データの集計は会員限定（非公開）も含めてカウント（件数のみ表示・値は出さない）
-      prisma.photo.count({ where: { isPublished: true } }),
-      prisma.photo.findMany({
-        where: { isPublished: true, lensModel: { not: null } },
-        select: { lensModel: true },
-        distinct: ["lensModel"],
-      }),
-      prisma.photo.findMany({
-        where: { isPublished: true, location: { not: null } },
-        select: { location: true },
-        distinct: ["location"],
-      }),
-    ]);
+  const [featured, heroCount] = await Promise.all([
+    prisma.photo.findMany({
+      where: { isPublished: true, isPortfolio: true, ...excludeLockedPhotos },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    }),
+    // ヒーロー候補（管理画面で Hero 指定した写真）の件数。全件は読み込まない
+    prisma.photo.count({ where: heroWhere }),
+  ]);
+
+  // 05「By the Numbers」の集計は HOME_STATS_ENABLED のときだけ実行（非表示時は DB コスト 0）
+  const [totalPhotos, lenses, locations] = HOME_STATS_ENABLED
+    ? await Promise.all([
+        // 撮影データの集計は会員限定（非公開）も含めてカウント（件数のみ表示・値は出さない）
+        prisma.photo.count({ where: { isPublished: true } }),
+        prisma.photo.findMany({
+          where: { isPublished: true, lensModel: { not: null } },
+          select: { lensModel: true },
+          distinct: ["lensModel"],
+        }),
+        prisma.photo.findMany({
+          where: { isPublished: true, location: { not: null } },
+          select: { location: true },
+          distinct: ["location"],
+        }),
+      ])
+    : [
+        0,
+        [] as { lensModel: string | null }[],
+        [] as { location: string | null }[],
+      ];
 
   // ヒーロー候補から1枚だけ取得（count→skipで全件ロードを避ける）。指定が無ければ最新で代替。
   // ISR の再生成時に乱数が1回評価され、その期間のヒーローが決まる（純度ルール対象外）。
@@ -175,8 +185,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 03 Web Production（生成り） */}
-      <section data-snap className="py-24">
+      {/* 03 Web Production — 濃紺チャプター前半（つくる）。04 と連続した「Web/IT の幕」 */}
+      <section data-snap className="bluehour grain py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div>
@@ -231,9 +241,9 @@ export default async function HomePage() {
                   </span>
                 </div>
               )}
-              {/* 撮影 → 制作 */}
+              {/* 撮影 → 制作（写真＝RAW琥珀 → Web＝青の動作） */}
               <div className="flex shrink-0 flex-col items-center gap-1 text-muted-foreground">
-                <span className="font-mono text-2xl leading-none text-safelight">
+                <span className="font-mono text-2xl leading-none text-coolant">
                   →
                 </span>
                 <span className="exif-text">制作</span>
@@ -288,7 +298,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 04 IT Support — 濃紺バンド（ロゴ土台色＝Web/IT・機械の面）。ページ唯一の bluehour */}
+      {/* 04 IT Support — 濃紺チャプター後半（ささえる）。03 から連続する Web/IT の幕 */}
       <section data-snap className="bluehour grain py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
@@ -359,7 +369,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
+      {/* Stats — 数字が育つまで非表示（HOME_STATS_ENABLED）。濃紺の締めを分断しないため 04→フッターを地続きに */}
+      {HOME_STATS_ENABLED && (
       <section data-snap className="py-20">
         <div className="container mx-auto px-4">
           <SectionMark no="05" label="By the Numbers" className="mb-12" />
@@ -393,6 +404,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      )}
     </>
   );
 }

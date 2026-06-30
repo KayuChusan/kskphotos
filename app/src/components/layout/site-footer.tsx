@@ -4,12 +4,12 @@ import { mainNav, secondaryNav } from "./nav-config";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t">
+    <footer className="bluehour grain border-t">
       <div className="container mx-auto px-4 py-16">
         <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
           <div>
             <Image
-              src="/ksk-works-logo-dark.png"
+              src="/ksk-works-logo-light.png"
               alt="KSK Works"
               width={960}
               height={168}
