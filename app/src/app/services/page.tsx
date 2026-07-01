@@ -378,7 +378,7 @@ export default async function ServicesPage() {
             </p>
             <p className="mx-auto mt-2 max-w-2xl text-xs leading-relaxed text-muted-foreground/80">
               <JaText>
-                ドメイン・メール・Google Workspace / Microsoft 365 の初期構築もご相談いただけます（設定・移行・手順書の納品まで。運用はお客様保有・即応保証（SLA）なし・個別見積）。当方は現在免税事業者のため、適格請求書（インボイス）は発行できません。
+                ドメイン・メール・Google Workspace / Microsoft 365 の初期構築もご相談いただけます（設定・移行・手順書の納品まで。ライセンスはお客様名義で直接契約・運用はお客様保有・即応保証（SLA）なし・個別見積）。当方は現在免税事業者のため、適格請求書（インボイス）は発行できません。
               </JaText>
             </p>
           </div>
