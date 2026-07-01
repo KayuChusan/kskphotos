@@ -6,4 +6,5 @@ export const SOURCE_MANAGED_IDS: string[] = [
   "seed-svc-photo",
   "seed-svc-web",
   "seed-svc-maint",
+  "seed-svc-it",
 ];
