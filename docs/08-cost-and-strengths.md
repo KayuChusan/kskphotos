@@ -103,7 +103,7 @@ Cloud CDN は `terraform/modules/storage/main.tf` にバックエンドバケッ
 `terraform/modules/iam/main.tf` の Workload Identity Federation により、GitHub Actions は**サービスアカウントキー（JSON）を持たずに** GCP 認証します。
 
 - 鍵ファイルの発行・ローテーション・漏洩対応といった**運用コストが構造的に発生しない**
-- 認証トークンは短寿命で、リポジトリ単位に制限（`attribute_condition = "assertion.repository == 'KayuChusan/kskphotos'"`）
+- 認証トークンは短寿命で、リポジトリ単位に制限（`attribute_condition = "assertion.repository == 'kskworks/kskphotos'"`）
 
 金額としては $0 ですが、「管理し続けるコスト（と漏洩リスク）を設計で消す」という、運用視点のコスト最適化です。
 
@@ -118,7 +118,7 @@ Cloud CDN は `terraform/modules/storage/main.tf` にバックエンドバケッ
 | 強み軸 | kskphotos での実証（具体ファイル・機能） | 採用観点での意味 |
 |--------|----------------------------------------|----------------|
 | **IaC 全レイヤを Terraform 化** | `terraform/` をモジュール分割（`cloud-run` / `iam` / `artifact-registry` / `storage`）。`resources.tf` から呼び出し、`outputs.tf` で接続値を公開 | クリック操作でなく宣言的にインフラを再現・レビューできる。手順書ではなくコードでインフラを語れる |
-| **キーレス CD（WIF / OIDC）** | `modules/iam/main.tf` の Workload Identity Pool + Provider。`attribute_condition` で `KayuChusan/kskphotos` リポジトリに限定 | クラウドのセキュリティ慣行（長期鍵を持たない）を実装に落とせる。鍵漏洩という典型インシデントを設計で予防 |
+| **キーレス CD（WIF / OIDC）** | `modules/iam/main.tf` の Workload Identity Pool + Provider。`attribute_condition` で `kskworks/kskphotos` リポジトリに限定 | クラウドのセキュリティ慣行（長期鍵を持たない）を実装に落とせる。鍵漏洩という典型インシデントを設計で予防 |
 | **最小権限の IAM 設計** | Cloud Run SA は `secretmanager.secretAccessor` と `cloudsql.client` のみ。CI/CD SA は `artifactregistry.writer` / `run.developer` / `serviceAccountUser` / `cloudsql.client` 等に限定（`modules/iam/main.tf`） | 「とりあえず Owner」を避け、役割ごとに権限を絞れる。権限の最小化を説明できる |
 | **コストを設計判断にできる** | スケール to ゼロ、Cloud SQL 共有、Artifact Registry の世代保持、CDN の意図的保留（第1部参照） | 技術選定をコストとトレードオフで語れる。過剰投資をしない判断力 |
 | **マルチサービス構成の運用** | Cloud Run / Cloud SQL / Cloud Storage / Artifact Registry / Secret Manager を連携。Secret 本体は Terraform 管理外（`gcloud` で別途作成）にして秘匿値をコードから隔離（`resources.tf` のコメント） | 単一サービスでなく、依存関係を持つ構成全体を組める。秘匿情報の扱いを分けられる |
