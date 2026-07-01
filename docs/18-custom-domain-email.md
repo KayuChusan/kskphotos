@@ -2,7 +2,7 @@
 
 ## このドキュメントの目的
 
-`kskworks.jp` で**人が読み書きするメール**（例 `contact@kskworks.jp`）を送受信するための設定手順を記録する。アプリの送信（Resend / `noreply@kskworks.jp` の一方向通知）とは別物で、両者を DNS 上で共存させる方法も含む。
+`kskworks.jp` で**人が読み書きするメール**（例 `ksk@` / `info@kskworks.jp`）を送受信し、**普段使いの個人 Gmail へ転送**（手順D）するまでの設定手順を記録する。アプリの送信（Resend / `noreply@kskworks.jp` の一方向通知）とは別物で、両者を DNS 上で共存させる方法も含む。
 
 ## 方式の選定
 
@@ -68,12 +68,27 @@ dig NS  kskworks.jp +short   →  01〜04.dnsv.jp
 
 → ランブック [03 章](./03-launch-kskworks-checklist.md) の Resend 項もこの方針に更新済み。
 
+## 手順D：iCloud 受信 → 個人 Gmail へ転送（ユーザー操作）
+
+受信メール（`ksk@` / `info@kskworks.jp`）を普段使いの個人 Gmail（`ksk.nkym0403@gmail.com`）に届けたい場合、iCloud Mail の**ルール（フィルタ）で `@kskworks.jp` 宛だけを転送**する。iCloud 全体転送（「メールの転送先」設定）は個人 iCloud メールまで巻き込むので**使わない**。
+
+1. [icloud.com](https://www.icloud.com) → メール → 左下の歯車 → **「ルール」** →「ルールを追加」。
+2. 条件: **「宛先/Cc」＋「次を含む」＋`kskworks.jp`**。
+3. 動作: **「メッセージを次へ転送」→ `ksk.nkym0403@gmail.com`**。控えを iCloud にも残すなら「＋受信ボックスに残す」系の動作も併用（iCloud の UI では転送を選ぶと原本は残る挙動が既定）。
+4. 保存。以降 `@kskworks.jp` 宛だけが個人 Gmail に届く。
+
+補足（任意・今回のゴール外）:
+- **Gmail 側で受信するだけ**なら追加設定は不要（転送メールはそのまま届く）。
+- Gmail から**差出人 `ksk@kskworks.jp` で返信**したい場合は、Gmail の「アカウントとインポート → 他のメールアドレスを追加」で iCloud SMTP（`smtp.mail.me.com` / 要 App 用パスワード）を登録する。受信・転送だけなら不要。
+- 転送は SPF/DKIM の観点で Gmail 側が稀に迷惑メール判定することがある。届かない時はまず Gmail の「迷惑メール」を確認。
+
 ## 検証（設定後）
 
 - `dig MX kskworks.jp +short` → `mx01/mx02.mail.icloud.com`。
 - `dig TXT kskworks.jp +short` → SPF が `include:icloud.com` を含む **1本のみ**＋既存の `google-site-verification`。
 - Apple 設定画面でドメイン/DKIM が緑（検証済み）。
-- 実テスト：外部（個人 Gmail 等）→ `contact@kskworks.jp` 受信を確認。iCloud から `contact@kskworks.jp` 差出で返信 → 個人 Gmail 受信＆ヘッダで SPF/DKIM pass。
+- 実テスト：外部（別アドレス）→ `ksk@kskworks.jp` 受信を確認。iCloud 受信箱に届き、かつ**手順Dのルールで個人 Gmail にも転送**されることを確認。
+- iCloud から `ksk@kskworks.jp` 差出で返信 → 相手側でヘッダに SPF/DKIM pass。
 - 既存サイト `https://kskworks.jp` が引き続き表示（A/AAAA 無傷）。
 
 ## 留意
