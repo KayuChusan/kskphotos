@@ -100,7 +100,7 @@ GitHub Actions                    GCP
     │  (リポジトリ情報を含む)         │
     │                              ├─ WIF Pool で検証
     │                              │  attribute_condition:
-    │                              │  repository == "KayuChusan/kskphotos"
+    │                              │  repository == "kskworks/kskphotos"
     │                              │
     │←── 一時的な認証トークン ────────┤
     │                              │

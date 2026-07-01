@@ -9,7 +9,7 @@ module "iam" {
 
   project_id             = var.gcp_project_id
   project_name           = var.project_name
-  github_repo            = "KayuChusan/kskphotos"
+  github_repo            = "kskworks/kskphotos"
   database_url_secret_id = var.database_url_secret_id
 }
 
