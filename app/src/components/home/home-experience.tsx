@@ -22,6 +22,7 @@ import {
   useScroll,
   useTransform,
   useReducedMotion,
+  useMotionValueEvent,
   AnimatePresence,
 } from "framer-motion";
 
@@ -254,63 +255,97 @@ function Cover({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }) {
   );
 }
 
-/* --------------- シャッターの瞬間（撮る）— 画面に入ると自動で1カット撮れる --------------- */
-/* ピン留めスクラブは廃止（スクロールを乗っ取らない）。whileInView の時間再生・一度きり */
+/* --------------------- シャッター・スクラブ（撮る、を体験する） --------------------- */
 
 function ShutterScrub({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  });
+  const [idx, setIdx] = useState(0);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    setIdx(Math.min(2, Math.floor(v * 3)));
+  });
+
+  const bracket = useTransform(
+    scrollYProgress,
+    [0, 0.3, 0.334, 0.63, 0.667, 0.96, 1],
+    [1.18, 1, 1.18, 1, 1.18, 1, 1]
+  );
+  const blur = useTransform(
+    scrollYProgress,
+    [0, 0.28, 0.334, 0.61, 0.667, 0.94, 1],
+    ["blur(10px)", "blur(0px)", "blur(10px)", "blur(0px)", "blur(10px)", "blur(0px)", "blur(0px)"]
+  );
+  const flash = useTransform(
+    scrollYProgress,
+    [0, 0.3, 0.315, 0.33, 0.63, 0.645, 0.66, 0.96, 0.975, 0.99, 1],
+    [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
+  );
+  const printAt = [0.315, 0.645, 0.975];
+  const prints = [
+    useTransform(scrollYProgress, [printAt[0], printAt[0] + 0.02], [0, 1]),
+    useTransform(scrollYProgress, [printAt[1], printAt[1] + 0.02], [0, 1]),
+    useTransform(scrollYProgress, [printAt[2], printAt[2] + 0.02], [0, 1]),
+  ];
+
   const three = photos.slice(0, 3);
   if (three.length === 0) return null;
-  const main = three[0];
+
+  if (reduce) {
+    return (
+      <section className="bg-background px-6 py-24">
+        <p className="font-mono text-[10px] uppercase tracking-[0.3em]">
+          <span className="text-rec">●</span> CAPTURE 01–03
+        </p>
+        <div className="mt-8 flex flex-wrap gap-6">
+          {three.map((p) => (
+            <div key={p.id} className="w-56 bg-white p-2 pb-8 shadow-lg">
+              <div className="relative aspect-[4/5]">
+                <Image src={photoUrl(p)!} alt={p.title} fill className="object-cover" sizes="224px" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="relative bg-background py-24">
-      <div className="container mx-auto px-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.3em]">
-          <span className="rec-blink mr-2 inline-block text-rec">●</span>
-          CAPTURE — 01 / 03
-        </p>
-        <p className="eyebrow-jp mt-1">現場でピントが合い、シャッターが落ちる。</p>
-      </div>
+    <section ref={ref} className="relative h-[320vh] bg-background">
+      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
+        <div className="absolute left-6 top-20 z-10 md:left-10">
+          <p className="font-mono text-[10px] uppercase tracking-[0.3em]">
+            <span className="rec-blink mr-2 inline-block text-rec">●</span>
+            CAPTURE {String(idx + 1).padStart(2, "0")} / 03
+          </p>
+          {/* 和文は等幅に載せず 12px 以上の別行で */}
+          <p className="eyebrow-jp mt-1">スクロールでシャッターが落ちます</p>
+        </div>
 
-      <div className="relative mx-auto mt-10 flex max-w-5xl items-center justify-center px-4">
-        {/* 被写体 — 画面に入るとピントが合う（blurのみ・opacityは常に1） */}
         <motion.div
-          className="relative aspect-square w-full max-w-[34rem] overflow-hidden bg-muted"
-          initial={reduce ? undefined : { filter: "blur(12px)" }}
-          whileInView={reduce ? undefined : { filter: "blur(0px)" }}
-          viewport={{ once: true, amount: 0.45 }}
-          transition={{ duration: 1.0, ease: EASE }}
+          className="relative h-[62vmin] w-[62vmin] overflow-hidden md:h-[68vmin] md:w-[68vmin]"
+          style={{ filter: blur }}
         >
-          {photoUrl(main) && (
+          {three.map((p, i) => (
             <Image
-              src={photoUrl(main)!}
-              alt={main.title}
+              key={p.id}
+              src={photoUrl(p)!}
+              alt=""
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 92vw, 544px"
+              style={{ opacity: idx === i ? 1 : 0 }}
+              sizes="68vmin"
+              priority={i === 0}
             />
-          )}
-          {/* シャッター幕 — ピントが合った直後に一瞬だけ落ちる */}
-          {!reduce && (
-            <motion.div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 bg-black"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: [0, 0, 1, 0] }}
-              viewport={{ once: true, amount: 0.45 }}
-              transition={{ duration: 1.5, times: [0, 0.72, 0.8, 0.95] }}
-            />
-          )}
+          ))}
         </motion.div>
 
-        {/* フォーカスブラケット — 絞り込まれて止まる */}
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute h-[calc(100%+2rem)] w-full max-w-[36rem]"
-          initial={reduce ? undefined : { scale: 1.12 }}
-          whileInView={reduce ? undefined : { scale: 1 }}
-          viewport={{ once: true, amount: 0.45 }}
-          transition={{ duration: 0.9, ease: EASE }}
+          className="pointer-events-none absolute h-[66vmin] w-[66vmin] md:h-[72vmin] md:w-[72vmin]"
+          style={{ scale: bracket }}
         >
           <span className="absolute left-0 top-0 h-10 w-10 border-l-2 border-t-2" style={{ borderColor: "var(--rec)" }} />
           <span className="absolute right-0 top-0 h-10 w-10 border-r-2 border-t-2" style={{ borderColor: "var(--rec)" }} />
@@ -318,17 +353,22 @@ function ShutterScrub({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean 
           <span className="absolute bottom-0 right-0 h-10 w-10 border-b-2 border-r-2" style={{ borderColor: "var(--rec)" }} />
         </motion.div>
 
-        {/* 撮れたプリントの棚 — シャッター後に1枚ずつ積まれる（scaleのみ・不可視化しない） */}
-        <div className="absolute -bottom-8 right-2 flex md:right-10">
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-black"
+          style={{ opacity: flash }}
+        />
+
+        <div className="absolute bottom-6 right-4 flex md:bottom-10 md:right-10">
           {three.map((p, i) => (
             <motion.div
               key={p.id}
               className="-ml-10 w-24 bg-white p-1 pb-5 shadow-lg md:-ml-12 md:w-32 md:p-1.5 md:pb-7"
-              style={{ rotate: (i - 1) * 7 }}
-              initial={reduce ? undefined : { scale: 0.6, y: 18 }}
-              whileInView={reduce ? undefined : { scale: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.55, ease: EASE, delay: 1.3 + i * 0.18 }}
+              style={{
+                opacity: prints[i],
+                scale: prints[i],
+                rotate: (i - 1) * 7,
+              }}
             >
               <div className="relative aspect-[4/5]">
                 <Image src={photoUrl(p)!} alt="" fill className="object-cover" sizes="128px" />
@@ -341,10 +381,21 @@ function ShutterScrub({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean 
   );
 }
 
-/* --------- 一枚の写真の、その後（3本柱＋実価格）— 縦に流れる3面（ピン留めなし） --------- */
+/* --------------- フィルムアドバンス — 一枚の写真の、その後（3本柱＋実価格） --------------- */
 
 function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }) {
-  // 物語の主役は「表紙で撮った、あの一枚」。3面で同じ写真が姿を変える
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  });
+  const x = useTransform(scrollYProgress, [0, 1], ["0vw", "-200vw"]);
+  const [headerDark, setHeaderDark] = useState(false);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    setHeaderDark(v > 0.2);
+  });
+
+  // 物語の主役は「表紙で撮った、あの一枚」。3パネルで同じ写真が姿を変える
   const story = photos[0];
   const storyUrl = photoUrl(story);
 
@@ -352,7 +403,6 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
     {
       key: "toru",
       surface: "bg-background",
-      dark: false,
       word: "撮る。",
       en: "01 — CAPTURE",
       desc: "現場で、この一枚を撮る。空気ごと、高品質な写真で。",
@@ -363,7 +413,6 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
     {
       key: "tsukuru",
       surface: "slam",
-      dark: true,
       word: "つくる。",
       en: "02 — BUILD",
       desc: "同じ一枚が、サイトの主役になる。設計から実装・公開まで。",
@@ -374,7 +423,6 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
     {
       key: "sasaeru",
       surface: "bluehour",
-      dark: true,
       word: "ささえる。",
       en: "03 — KEEP RUNNING",
       desc: "公開したその一枚を、止めない。運用・保守を継続サポート。",
@@ -417,6 +465,7 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
         <div className="relative aspect-[16/10] overflow-hidden bg-muted">
           <Image src={storyUrl} alt="" fill className="object-cover object-[50%_35%]" sizes="52vmin" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          {/* あの一枚の上に組まれる誌面（見出し・本文・CTA のスケルトン） */}
           <div className="absolute inset-x-4 bottom-3">
             <div className="h-[2.2vmin] w-1/2 rounded-full bg-white/90" />
             <div className="mt-[0.8vmin] h-[1.4vmin] w-1/3 rounded-full bg-white/60" />
@@ -447,6 +496,7 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
           </div>
         </div>
       )}
+      {/* 稼働コンソール — 公開後の心拍 */}
       <div className="bluehour absolute -bottom-[6vmin] right-0 w-[62%] overflow-hidden rounded-md border shadow-xl">
         <div className="flex items-center gap-1.5 border-b px-3 py-1.5">
           <span className="size-1.5 rounded-full bg-muted-foreground/40" />
@@ -469,64 +519,93 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
 
   const visuals = [RawShot, BuiltSite, RunningSite] as const;
 
-  return (
-    <section>
-      {/* 物語のラベル — この3面は「同じ一枚」の話 */}
-      <div className="bg-background">
-        <div className="container mx-auto px-4 pb-4 pt-16">
+  const PanelBody = ({ p, i }: { p: (typeof panels)[number]; i: number }) => {
+    const Visual = visuals[i];
+    return (
+      <>
+        {/* 巨大アウトライン番号 — 画面端で切る（装飾） */}
+        <span
+          aria-hidden
+          className="absolute -left-6 top-1/2 -translate-y-1/2 select-none font-mono text-[46vmin] font-bold leading-none opacity-20"
+          style={{ WebkitTextStroke: "2px var(--foreground)", color: "transparent" }}
+        >
+          {String(i + 1).padStart(2, "0")}
+        </span>
+
+        <div className="-mt-[6vmin]">
+          <Visual />
+        </div>
+
+        <p className="statement-jp absolute top-[13%] text-[clamp(3rem,12vmin,8rem)]">
+          {p.word}
+        </p>
+
+        {/* トップページの義務 — 説明・実価格・導線（タッチ44px） */}
+        <div className="absolute bottom-[7%] left-1/2 w-[86vw] max-w-md -translate-x-1/2 text-center">
+          <p className="text-sm leading-relaxed text-foreground-soft">{p.desc}</p>
+          <p className="mt-2 font-mono text-2xl font-medium tabular-nums">{p.price}</p>
+          <Link
+            href={p.href}
+            className="mt-1 inline-flex min-h-11 items-center px-4 font-mono text-xs tracking-[0.14em] underline underline-offset-8 transition-colors hover:opacity-80"
+          >
+            {p.link} →
+          </Link>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+            {p.en}
+          </p>
+        </div>
+      </>
+    );
+  };
+
+  if (reduce) {
+    return (
+      <section>
+        <div className="bg-background px-6 pt-16">
           <p className="eyebrow">One Photo — Shoot to Run</p>
           <p className="eyebrow-jp mt-1">一枚の写真が、サイトになり、動きつづけるまで。</p>
         </div>
-      </div>
-
-      {panels.map((p, i) => {
-        const Visual = visuals[i];
-        return (
+        {panels.map((p, i) => (
           <div
             key={p.key}
-            data-header-dark={p.dark ? "" : undefined}
-            className={`relative flex min-h-[92vh] items-center justify-center overflow-hidden ${p.surface === "bg-background" ? "bg-background" : p.surface}`}
+            data-header-dark={p.surface === "bg-background" ? undefined : ""}
+            className={`relative flex min-h-[80vh] items-center justify-center overflow-hidden ${p.surface === "bg-background" ? "bg-background" : p.surface}`}
           >
-            {/* 巨大アウトライン番号 — 画面端で切る（装飾） */}
-            <span
-              aria-hidden
-              className="absolute -left-6 top-1/2 -translate-y-1/2 select-none font-mono text-[46vmin] font-bold leading-none opacity-20"
-              style={{ WebkitTextStroke: "2px var(--foreground)", color: "transparent" }}
-            >
-              {String(i + 1).padStart(2, "0")}
-            </span>
-
-            <motion.div
-              className="-mt-[6vmin]"
-              initial={reduce ? undefined : { y: 26 }}
-              whileInView={reduce ? undefined : { y: 0 }}
-              viewport={{ once: true, amount: 0.35 }}
-              transition={{ duration: 0.8, ease: EASE }}
-            >
-              <Visual />
-            </motion.div>
-
-            <p className="statement-jp absolute top-[13%] text-[clamp(3rem,12vmin,8rem)]">
-              {p.word}
-            </p>
-
-            {/* トップページの義務 — 説明・実価格・導線（タッチ44px） */}
-            <div className="absolute bottom-[7%] left-1/2 w-[86vw] max-w-md -translate-x-1/2 text-center">
-              <p className="text-sm leading-relaxed text-foreground-soft">{p.desc}</p>
-              <p className="mt-2 font-mono text-2xl font-medium tabular-nums">{p.price}</p>
-              <Link
-                href={p.href}
-                className="mt-1 inline-flex min-h-11 items-center px-4 font-mono text-xs tracking-[0.14em] underline underline-offset-8 transition-colors hover:opacity-80"
-              >
-                {p.link} →
-              </Link>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-                {p.en}
-              </p>
-            </div>
+            <PanelBody p={p} i={i} />
           </div>
-        );
-      })}
+        ))}
+      </section>
+    );
+  }
+
+  return (
+    <section
+      ref={ref}
+      data-header-dark={headerDark ? "" : undefined}
+      className="relative h-[300vh]"
+    >
+      <div className="sticky top-0 h-screen overflow-hidden">
+        <motion.div className="flex h-full w-[300vw]" style={{ x }}>
+          {panels.map((p, i) => (
+            <div
+              key={p.key}
+              className={`relative flex h-full w-screen items-center justify-center overflow-hidden ${p.surface === "bg-background" ? "bg-background" : p.surface}`}
+            >
+              <PanelBody p={p} i={i} />
+            </div>
+          ))}
+        </motion.div>
+
+        {/* 物語のラベル — この3面は「同じ一枚」の話 */}
+        <div className="pointer-events-none absolute left-6 top-20 md:left-10">
+          <p className="font-mono text-[10px] uppercase tracking-[0.3em] mix-blend-difference">
+            <span className="text-white">ONE PHOTO — SHOOT TO RUN</span>
+          </p>
+        </div>
+        <div className="pointer-events-none absolute right-6 top-20 font-mono text-[10px] uppercase tracking-[0.3em] mix-blend-difference md:right-10">
+          <span className="text-white">FILM ADVANCE →</span>
+        </div>
+      </div>
     </section>
   );
 }

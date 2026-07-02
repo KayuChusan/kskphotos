@@ -253,6 +253,14 @@
   html {
     @apply scroll-smooth font-sans;
   }
+  /* モバイルの縦スクロール暴れ対策: 横方向を 1px もはみ出させない。
+     横に溢れると iPhone で 2 次元パンが有効になり、最下部で斜めスワイプ→
+     横バウンス→縦位置が引き戻される（「フッターに戻される」）挙動を誘発する。
+     clip はスクロールコンテナを作らず sticky/fixed とも干渉しない */
+  html,
+  body {
+    overflow-x: clip;
+  }
   ::selection {
     @apply bg-foreground text-background;
   }
