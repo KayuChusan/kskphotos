@@ -9,6 +9,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { ContactForm } from "./contact-form";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/contact" }),
@@ -19,9 +20,8 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-12">
-      <div className="mb-10 text-center">
-        <p className="eyebrow">Get in Touch</p>
-        <h1 className="mt-3 font-heading text-5xl font-medium">お問い合わせ</h1>
+      <div className="mb-10">
+        <PageTitle en="Get in Touch" title="お問い合わせ" />
         <p className="mt-3 text-sm text-muted-foreground">
           お気軽にお問い合わせください。
         </p>

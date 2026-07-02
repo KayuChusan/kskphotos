@@ -27,6 +27,7 @@ import { JaText } from "@/components/ui/ja-text";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/json-ld";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/services" }),
@@ -130,17 +131,8 @@ export default async function ServicesPage() {
           ]),
         ]}
       />
-      <div className="relative mb-12 pt-6">
-        <span
-          aria-hidden
-          className="absolute left-0 top-0 size-5 border-l-2 border-t-2"
-          style={{ borderColor: "var(--rec)" }}
-        />
-        <p className="eyebrow">
-          <span className="rec-blink mr-2 inline-block text-rec">●</span>
-          Menu &amp; Pricing
-        </p>
-        <h1 className="statement-jp mt-3 text-4xl md:text-5xl">料金・メニュー</h1>
+      <div className="mb-12">
+        <PageTitle en="Menu & Pricing" title="料金・メニュー" />
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <p className="max-w-xl text-sm leading-relaxed text-foreground-soft">
             <JaText>

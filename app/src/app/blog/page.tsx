@@ -6,6 +6,7 @@ import { Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { BLOG_ENABLED } from "@/lib/feature-flags";
 import { Badge } from "@/components/ui/badge";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/blog" }),
@@ -38,8 +39,7 @@ export default async function BlogPage() {
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8">
       <div className="mb-10">
-        <p className="eyebrow">Journal</p>
-        <h1 className="mt-2 font-heading text-5xl font-medium">ブログ</h1>
+        <PageTitle en="Journal" title="ブログ" />
         <p className="mt-3 text-sm text-muted-foreground">
           撮影日記、機材レビュー、撮影テクニックを発信しています。
         </p>

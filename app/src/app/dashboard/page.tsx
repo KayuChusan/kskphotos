@@ -3,6 +3,7 @@ import { pageSeo } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import { excludeLockedPhotos } from "@/lib/photo-visibility";
 import { ExifDashboard } from "@/components/dashboard/exif-charts";
+import { PageTitle } from "@/components/ui/page-title";
 
 // 件数集計用の小さなヘルパー（サーバー側でのみ実行）
 function countBy<T>(items: T[], key: (i: T) => string | null) {
@@ -80,10 +81,7 @@ export default async function DashboardPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-10">
-        <p className="eyebrow">Shooting Data</p>
-        <h1 className="mt-2 font-heading text-5xl font-medium">
-          撮影データ
-        </h1>
+        <PageTitle en="Shooting Data" title="撮影データ" />
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
           これまでの撮影を、写真に記録された EXIF
           から自動集計してグラフにしています。どんな機材で、どんな設定で撮ってきたか

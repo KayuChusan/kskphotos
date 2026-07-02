@@ -181,3 +181,12 @@ unicode-range は付けない（サブセット外の文字はグリフ単位で
 - 扉: ギャラリーと同型（左寄せ・赤トリムマーク・● MENU & PRICING・機能名タイトル「料金・メニュー」statement-jp・mono情報「PHOTO / WEB / IT — TAX INCLUDED」）
 - セクション見出し（撮影料金（時間制）／料金の考え方／サイト制作・IT サポート）を text-center → 左寄せ、font-heading → statement-jp に統一
 - Statement JP サブセットに見出し文字（時間制・考え方・ポ・政治選挙・商法人・保守運用 等）を追加再生成（約31KB）
+
+## 追補17：全下層ページの扉を統一（段階再構成 完了）
+
+共有コンポーネント `ui/page-title.tsx`（PageTitle）を新設し、全下層ページの扉を機能名タイトル＋トップのタイポグラフィに統一（コピー不増のルール適用）。
+- 適用: guide / about / works / collections / contact / booking / dashboard / blog / privacy ＋ gallery・services を共通化にリファクタ（計11ページ）
+- works / contact / booking は中央寄せ扉→左寄せに統一
+- Statement JP サブセットに残りのタイトル文字（依頼・ブ・グ・バ・シ）を追加再生成（約31KB）
+- /blog の404 はフィーチャーフラグ（BLOG_ENABLED=off）による既存挙動で正常
+- 以後、新規ページの扉は PageTitle を使うこと（タグラインを足さない）

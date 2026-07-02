@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { getProfile, parseGearItem } from "@/lib/profile";
 import { JsonLd } from "@/components/json-ld";
 import { personSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/about" }),
@@ -63,8 +64,7 @@ export default async function AboutPage() {
         ]}
       />
       <div className="mb-10">
-        <p className="eyebrow">Profile</p>
-        <h1 className="mt-2 font-heading text-5xl font-medium">プロフィール</h1>
+        <PageTitle en="Profile" title="プロフィール" />
         <p className="mt-3 text-sm text-muted-foreground">
           撮影者のプロフィールと使用機材について。
         </p>
