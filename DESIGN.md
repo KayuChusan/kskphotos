@@ -262,7 +262,7 @@ p { text-wrap: pretty; }
 4. 新規インタラクティブ要素は **focus-visible リング + タッチ 44px + `prefers-reduced-motion` ガード**を既定で備える。選択状態は `aria-pressed` / `aria-current`。
 5. 見出しは `font-heading`、本文は既定（`font-sans`）、数値/EXIF は `font-mono`。**ブランドの断言（決め文句）だけ `.statement-jp`**（乱用禁止・1セクション1声。文言を追加したらフォントサブセット再生成）。
 
-**実験場 `/lab`**: 本書の運用規律の**適用外**（サンドボックス・noindex）。制約を外した実験はまず /lab で行い、本編へ昇格する意匠は本書に翻訳（トークン化・AA 実測・reduced-motion ガード）してから移植する。
+**実験場 `/lab` → 翻訳版 `/lab2`**: `/lab` は本書の運用規律の**適用外**（サンドボックス・noindex）。制約を外した実験はまず /lab で行う。**`/lab2` はその本編品質版**＝ /lab を基準に本書へ翻訳した昇格候補（トークン参照・`.slam` 局所面・AA 実測・和文12px+・タッチ44px・reduced-motion。トップの義務＝3本柱/実価格/導線を内蔵）。本編へ移植する場合は /lab2 を出発点にする。
 
 プロンプト例:
 > 「kskphotos の DESIGN.md に従って、〔機能〕の UI を実装して。配色は @theme トークン、和文は palt/最小12px/AAコントラスト、タッチ44px、focus-visible と reduced-motion を必ず満たすこと。」
