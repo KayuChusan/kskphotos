@@ -15,6 +15,18 @@
   unicode-range: U+3001-3002, U+3048, U+304F, U+3055, U+3064, U+308B, U+64AE;
 }
 
+/* ステートメント専用の極太ゴシック（Noto Sans JP Black）。ブランドの決め文句
+   （「写したあとが、強い。」ほか DESIGN.md §3 に列挙）の使用文字だけをサブセット self-host。
+   unicode-range は付けない＝サブセットに無い文字はグリフ単位で OS 極太ゴシックへフォールバック。
+   決め文句を追加・変更したらサブセットを再生成する（docs/16 手順）。 */
+@font-face {
+  font-family: "Statement JP";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/fonts/statement-jp.woff2") format("woff2");
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -25,6 +37,10 @@
   /* 第2アクセント（ブランド・エレクトリックブルー）を Tailwind ユーティリティに公開 */
   --color-coolant: var(--coolant);
   --color-coolant-line: var(--coolant-line);
+  /* ステートメントの墨・RECレッド・フィルムイエローを公開 */
+  --color-ink: var(--ink);
+  --color-rec: var(--rec);
+  --color-film: var(--film);
   /* ロゴ純青（大要素・マーク・署名青のみ。本文テキスト不可） */
   --color-brand-blue: var(--brand-blue);
   --color-tide: var(--tide);
@@ -135,6 +151,14 @@
   --coolant-wash: oklch(0.58 0.16 262 / 0.08);
   --coolant-line: oklch(0.6 0.12 262);
   --brand-blue: oklch(0.6 0.19 262);
+  /* ステートメントの墨 — 極太ゴシックの断言専用の強い黒（対背景 約15:1） */
+  --ink: oklch(0.185 0.014 75);
+  /* RECレッド — 「記録中・現場・ライブ」の信号色。ドット/大文字/罫は --rec（生成り上 約3.2:1・非テキスト/大字用）、
+     小さいテキストは --rec-strong（約4.9:1・AA）。面積は点に限る（多用禁止） */
+  --rec: oklch(0.62 0.23 29);
+  --rec-strong: oklch(0.5 0.19 28);
+  /* フィルムイエロー — テープ/マーカー等「記憶の差し色」の面用（非テキスト背景。上に載せる文字は墨） */
+  --film: oklch(0.84 0.16 85);
   /* 琥珀↔シアンを橋渡しする青緑（グラデ中継・チャート中間系列） */
   --tide: oklch(0.55 0.07 160);
   /* 縁グラデ/デュオトーン帯の停止色（装飾面専用・テキスト不可） */
@@ -190,6 +214,10 @@
   --coolant-wash: oklch(0.74 0.15 262 / 0.12);
   --coolant-line: oklch(0.58 0.1 262);
   --brand-blue: oklch(0.7 0.18 262);
+  --ink: oklch(0.97 0.005 85);
+  --rec: oklch(0.68 0.21 29);
+  --rec-strong: oklch(0.72 0.19 29);
+  --film: oklch(0.8 0.14 85);
   --tide: oklch(0.7 0.09 160);
   --grad-warm: oklch(0.78 0.13 70);
   --grad-deep: oklch(0.22 0.04 290);
@@ -335,6 +363,43 @@
   /* 和文ラベル用 — 0.3em は欧文キャプス専用。和文は字間を詰め最低12pxを確保 */
   .eyebrow-jp {
     @apply font-sans text-xs tracking-[0.08em] text-muted-foreground;
+  }
+  /* ステートメント — ブランドの断言専用の極太ゴシック（墨）。
+     文字そのものを画面構造として使う（ヒーロー・セクションの決め文句）。
+     色は --ink を既定継承（.bluehour 内では自動で白へ）。多用禁止＝1セクション1声 */
+  .statement-jp {
+    font-family: "Statement JP", var(--font-sans);
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    line-height: 1.16;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  /* RECレッド（記録中の信号）— テキストは AA の strong、ドット/罫/大字は --rec */
+  .text-rec {
+    color: var(--rec-strong);
+  }
+  .bg-rec {
+    background-color: var(--rec);
+  }
+  /* フィルムイエローのテープ片 — 記憶の差し色（非テキスト面。上の文字は墨で AA） */
+  .tape {
+    background-color: var(--film);
+    color: oklch(0.22 0.02 80);
+    box-shadow: var(--shadow-sm);
+  }
+  /* REC の点滅 — 撮影機の録画ランプ（reduced-motion では base 層の全体ルールで停止） */
+  .rec-blink {
+    animation: rec-blink 1.6s steps(1) infinite;
+  }
+  @keyframes rec-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.25;
+    }
   }
   /* EXIF・数値データ表記 */
   .exif-text {
@@ -499,6 +564,11 @@
     --coolant-wash: oklch(0.7 0.16 262 / 0.14);
     --coolant-line: oklch(0.55 0.1 262);
     --brand-blue: oklch(0.72 0.18 262);
+    /* 濃紺面のステートメント/信号色（AA が出る明度へ持ち上げ） */
+    --ink: oklch(0.97 0.008 262);
+    --rec: oklch(0.7 0.19 29);
+    --rec-strong: oklch(0.74 0.17 29);
+    --film: oklch(0.84 0.15 85);
     --chart-1: oklch(0.8 0.14 70);
     --chart-2: oklch(0.7 0.16 262);
     --chart-3: oklch(0.7 0.09 160);

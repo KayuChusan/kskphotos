@@ -6,11 +6,44 @@ import { prisma } from "@/lib/prisma";
 import { excludeLockedPhotos } from "@/lib/photo-visibility";
 import { HeroSection } from "@/components/home/hero-section";
 import { SnapScroll } from "@/components/home/snap-scroll";
-import { CountUp } from "@/components/count-up";
 import { SectionMark } from "@/components/ui/section-mark";
-import { HOME_STATS_ENABLED } from "@/lib/feature-flags";
+import { buttonVariants } from "@/components/ui/button";
+import { BrushStroke } from "@/components/home/brush-stroke";
+import { cn } from "@/lib/utils";
+import {
+  Camera,
+  LayoutGrid,
+  PenTool,
+  Monitor,
+  Server,
+  Gauge,
+  ShieldCheck,
+  Wrench,
+} from "lucide-react";
 
 export const metadata: Metadata = pageSeo({ path: "/" });
+
+// ワークフロー — 撮影から運用までを一本の流れとして見せる（トップの背骨）
+const WORKFLOW = [
+  {
+    no: "01",
+    label: "CAPTURE",
+    title: "現場の空気を撮る。",
+    desc: "人物・現場・イベント。その瞬間の温度ごと、高品質な写真で切り取ります。",
+  },
+  {
+    no: "02",
+    label: "CONVERT",
+    title: "写真を、伝わるWebに変える。",
+    desc: "撮った素材が最も活きる設計と実装で、見た人の心を動かし、成果につなげるサイトをつくります。",
+  },
+  {
+    no: "03",
+    label: "KEEP RUNNING",
+    title: "サイトを、止めない。",
+    desc: "表示速度・セキュリティ・保守まで。インフラエンジニアの視点で、公開後も止めない運用を支えます。",
+  },
+] as const;
 
 // 「つくる」セクションの Web 対応範囲（幅広さの訴求）
 const WEB_SCOPE = [
@@ -20,8 +53,32 @@ const WEB_SCOPE = [
   { title: "リニューアル", desc: "既存サイトの作り替え・再設計。" },
 ] as const;
 
+// 料金の入口（ソースは services-data.ts / docs/14。変更時は同期する）
+const PRICE_CARDS = [
+  {
+    icon: Camera,
+    label: "撮影（時間制）",
+    price: "¥14,000",
+    unit: "〜 / 1時間",
+    note: "半日4時間 ¥44,000・1日8時間 ¥78,000。1時間あたり約20枚をセレクト納品。",
+  },
+  {
+    icon: Monitor,
+    label: "Web 制作",
+    price: "¥128,000",
+    unit: "〜",
+    note: "構成・デザイン・実装・公開まで一括。多機能・作り込みは ¥248,000〜目安。",
+  },
+  {
+    icon: Server,
+    label: "保守・運用",
+    price: "¥11,000",
+    unit: "〜 / 月額",
+    note: "更新代行・ドメイン/SSL 管理・障害一次対応。当社制作は移行後3ヶ月無償。",
+  },
+] as const;
+
 // ISR: 一定間隔で再生成し CDN/キャッシュから即返す（TTFB/LCP 改善）。
-// ヒーローは「毎回ランダム」ではなく「再生成のたびに切り替わる」。
 export const revalidate = 3600;
 
 export default async function HomePage() {
@@ -37,31 +94,8 @@ export default async function HomePage() {
       orderBy: { createdAt: "desc" },
       take: 6,
     }),
-    // ヒーロー候補（管理画面で Hero 指定した写真）の件数。全件は読み込まない
     prisma.photo.count({ where: heroWhere }),
   ]);
-
-  // 05「By the Numbers」の集計は HOME_STATS_ENABLED のときだけ実行（非表示時は DB コスト 0）
-  const [totalPhotos, lenses, locations] = HOME_STATS_ENABLED
-    ? await Promise.all([
-        // 撮影データの集計は会員限定（非公開）も含めてカウント（件数のみ表示・値は出さない）
-        prisma.photo.count({ where: { isPublished: true } }),
-        prisma.photo.findMany({
-          where: { isPublished: true, lensModel: { not: null } },
-          select: { lensModel: true },
-          distinct: ["lensModel"],
-        }),
-        prisma.photo.findMany({
-          where: { isPublished: true, location: { not: null } },
-          select: { location: true },
-          distinct: ["location"],
-        }),
-      ])
-    : [
-        0,
-        [] as { lensModel: string | null }[],
-        [] as { location: string | null }[],
-      ];
 
   // ヒーロー候補から1枚だけ取得（count→skipで全件ロードを避ける）。指定が無ければ最新で代替。
   // ISR の再生成時に乱数が1回評価され、その期間のヒーローが決まる（純度ルール対象外）。
@@ -71,32 +105,43 @@ export default async function HomePage() {
     heroCount > 0
       ? await prisma.photo.findFirst({ where: heroWhere, skip: heroSkip })
       : (featured[0] ?? null);
-  const mockupPhoto = heroPhoto ?? featured[0];
+  // コラージュ用に主写真＋別カット（重複は除く）
+  const collagePhotos = [
+    ...(heroPhoto ? [heroPhoto] : []),
+    ...featured.filter((p) => p.id !== heroPhoto?.id),
+  ].slice(0, 3);
+  const mockupPhoto = collagePhotos[1] ?? collagePhotos[0];
 
   return (
     <>
       <SnapScroll />
-      <HeroSection photos={heroPhoto ? [heroPhoto] : featured} />
+      <HeroSection photos={collagePhotos} />
 
-      {/* Introduction — 3本柱の宣言（生成り） */}
+      {/* 01 Concept — 撮影で終わらない、という宣言 */}
       <section data-snap>
         <div className="container mx-auto px-4 py-24">
-          <SectionMark no="01" label="Introduction" className="mb-12" />
+          <SectionMark no="01" label="Concept" className="mb-12" />
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
-            <h2 className="develop-text tagline-jp text-4xl font-semibold leading-snug md:text-5xl md:leading-snug">
-              撮る、つくる、
+            <h2 className="develop-text statement-jp text-3xl leading-normal md:text-4xl md:leading-normal">
+              撮影で終わらない。
               <br />
-              ささえる。
+              納品で終わらない。
+              <br />
+              公開してからも、終わらない。
             </h2>
             <div>
               <p className="text-sm leading-loose text-foreground-soft md:text-base md:leading-loose">
-                KSK Works は、出張撮影を軸に、Web サイト制作・運用代行、
-                IT サポートまでを一人で担う「フォトグラファー ×
+                KSK Works は、出張撮影・Web サイト制作・IT
+                サポートを一人で担う「フォトグラファー ×
                 インフラエンジニア」の事務所です。
-                政治の現場から七五三・家族写真まで、その人らしさが伝わる一枚を。
-                そして、撮った写真が活きる場所づくりまで、まとめてお任せください。
+                写真を撮って終わり、ではなく——その写真が働く場所（Web）をつくり、
+                公開後の運用まで守る。だから、写したあとが、強い。
               </p>
-              <dl className="mt-10 space-y-3 border-t pt-6">
+              <p className="eyebrow mt-8">Principle</p>
+              <p className="statement-jp mt-2 text-xl md:text-2xl">
+                撮る、つくる、ささえる。
+              </p>
+              <dl className="mt-8 space-y-3 border-t pt-6">
                 <div className="flex items-baseline justify-between gap-6">
                   <dt className="exif-text text-muted-foreground">Based in</dt>
                   <dd className="exif-text">KANAGAWA — 全国出張対応</dd>
@@ -107,7 +152,9 @@ export default async function HomePage() {
                 </div>
                 <div className="flex items-baseline justify-between gap-6">
                   <dt className="exif-text text-muted-foreground">For</dt>
-                  <dd className="exif-text">個人・法人・政治団体 — お支払いは柔軟に対応</dd>
+                  <dd className="exif-text">
+                    個人・法人・政治団体 — お支払いは柔軟に対応
+                  </dd>
                 </div>
               </dl>
             </div>
@@ -115,18 +162,79 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 02 Photography — フィルムストリップ（沈め面＋暖wash。写真＝暖色） */}
-      <section data-snap className="safelight-wash bg-surface-sink py-24">
+      {/* 02 Workflow — 私たちの仕事は、ひとつの流れ */}
+      <section data-snap className="bg-surface-sink py-24">
+        <div className="container mx-auto px-4">
+          <SectionMark no="02" label="Workflow" className="mb-4" />
+          <p className="text-sm text-foreground-soft">
+            私たちの仕事は、ひとつの流れ。
+          </p>
+          <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
+            {WORKFLOW.map((step) => (
+              <div key={step.no} className="relative">
+                {/* 赤の裁ちマーク — 現場・紙面の痕跡 */}
+                <span className="relative inline-block px-3 py-1.5">
+                  <span
+                    aria-hidden
+                    className="absolute left-0 top-0 size-3 border-l-2 border-t-2"
+                    style={{ borderColor: "var(--rec)" }}
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute bottom-0 right-0 size-3 border-b-2 border-r-2"
+                    style={{ borderColor: "var(--rec)" }}
+                  />
+                  <span className="font-mono text-3xl font-medium tabular-nums text-foreground md:text-4xl">
+                    {step.no}
+                  </span>
+                </span>
+                <p className="eyebrow mt-3">{step.label}</p>
+                <h3 className="statement-jp mt-2 text-xl md:text-2xl">
+                  {step.title}
+                </h3>
+                <p className="mt-3 max-w-sm text-xs leading-relaxed text-muted-foreground md:text-sm">
+                  {step.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+          {/* パイプライン — アイコンの流れ（ヒーローの署名の再掲・締め） */}
+          <div className="mt-14 flex flex-wrap items-center gap-x-4 gap-y-4 border-t pt-8 md:gap-x-6">
+            {[
+              { icon: Camera, label: "RAW" },
+              { icon: LayoutGrid, label: "SELECT" },
+              { icon: PenTool, label: "DESIGN" },
+              { icon: Monitor, label: "WEB" },
+              { icon: Server, label: "KEEP RUNNING" },
+            ].map(({ icon: Icon, label }, i) => (
+              <span key={label} className="flex items-center gap-x-4 md:gap-x-6">
+                {i > 0 && (
+                  <span aria-hidden className="font-mono text-coolant">
+                    →
+                  </span>
+                )}
+                <span className="flex flex-col items-center gap-1.5">
+                  <Icon className="size-5 text-foreground-soft" strokeWidth={1.5} />
+                  <span className="exif-text text-muted-foreground">{label}</span>
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 03 Photography — フィルムストリップ（写真＝暖・REC） */}
+      <section data-snap className="safelight-wash py-24">
         <div className="container mx-auto px-4">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <SectionMark no="02" label="Photography" />
-              <h2 className="develop-text mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
-                撮る
+              <SectionMark no="03" label="Photography" />
+              <h2 className="develop-text statement-jp mt-3 text-3xl md:text-5xl">
+                現場の空気を撮る。
               </h2>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground-soft">
-                議員・候補者のポートレートから家族写真まで。
-                現場の空気ごと、その人らしさを記録します。
+                議員・候補者のポートレートから七五三・家族写真まで。
+                現場の温度ごと、その人らしさを記録します。
               </p>
             </div>
             <Link
@@ -168,7 +276,13 @@ export default async function HomePage() {
         </div>
 
         <div className="container mx-auto px-4">
-          <div className="mt-8 flex gap-8">
+          <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+            <Link
+              href="/gallery"
+              className="exif-text text-muted-foreground underline-offset-8 transition-colors hover:text-foreground hover:underline"
+            >
+              空気まで、残す — ギャラリー →
+            </Link>
             <Link
               href="/works"
               className="exif-text text-muted-foreground underline-offset-8 transition-colors hover:text-foreground hover:underline"
@@ -185,21 +299,21 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 03 Web Production — 薄明の寒色ライト面（つくる＝撮影×Web の橋渡し）。
-          暖クリーム(02)→寒色ライト(03)→濃紺(04) の温度推移。04 との境界も明暗で明確に */}
+      {/* 04 Web Production — 薄明の寒色ライト面（撮影×Web の橋渡し） */}
       <section data-snap data-header-dawn className="dawn py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div>
-              <SectionMark no="03" label="Web Production" />
-              <h2 className="develop-text mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
-                つくる
+              <SectionMark no="04" label="Web Production" />
+              <h2 className="develop-text statement-jp mt-3 text-3xl md:text-5xl">
+                写真を、
+                <br className="md:hidden" />
+                伝わるWebに変える。
               </h2>
               <p className="mt-6 text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
-                撮った写真が活きる Web サイトを、構成からデザイン・実装・公開まで一括で。
-                新規制作はもちろん、公開後の運用・保守、既存サイトの引き継ぎやリニューアルにも対応します。
-                撮影とまとめてご依頼いただくと、素材からサイトまで一貫＋セット価格でお得に。
-                ご覧いただいているこのサイト自体が制作例です。
+                テンプレートの流用ではなく、撮った写真が最も活きる構成・デザイン・実装で。
+                新規制作から運用・保守、引き継ぎ、リニューアルまで対応します。
+                ご覧いただいているこのサイト自体が、つくれるものの見本です。
               </p>
               <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
                 <Link
@@ -225,7 +339,6 @@ export default async function HomePage() {
 
             {/* 写真 → Web フロー（撮影×Web ワンストップを一目で） */}
             <div className="flex items-center gap-3 sm:gap-5">
-              {/* 撮った写真（素材） */}
               {mockupPhoto && (
                 <div className="frame relative aspect-[3/4] w-24 shrink-0 overflow-hidden bg-muted sm:w-28">
                   <Image
@@ -237,19 +350,17 @@ export default async function HomePage() {
                     className="object-cover"
                     sizes="120px"
                   />
-                  <span className="exif-text absolute bottom-1.5 left-1.5 text-safelight drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                  <span className="exif-text absolute bottom-1.5 left-1.5 text-white/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
                     RAW
                   </span>
                 </div>
               )}
-              {/* 撮影 → 制作（写真＝RAW琥珀 → Web＝青の動作） */}
               <div className="flex shrink-0 flex-col items-center gap-1 text-muted-foreground">
                 <span className="font-mono text-2xl leading-none text-coolant">
                   →
                 </span>
                 <span className="exif-text">制作</span>
               </div>
-              {/* 仕上がりのサイト（この サイト自体が制作例） */}
               <div className="min-w-0 flex-1 border bg-card">
                 <div className="flex items-center gap-1.5 border-b px-3 py-2">
                   <span className="size-2 rounded-full bg-muted-foreground/30" />
@@ -279,7 +390,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* 対応範囲カード（比率に依存せずどの幅でも読みやすい） */}
+          {/* 対応範囲カード */}
           <div className="mt-16">
             <p className="eyebrow mb-6">対応範囲</p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -299,54 +410,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 04 IT Support — 濃紺バンド（ささえる＝Web/IT・機械の面）。03 の薄明から夜へ降りる。フッターまで地続き */}
-      <section data-snap data-header-dark className="bluehour grain py-24">
+      {/* 05 IT Support — 濃紺コンソールカード（運用＝機械の声。バンドではなくカードで携える） */}
+      <section data-snap className="py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-            {/* ターミナル風パネル(後日現場写真に差し替え可) */}
-            <div className="order-last border bg-card lg:order-first">
-              <div className="flex items-center gap-1.5 border-b px-4 py-3">
-                <span className="size-2.5 rounded-full bg-muted-foreground/30" />
-                <span className="size-2.5 rounded-full bg-muted-foreground/30" />
-                <span className="size-2.5 rounded-full bg-muted-foreground/30" />
-                <span className="exif-text ml-3 text-muted-foreground">
-                  ksk@works: ~
-                </span>
-              </div>
-              <div className="space-y-2 p-6 font-mono text-xs leading-relaxed text-muted-foreground md:text-sm">
-                <p>
-                  <span className="text-coolant">$</span> whoami
-                </p>
-                <p className="text-foreground">
-                  infrastructure engineer / photographer
-                </p>
-                <p className="pt-2">
-                  <span className="text-coolant">$</span> systemctl status
-                  website
-                </p>
-                <p className="text-foreground">
-                  <span className="text-coolant">●</span> active (running) —
-                  サイトは止めない
-                </p>
-                <p className="pt-2">
-                  <span className="text-coolant">$</span> support --request
-                  &quot;なんでも&quot;
-                </p>
-                <p className="text-foreground">
-                  → 機材選定からトラブルまで、まずはご相談を
-                  <span className="ml-1 inline-block w-2 animate-pulse bg-coolant">
-                    &nbsp;
-                  </span>
-                </p>
-              </div>
-            </div>
-
             <div>
-              <SectionMark no="04" label="IT Support" />
-              <h2 className="develop-text mt-3 tagline-jp text-4xl font-semibold md:text-5xl">
-                ささえる
+              <SectionMark no="05" label="IT Support" />
+              <h2 className="develop-text statement-jp mt-3 text-3xl md:text-5xl">
+                サイトを、止めない。
               </h2>
-              <p className="mt-6 text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
+              <p className="mt-6 text-sm leading-loose text-foreground-soft md:text-base md:leading-loose">
                 公開後のウェブサイトの運用・保守を継続サポート。更新代行、表示速度やスマホ対応の改善、
                 ドメインやメールの設定、日々の「なんだか動かない」まで。
                 本番に強い現役インフラエンジニアが、サイトと現場の困りごとを引き受けます。
@@ -366,46 +439,179 @@ export default async function HomePage() {
                 </Link>
               </div>
             </div>
+
+            {/* サポートコンソール — 濃紺の機械の窓（コマンド＋実務の中身） */}
+            <div className="bluehour overflow-hidden rounded-xl shadow-lg">
+              <div className="flex items-center gap-1.5 border-b px-4 py-3">
+                <span className="size-2.5 rounded-full bg-muted-foreground/30" />
+                <span className="size-2.5 rounded-full bg-muted-foreground/30" />
+                <span className="size-2.5 rounded-full bg-muted-foreground/30" />
+                <span className="exif-text ml-3 text-muted-foreground">
+                  KSK SUPPORT CONSOLE
+                </span>
+              </div>
+              <div className="space-y-3 p-6">
+                {[
+                  { cmd: "capture --moment", note: "現場の価値ある瞬間を、写真に。" },
+                  { cmd: "build --website", note: "伝わる Web で、活動を加速。" },
+                  { cmd: "keep --running", note: "インフラ視点で、止めない運用を。" },
+                ].map(({ cmd, note }) => (
+                  <div key={cmd}>
+                    <p className="font-mono text-xs text-muted-foreground md:text-sm">
+                      <span className="text-coolant">$</span> {cmd}
+                    </p>
+                    <p className="mt-0.5 pl-4 text-xs leading-relaxed text-foreground-soft">
+                      {note}
+                    </p>
+                  </div>
+                ))}
+                <p className="font-mono text-xs text-foreground md:text-sm">
+                  <span className="text-[oklch(0.8_0.17_150)]">●</span> active
+                  (running) — サイトは止めない
+                  <span className="ml-1 inline-block w-2 animate-pulse bg-coolant">
+                    &nbsp;
+                  </span>
+                </p>
+                {/* 実務の中身 — 運用で実際にやること */}
+                <ul className="mt-2 space-y-2 rounded-lg border bg-card p-4">
+                  {[
+                    { icon: Server, label: "サーバー・インフラの設計 / 運用" },
+                    { icon: Gauge, label: "表示速度・セキュリティ最適化" },
+                    { icon: ShieldCheck, label: "バックアップ / SSL・ドメイン管理" },
+                    { icon: Wrench, label: "保守・トラブル対応" },
+                  ].map(({ icon: Icon, label }) => (
+                    <li
+                      key={label}
+                      className="flex items-center gap-3 text-xs text-foreground-soft"
+                    >
+                      <Icon
+                        className="size-4 shrink-0 text-coolant"
+                        strokeWidth={1.5}
+                      />
+                      {label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Stats — 数字が育つまで非表示（HOME_STATS_ENABLED）。濃紺の締めを分断しないため 04→フッターを地続きに */}
-      {HOME_STATS_ENABLED && (
-      <section data-snap className="py-20">
+      {/* 06 Price — 料金は隠さない */}
+      <section data-snap className="bg-surface-sink py-24">
         <div className="container mx-auto px-4">
-          <SectionMark no="05" label="By the Numbers" className="mb-12" />
-          <div className="grid gap-12 text-center sm:grid-cols-3">
-            <div>
-              <p className="develop font-heading text-7xl font-medium">
-                {totalPhotos ? <CountUp value={totalPhotos} /> : "—"}
-              </p>
-              <p className="eyebrow-jp mt-3">掲載写真</p>
-            </div>
-            <div>
-              <p className="develop font-heading text-7xl font-medium">
-                {lenses.length ? <CountUp value={lenses.length} /> : "—"}
-              </p>
-              <p className="eyebrow-jp mt-3">使用レンズ</p>
-            </div>
-            <div>
-              <p className="develop font-heading text-7xl font-medium">
-                {locations.length ? <CountUp value={locations.length} /> : "—"}
-              </p>
-              <p className="eyebrow-jp mt-3">撮影場所</p>
-            </div>
-          </div>
-          <div className="mt-14 text-center">
-            <Link
-              href="/dashboard"
-              className="exif-text text-muted-foreground underline-offset-8 transition-colors hover:text-foreground hover:underline"
-            >
-撮影データを見る →
-            </Link>
+          <SectionMark no="06" label="Price" />
+          <h2 className="develop-text statement-jp mt-3 text-3xl md:text-4xl">
+            料金は、分かりやすく。
+            <br className="sm:hidden" />
+            仕事は、ていねいに。
+          </h2>
+          <p className="mt-4 text-sm text-foreground-soft">
+            時間制と規模別の明朗会計。内容に応じてお見積りします。
+          </p>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {PRICE_CARDS.map((card) => (
+              <div
+                key={card.label}
+                className="flex flex-col rounded-lg border bg-card p-6 shadow-sm"
+              >
+                <card.icon
+                  className="size-6 text-foreground-soft"
+                  strokeWidth={1.5}
+                />
+                <p className="eyebrow-jp mt-4">{card.label}</p>
+                <p className="mt-2 font-mono text-3xl font-medium tabular-nums">
+                  {card.price}
+                  <span className="ml-1 text-sm font-normal text-muted-foreground">
+                    {card.unit}
+                  </span>
+                </p>
+                <p className="mt-3 flex-1 text-xs leading-relaxed text-muted-foreground">
+                  {card.note}
+                </p>
+                <Link
+                  href="/services"
+                  className="exif-text mt-5 text-muted-foreground underline-offset-8 transition-colors hover:text-foreground hover:underline"
+                >
+                  プラン詳細 →
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>
-      )}
+
+      {/* Contact — 濃紺の締め（フッターまで地続きの夜・筆致の縁） */}
+      <section
+        data-snap
+        data-header-dark
+        className="bluehour grain relative py-24"
+      >
+        {/* 上縁の筆致 — 生成りの紙面に濃紺をひと刷毛（帯の縁を機械的な直線にしない） */}
+        <BrushStroke
+          id="cta-edge"
+          color="oklch(0.16 0.045 262)"
+          className="pointer-events-none absolute inset-x-0 -top-8 z-10 h-12 w-full"
+        />
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-center">
+            <div>
+              <p className="eyebrow">
+                <span className="rec-blink mr-2 inline-block text-rec">●</span>
+                Contact
+              </p>
+              <h2 className="statement-jp mt-4 text-3xl md:text-4xl">
+                まずは、お気軽に
+                <br className="sm:hidden" />
+                ご相談ください。
+              </h2>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                撮影・Web 制作・IT サポートのこと、なんでもどうぞ。
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-6">
+              {/* 無料バッジ — 円の判子 */}
+              <span className="flex size-24 shrink-0 flex-col items-center justify-center rounded-full border-2 border-foreground/70 text-center">
+                <span className="text-[10px] leading-tight text-muted-foreground">
+                  ご相談・お見積り
+                </span>
+                <span className="statement-jp mt-0.5 text-xl">無料</span>
+              </span>
+              <Link
+                href="/contact"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "group font-mono text-xs tracking-[0.14em]"
+                )}
+              >
+                相談する
+                <span
+                  aria-hidden
+                  className="inline-block transition-transform group-hover:translate-x-1"
+                >
+                  →
+                </span>
+              </Link>
+              <Link
+                href="/booking"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "group font-mono text-xs tracking-[0.14em]"
+                )}
+              >
+                撮影を相談する
+                <span
+                  aria-hidden
+                  className="inline-block transition-transform group-hover:translate-x-1"
+                >
+                  →
+                </span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
