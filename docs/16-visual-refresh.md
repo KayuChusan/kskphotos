@@ -146,3 +146,11 @@ unicode-range は付けない（サブセット外の文字はグリフ単位で
 - 送信は /contact と同一の Server Action（ハニーポット・IPレート制限・Resend 通知/自動返信を共有）＝機能の二重実装なし。
 - 左面＝断言＋「このままフォームから送れます。」＋メール派向け mailto（info@kskworks.jp）＋「先に料金を見る →」。
 - 実装: `components/home/home-contact-form.tsx` 新設。
+
+## 追補12：スクロール吸い付きの除去（ピン留めスクラブ廃止）
+
+「セクションに吸い付く・上に戻る」というユーザー指摘への対応。原因は 320vh/300vh の position:sticky ピン留めスクラブ（シャッター・フィルムアドバンス）＝スクロール量と画面移動が一致しない区間。
+- **シャッター**: ピン留め→ 通常セクション化。画面に入ると whileInView(once) の時間再生で自動的に「ピント(blur→0)→シャッター幕→プリント3枚が積まれる」。opacity を落とさない堅牢原則は維持（blur/scale のみ）
+- **フィルムアドバンス**: 横送りスクラブ→ **縦に流れる3面**（各 min-h-92vh・通常スクロール）。同一写真の物語・実価格・導線・巨大アウトライン番号は維持。暗い面（slam/bluehour）に個別に data-header-dark
+- 旧 SnapScroll の死んだ CSS（html.snap-page scroll-snap）も削除
+- 学び: **スクロール位置を乗っ取る演出（pin/scrub/snap）はトップでは使わない**。時間再生（whileInView once）か transform 視差までに留める
