@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { maskForViewer } from "@/lib/photo-visibility";
 import { isMember } from "@/lib/unlock-server";
 import { PhotoGallery } from "@/components/gallery/photo-grid";
+import { JaText } from "@/components/ui/ja-text";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/gallery" }),
@@ -30,12 +31,31 @@ export default async function GalleryPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="mb-10">
-        <p className="eyebrow">Gallery</p>
-        <h1 className="mt-2 font-heading text-5xl font-medium">ギャラリー</h1>
-        <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          カテゴリーで絞り込んだり、地図ビューで撮影場所から写真をたどることもできます。
+      {/* 特集の扉 — 誌面の扉ページ（ステートメント＋誌面情報） */}
+      <div className="relative mb-14 pt-6">
+        {/* トリムマーク — 紙面の裁ち落とし */}
+        <span
+          aria-hidden
+          className="absolute left-0 top-0 size-5 border-l-2 border-t-2"
+          style={{ borderColor: "var(--rec)" }}
+        />
+        <p className="eyebrow">
+          <span className="rec-blink mr-2 inline-block text-rec">●</span>
+          Gallery — Contact Sheets
         </p>
+        <h1 className="reveal-sweep statement-jp mt-4 text-[clamp(2.75rem,8vw,6rem)]">
+          空気まで、残す。
+        </h1>
+        <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
+          <p className="max-w-xl text-sm leading-relaxed text-foreground-soft">
+            <JaText>
+              現場の温度ごと記録した実写のアーカイブ。カテゴリーで絞り込み、地図ビューで撮影場所からたどれます。
+            </JaText>
+          </p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            {photos.length} FRAMES — MAP READY
+          </p>
+        </div>
       </div>
       <PhotoGallery photos={photos} />
     </div>
