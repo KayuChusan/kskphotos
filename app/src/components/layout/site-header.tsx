@@ -18,7 +18,6 @@ import { cn } from "@/lib/utils";
 export function SiteHeader() {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const [scrolled, setScrolled] = useState(false);
   // ヘッダー直下のセクションが暗い面(data-header-dark)か。暗い面では白ロゴ・濃紺ヘッダーへ追従。
   // 初期値は false（トップのヒーローは明るい生成り面。初回描画で白ロゴが生成りに載る事故を防ぐ）。
   const [overDark, setOverDark] = useState(false);
@@ -40,7 +39,6 @@ export function SiteHeader() {
     };
     const update = () => {
       raf = 0;
-      setScrolled(window.scrollY > 24);
       // ヘッダーのすぐ下(y=HEADER_H)を跨ぐ面の明暗で追従
       setOverDark(spans("[data-header-dark]"));
       setOverDawn(spans("[data-header-dawn]"));
@@ -58,8 +56,9 @@ export function SiteHeader() {
     };
   }, [pathname]);
 
-  // トップ(ヒーロー最上部)は透過ヘッダー。スクロール後はセクションの明暗に追従。
-  const transparentTop = isHome && !scrolled;
+  // 旧・暗い写真ヒーロー時代の「トップだけ透過」は廃止（HALF BLEED の右面写真に
+  // ナビ文字が素で重なり読めなくなるため）。常に背面の明暗に追従した色ガラスを敷く。
+  const transparentTop = false;
   // 暗い面に重なるときの局所トークン（白文字・CTAは明色ボタン・濃紺ヘッダー）。
   const darkVars = {
     "--foreground": "oklch(0.95 0.01 262)",
