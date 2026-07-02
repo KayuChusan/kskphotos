@@ -88,23 +88,27 @@ function ApertureIntro({ reduce }: { reduce: boolean }) {
       <motion.div
         key="iris"
         className="fixed inset-0 z-[60] flex items-center justify-center"
-        style={{ backgroundColor: "var(--ink)" }}
+        style={{ backgroundColor: "oklch(0.145 0.02 262)" /* アイコンの濃紺地に合わせ継ぎ目を消す */ }}
         initial={{ clipPath: "circle(140% at 50% 50%)" }}
         animate={{ clipPath: "circle(0% at 50% 50%)" }}
         transition={{ duration: 1.1, ease: EASE, delay: 0.55 }}
         onAnimationComplete={() => setDone(true)}
       >
-        <motion.p
-          className="font-mono text-xs uppercase tracking-[0.4em] text-white/90"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 1, 1, 0] }}
-          transition={{ duration: 1.2, times: [0, 0.25, 0.7, 1] }}
+        {/* ロゴマーク（絞り羽根の K）— 絞りが開く演出とモチーフが一致する */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.82, rotate: -8 }}
+          animate={{ opacity: [0, 1, 1, 0], scale: [0.82, 1, 1, 1.06], rotate: 0 }}
+          transition={{ duration: 1.3, times: [0, 0.3, 0.75, 1], ease: EASE }}
         >
-          <span className="rec-blink mr-3 inline-block" style={{ color: "var(--rec)" }}>
-            ●
-          </span>
-          KSK WORKS
-        </motion.p>
+          <Image
+            src="/icon.png"
+            alt=""
+            width={512}
+            height={512}
+            priority
+            className="size-24 md:size-28"
+          />
+        </motion.div>
       </motion.div>
     </AnimatePresence>
   );
