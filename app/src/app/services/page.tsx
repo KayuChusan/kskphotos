@@ -130,14 +130,27 @@ export default async function ServicesPage() {
           ]),
         ]}
       />
-      <div className="mb-14 text-center">
-        <p className="eyebrow">Menu &amp; Pricing</p>
-        <h1 className="mt-3 font-heading text-5xl font-medium">料金・メニュー</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          <JaText>
-            撮影は時間制で明朗会計。Lightroom で丁寧にレタッチして仕上げます。
-          </JaText>
+      <div className="relative mb-12 pt-6">
+        <span
+          aria-hidden
+          className="absolute left-0 top-0 size-5 border-l-2 border-t-2"
+          style={{ borderColor: "var(--rec)" }}
+        />
+        <p className="eyebrow">
+          <span className="rec-blink mr-2 inline-block text-rec">●</span>
+          Menu &amp; Pricing
         </p>
+        <h1 className="statement-jp mt-3 text-4xl md:text-5xl">料金・メニュー</h1>
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+          <p className="max-w-xl text-sm leading-relaxed text-foreground-soft">
+            <JaText>
+              撮影は時間制で明朗会計。Lightroom で丁寧にレタッチして仕上げます。
+            </JaText>
+          </p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            PHOTO / WEB / IT — TAX INCLUDED
+          </p>
+        </div>
       </div>
 
       {/* 実績づくり特別価格の案内（静的） */}
@@ -157,10 +170,10 @@ export default async function ServicesPage() {
 
       {/* 撮影料金（時間制） */}
       <section className="mb-16">
-        <div className="mb-8 text-center">
+        <div className="mb-8">
           <p className="eyebrow">Photography</p>
-          <h2 className="mt-3 font-heading text-3xl font-medium">撮影料金（時間制）</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          <h2 className="statement-jp mt-3 text-2xl md:text-3xl">撮影料金（時間制）</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             <JaText>
               ジャンルで分けず、撮影時間で料金が決まります。
               ポートレートも家族写真もイベントも、同じ時間単価。分かりやすく、ごまかしません。
@@ -301,10 +314,10 @@ export default async function ServicesPage() {
 
       {/* 料金の考え方（価格の根拠＋参考リンク） */}
       <section className="mb-20">
-        <div className="mb-8 text-center">
+        <div className="mb-8">
           <p className="eyebrow">Pricing policy</p>
-          <h2 className="mt-3 font-heading text-3xl font-medium">料金の考え方</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          <h2 className="statement-jp mt-3 text-2xl md:text-3xl">料金の考え方</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             <JaText>
               テンプレートに流し込む作業ではなく、一つひとつ設計してつくります。価格は「設計・独自実装・運用品質」に対するものです。
             </JaText>
@@ -365,12 +378,12 @@ export default async function ServicesPage() {
       {/* Web 制作・IT サポート */}
       {web.length > 0 && (
         <section className="mt-20">
-          <div className="mb-8 text-center">
+          <div className="mb-8">
             <p className="eyebrow">Web &amp; IT</p>
-            <h2 className="mt-3 font-heading text-3xl font-medium">
+            <h2 className="statement-jp mt-3 text-2xl md:text-3xl">
               サイト制作・IT サポート
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               <JaText>
                 現役インフラエンジニアとして、撮影だけでなく Web まわりも一括で支援します。
                 サイト制作は規模により異なります（¥128,000〜、ページ数・機能・作り込みの範囲で変わり、多機能サイトは ¥248,000〜目安）。
