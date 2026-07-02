@@ -30,13 +30,15 @@ const csp = [
   "worker-src 'self' blob:",
   // プラグイン（<object>/<embed>）を無効化
   "object-src 'none'",
-  "frame-ancestors 'none'",
+  // 開発時のみ同一オリジン iframe を許可（/dev-viewport.html のレスポンシブQAハーネス用）。本番は none
+  isDev ? "frame-ancestors 'self'" : "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
 ].join("; ");
 
 const securityHeaders = [
-  { key: "X-Frame-Options", value: "DENY" },
+  // 開発時は SAMEORIGIN（QAハーネスの iframe を許可）。本番は DENY
+  { key: "X-Frame-Options", value: isDev ? "SAMEORIGIN" : "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {

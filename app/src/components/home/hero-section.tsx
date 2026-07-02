@@ -1,8 +1,15 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type Variants,
+} from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
 import { BrushStroke } from "@/components/home/brush-stroke";
 import { cn } from "@/lib/utils";
@@ -31,6 +38,19 @@ function TrimMark({ className }: { className: string }) {
 
 export function HeroSection({ photos }: HeroSectionProps) {
   const reduce = useReducedMotion() ?? false;
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // 机の上のレイヤー視差 — スクロールで各紙片が異なる速度で滑る（奥行き）
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const yPhoto = useTransform(scrollYProgress, [0, 1], [0, -36]);
+  const yPrint = useTransform(scrollYProgress, [0, 1], [0, -72]);
+  const yWire = useTransform(scrollYProgress, [0, 1], [0, -20]);
+  const yBrowser = useTransform(scrollYProgress, [0, 1], [0, -52]);
+  const yTerm = useTransform(scrollYProgress, [0, 1], [0, -88]);
+  const yTape = useTransform(scrollYProgress, [0, 1], [0, -110]);
 
   const main = photos[0];
   const second = photos[1] ?? photos[0];
@@ -88,7 +108,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
       };
 
   return (
-    <section className="relative overflow-hidden">
+    <section ref={sectionRef} className="relative overflow-hidden">
       {/* 左端の縦ラベル — 三幕（撮る/つくる/ささえる）の欧文レール */}
       <div
         aria-hidden
@@ -102,7 +122,7 @@ export function HeroSection({ photos }: HeroSectionProps) {
       {filmPhotos.length > 0 && (
         <div
           aria-hidden
-          className="absolute bottom-24 right-0 top-24 z-10 hidden w-14 bg-[oklch(0.13_0.01_75)] py-2 shadow-lg lg:flex lg:flex-col lg:gap-1.5"
+          className="film-drift absolute bottom-24 right-0 top-24 z-10 hidden w-14 bg-[oklch(0.13_0.01_75)] py-2 shadow-lg lg:flex lg:flex-col lg:gap-1.5"
         >
           {/* パーフォレーション（左右の送り穴） */}
           <span
@@ -228,9 +248,10 @@ export function HeroSection({ photos }: HeroSectionProps) {
             </motion.div>
           </motion.div>
 
-          {/* 机の上のコラージュ（右）— 撮影 → 設計 → Web 化 → 運用の実物が重なる */}
+          {/* 机の上のコラージュ（右）— 撮影 → 設計 → Web 化 → 運用の実物が重なる。
+              モバイルは紙片を絞って簡素化（縮小コピーにしない）、lg+ で全レイヤー＋視差 */}
           <motion.div
-            className="relative h-[28rem] sm:h-[32rem] lg:col-span-6 lg:mr-10 lg:h-[36rem]"
+            className="relative h-[24rem] sm:h-[32rem] lg:col-span-6 lg:mr-10 lg:h-[36rem]"
             variants={collage}
             initial={reduce ? false : "hidden"}
             animate="show"
@@ -242,8 +263,9 @@ export function HeroSection({ photos }: HeroSectionProps) {
             {/* 主写真 — 現場（撮る） */}
             {main && (
               <motion.div
+                style={reduce ? undefined : { y: yPhoto }}
                 variants={layer}
-                className="frame absolute right-0 top-0 h-[62%] w-[78%] overflow-hidden bg-muted shadow-lg"
+                className="frame absolute right-0 top-0 h-[62%] w-full overflow-hidden bg-muted shadow-lg sm:w-[78%]"
               >
                 <Image
                   src={main.thumbnailUrl ?? main.imageUrl}
@@ -275,8 +297,9 @@ export function HeroSection({ photos }: HeroSectionProps) {
             {/* 銀塩プリント — セレクトされた1枚（余白付きの紙） */}
             {third && (
               <motion.div
+                style={reduce ? undefined : { y: yPrint }}
                 variants={layer}
-                className="absolute left-0 top-[2%] z-10 w-[30%] -rotate-3 bg-white p-1.5 pb-6 shadow-lg"
+                className="absolute left-0 top-[2%] z-10 hidden w-[30%] -rotate-3 bg-white p-1.5 pb-6 shadow-lg sm:block"
               >
                 <span className="relative block aspect-[4/5] overflow-hidden bg-muted">
                   <Image
@@ -295,8 +318,9 @@ export function HeroSection({ photos }: HeroSectionProps) {
 
             {/* 設計図 — ワイヤーフレーム（青の筆致の上） */}
             <motion.div
+              style={reduce ? undefined : { y: yWire }}
               variants={layer}
-              className="absolute bottom-[2%] left-0 z-10 w-[42%] -rotate-2"
+              className="absolute bottom-[2%] left-0 z-10 hidden w-[42%] -rotate-2 sm:block"
             >
               <BrushStroke
                 id="hero-wire"
@@ -326,8 +350,9 @@ export function HeroSection({ photos }: HeroSectionProps) {
 
             {/* ブラウザモック — 写真が Web になる（つくる） */}
             <motion.div
+              style={reduce ? undefined : { y: yBrowser }}
               variants={layer}
-              className="absolute bottom-[20%] left-[32%] z-20 w-[50%] border bg-card shadow-lg"
+              className="absolute bottom-[16%] left-0 z-20 w-[62%] border bg-card shadow-lg sm:bottom-[20%] sm:left-[32%] sm:w-[50%]"
             >
               <div className="flex items-center gap-1.5 border-b px-3 py-2">
                 <span className="size-2 rounded-full bg-muted-foreground/30" />
@@ -359,8 +384,9 @@ export function HeroSection({ photos }: HeroSectionProps) {
 
             {/* ターミナル — 公開後も動き続ける（ささえる） */}
             <motion.div
+              style={reduce ? undefined : { y: yTerm }}
               variants={layer}
-              className="bluehour absolute bottom-0 right-0 z-30 w-[54%] overflow-hidden rounded-md shadow-xl sm:w-[44%]"
+              className="bluehour absolute bottom-0 right-0 z-30 w-[58%] overflow-hidden rounded-md shadow-xl sm:w-[44%]"
             >
               <div className="flex items-center gap-1.5 border-b px-3 py-1.5">
                 <span className="size-1.5 rounded-full bg-muted-foreground/40" />
@@ -370,16 +396,16 @@ export function HeroSection({ photos }: HeroSectionProps) {
                 </span>
               </div>
               <div className="space-y-1 px-3 py-2.5 font-mono text-[11px] leading-relaxed">
-                <p className="text-muted-foreground">
+                <p className="type-line type-line-1 text-muted-foreground">
                   <span className="text-coolant">$</span> capture --moment
                 </p>
-                <p className="text-muted-foreground">
+                <p className="type-line type-line-2 text-muted-foreground">
                   <span className="text-coolant">$</span> build --website
                 </p>
-                <p className="text-muted-foreground">
+                <p className="type-line type-line-3 text-muted-foreground">
                   <span className="text-coolant">$</span> keep --running
                 </p>
-                <p className="text-foreground">
+                <p className="type-line type-line-4 text-foreground">
                   <span className="text-[oklch(0.8_0.17_150)]">●</span> active
                   (running)
                   <span className="ml-1 inline-block w-1.5 animate-pulse bg-coolant">
@@ -391,8 +417,9 @@ export function HeroSection({ photos }: HeroSectionProps) {
 
             {/* フィルムイエローのテープ片 — 記憶の差し色 */}
             <motion.span
+              style={reduce ? undefined : { y: yTape }}
               variants={chip}
-              className="tape absolute right-[30%] top-[-2%] z-40 -rotate-6 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em]"
+              className="tape absolute right-[8%] top-[-2%] z-40 -rotate-6 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] sm:right-[30%]"
             >
               KSK WORKS — 2026
             </motion.span>
@@ -400,25 +427,34 @@ export function HeroSection({ photos }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* パイプライン — 撮影から運用までが一本の流れである、という署名 */}
-      <div className="border-t">
-        <div className="container mx-auto flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3">
-          {PIPELINE.map((step, i) => (
-            <span
-              key={step}
-              className="flex items-center gap-x-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+      {/* パイプライン — 撮影から運用までが一本の流れ、という署名（フィルムの送りのマーキー）。
+          -50% ループのため前半分の実幅がビューポート以上になるよう12連で敷き詰める（超ワイド対応） */}
+      <div className="marquee border-t py-3">
+        <div className="marquee-track" aria-hidden={undefined}>
+          {Array.from({ length: 12 }, (_, dup) => dup).map((dup) => (
+            <div
+              key={dup}
+              aria-hidden={dup > 0}
+              className="flex shrink-0 items-center gap-x-3"
             >
-              {i > 0 && (
-                <span aria-hidden className="text-coolant">
-                  →
+              {PIPELINE.map((step, i) => (
+                <span
+                  key={step}
+                  className="flex items-center gap-x-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+                >
+                  {i > 0 && (
+                    <span aria-hidden className="text-coolant">
+                      →
+                    </span>
+                  )}
+                  {step}
                 </span>
-              )}
-              {step}
-            </span>
+              ))}
+              <span className="ml-6 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                <span className="rec-blink text-rec">●</span> LIVE
+              </span>
+            </div>
           ))}
-          <span className="ml-auto hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground sm:flex">
-            <span className="rec-blink text-rec">●</span> LIVE
-          </span>
         </div>
       </div>
     </section>

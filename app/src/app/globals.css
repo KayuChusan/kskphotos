@@ -401,6 +401,98 @@
       opacity: 0.25;
     }
   }
+
+  /* ===== 「机の上が動く」モーション体系（スクロール駆動・scroll-driven animations） =====
+     すべて @supports + prefers-reduced-motion でガード。非対応/低モーション環境は静的表示。 */
+
+  /* マーキー — パイプラインの無限送り（フィルムの送りと同じリズム）。
+     中身を2連で複製し -50% ループ。hover で一時停止 */
+  .marquee {
+    overflow: hidden;
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    gap: 3rem;
+    animation: marquee 30s linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(calc(-50% - 1.5rem));
+    }
+  }
+
+  /* フィルムストリップの微速ドリフト — 目送りの「生きている」感 */
+  .film-drift {
+    animation: film-drift 7s ease-in-out infinite alternate;
+  }
+  @keyframes film-drift {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-14px);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* ステートメントの刷り出し — 版が紙に刷られるように左から現れる
+         （旧 develop-text の blur に代わる、断言専用のリビール） */
+      .reveal-sweep {
+        clip-path: inset(-8% 102% -12% -2%);
+        animation: reveal-sweep cubic-bezier(0.2, 0.7, 0.2, 1) both;
+        animation-timeline: view();
+        animation-range: entry 15% entry 55%;
+      }
+      @keyframes reveal-sweep {
+        to {
+          clip-path: inset(-8% -2% -12% -2%);
+        }
+      }
+
+      /* ターミナルのタイプ打ち — スクロールに同期して1文字ずつ打たれる */
+      .type-line {
+        clip-path: inset(0 101% 0 0);
+        animation: type-line both steps(26, end);
+        animation-timeline: view();
+      }
+      .type-line-1 {
+        animation-range: entry 25% entry 45%;
+      }
+      .type-line-2 {
+        animation-range: entry 40% entry 60%;
+      }
+      .type-line-3 {
+        animation-range: entry 55% entry 75%;
+      }
+      .type-line-4 {
+        animation-range: entry 70% entry 90%;
+      }
+      @keyframes type-line {
+        to {
+          clip-path: inset(0 -2% 0 0);
+        }
+      }
+
+      /* 筆致の刷き込み — ブラシが左から塗られる */
+      .brush-on {
+        transform: scaleX(0);
+        transform-origin: left center;
+        animation: brush-on cubic-bezier(0.2, 0.7, 0.2, 1) both;
+        animation-timeline: view();
+        animation-range: entry 10% entry 60%;
+      }
+      @keyframes brush-on {
+        to {
+          transform: scaleX(1);
+        }
+      }
+    }
+  }
   /* EXIF・数値データ表記 */
   .exif-text {
     @apply font-mono text-[10px] uppercase tracking-[0.12em];

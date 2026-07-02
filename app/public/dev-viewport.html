@@ -1,0 +1,31 @@
+<!doctype html>
+<!-- レスポンシブQAハーネス（開発専用）。本番では frame-ancestors 'none' により iframe が
+     ブロックされるため機能しない（意図的）。next dev で /dev-viewport.html を開き、
+     モバイル/タブレット幅の実レンダリングを並べて確認する。 -->
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>dev viewport harness</title>
+    <style>
+      body { margin: 0; padding: 16px; display: flex; gap: 16px; background: #333; font: 12px/1.4 monospace; color: #ddd; align-items: flex-start; }
+      figure { margin: 0; }
+      figcaption { margin-bottom: 6px; }
+      iframe { border: 1px solid #666; background: #fff; display: block; }
+    </style>
+  </head>
+  <body>
+    <figure>
+      <figcaption>390 × 844 (iPhone)</figcaption>
+      <iframe src="/" width="390" height="844" id="m"></iframe>
+    </figure>
+    <figure>
+      <figcaption>768 × 900 (tablet)</figcaption>
+      <iframe src="/" width="768" height="900"></iframe>
+    </figure>
+    <script>
+      // ?path=/services 等でページ切替
+      const p = new URLSearchParams(location.search).get("path");
+      if (p) document.querySelectorAll("iframe").forEach((f) => (f.src = p));
+    </script>
+  </body>
+</html>
