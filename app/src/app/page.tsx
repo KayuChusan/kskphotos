@@ -122,7 +122,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 py-24">
           <SectionMark no="01" label="Concept" className="mb-12" />
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
-            <h2 className="develop-text statement-jp text-3xl leading-normal md:text-4xl md:leading-normal">
+            <h2 className="reveal-sweep statement-jp text-3xl leading-normal md:text-4xl md:leading-normal">
               撮影で終わらない。
               <br />
               納品で終わらない。
@@ -229,7 +229,7 @@ export default async function HomePage() {
           <div className="mb-10 flex items-end justify-between">
             <div>
               <SectionMark no="03" label="Photography" />
-              <h2 className="develop-text statement-jp mt-3 text-3xl md:text-5xl">
+              <h2 className="reveal-sweep statement-jp mt-3 text-3xl md:text-5xl">
                 現場の空気を撮る。
               </h2>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground-soft">
@@ -299,13 +299,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 04 Web Production — 薄明の寒色ライト面（撮影×Web の橋渡し） */}
-      <section data-snap data-header-dawn className="dawn py-24">
+      {/* 04 Web Production — 生成りのまま、青は「モノ」（設計図・罫・リンク）が持つ */}
+      <section data-snap className="coolant-wash py-24">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div>
               <SectionMark no="04" label="Web Production" />
-              <h2 className="develop-text statement-jp mt-3 text-3xl md:text-5xl">
+              <h2 className="reveal-sweep statement-jp mt-3 text-3xl md:text-5xl">
                 写真を、
                 <br className="md:hidden" />
                 伝わるWebに変える。
@@ -416,7 +416,7 @@ export default async function HomePage() {
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div>
               <SectionMark no="05" label="IT Support" />
-              <h2 className="develop-text statement-jp mt-3 text-3xl md:text-5xl">
+              <h2 className="reveal-sweep statement-jp mt-3 text-3xl md:text-5xl">
                 サイトを、止めない。
               </h2>
               <p className="mt-6 text-sm leading-loose text-foreground-soft md:text-base md:leading-loose">
@@ -455,9 +455,11 @@ export default async function HomePage() {
                   { cmd: "capture --moment", note: "現場の価値ある瞬間を、写真に。" },
                   { cmd: "build --website", note: "伝わる Web で、活動を加速。" },
                   { cmd: "keep --running", note: "インフラ視点で、止めない運用を。" },
-                ].map(({ cmd, note }) => (
+                ].map(({ cmd, note }, i) => (
                   <div key={cmd}>
-                    <p className="font-mono text-xs text-muted-foreground md:text-sm">
+                    <p
+                      className={`type-line type-line-${i + 1} font-mono text-xs text-muted-foreground md:text-sm`}
+                    >
                       <span className="text-coolant">$</span> {cmd}
                     </p>
                     <p className="mt-0.5 pl-4 text-xs leading-relaxed text-foreground-soft">
@@ -465,7 +467,7 @@ export default async function HomePage() {
                     </p>
                   </div>
                 ))}
-                <p className="font-mono text-xs text-foreground md:text-sm">
+                <p className="type-line type-line-4 font-mono text-xs text-foreground md:text-sm">
                   <span className="text-[oklch(0.8_0.17_150)]">●</span> active
                   (running) — サイトは止めない
                   <span className="ml-1 inline-block w-2 animate-pulse bg-coolant">
@@ -502,7 +504,7 @@ export default async function HomePage() {
       <section data-snap className="bg-surface-sink py-24">
         <div className="container mx-auto px-4">
           <SectionMark no="06" label="Price" />
-          <h2 className="develop-text statement-jp mt-3 text-3xl md:text-4xl">
+          <h2 className="reveal-sweep statement-jp mt-3 text-3xl md:text-4xl">
             料金は、分かりやすく。
             <br className="sm:hidden" />
             仕事は、ていねいに。
@@ -552,7 +554,7 @@ export default async function HomePage() {
         <BrushStroke
           id="cta-edge"
           color="oklch(0.16 0.045 262)"
-          className="pointer-events-none absolute inset-x-0 -top-8 z-10 h-12 w-full"
+          className="brush-on pointer-events-none absolute inset-x-0 -top-8 z-10 h-12 w-full"
         />
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-center">

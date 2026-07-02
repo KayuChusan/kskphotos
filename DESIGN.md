@@ -41,7 +41,8 @@
 | ファインダー | 写真枠のコーナーブラケット | `.frame` / `.viewfinder` |
 | 現像 | スクロール進入で像が結ぶ（blur→鮮明） | `.develop` / `.develop-text` |
 | 暗室バンド | 写真用の暖色の暗面 | `.darkroom`（＋`grain`） |
-| 薄明（dawn） | 写真(暖)とWeb/IT(濃紺)を橋渡しする寒色の明るい面 | `.dawn` |
+| 薄明（dawn） | 【旧体系の遺物・トップから撤去済み】寒色の明るい面。新ブランドでは「青はモノ（設計図・コンソール・罫）が持つ」ため、**面の水色は使わない**。ユーティリティは下層互換のため残置 | `.dawn`（非推奨） |
+| **モーション体系** | 「机の上が動く」— スクロール駆動中心。刷り出し `.reveal-sweep`（断言）／タイプ打ち `.type-line`（ターミナル・scroll-scrub）／筆致の刷き込み `.brush-on`／マーキー `.marquee`（パイプライン）／フィルムドリフト `.film-drift`／レイヤー視差（ヒーロー・framer useScroll）。全て reduced-motion と `@supports (animation-timeline: view())` でガード、非対応は静的表示 | `globals.css` モーション節 |
 | ブルーアワー | ロゴ土台色の濃紺。Web/IT・機械の面（バンド／カード） | `.bluehour`（＋`grain`） |
 | ブランド青 | ロゴ差し色のエレクトリックブルー（Web・IT・データ） | `--coolant` 系 / `--brand-blue` |
 | HUD / EXIF / 計器ヘッダ | 計器風のモノスペース表記 | `.eyebrow` / `.exif-text` / `SectionMark` |
