@@ -117,3 +117,11 @@ unicode-range は付けない（サブセット外の文字はグリフ単位で
 - 右半分＝実写の全高ブリード（パーフォレーション縁・RAW—ON SET・視差+スケール）
 - ステートメントは「写したあとが、」/「強い。」の句読点折り・KineticLine（1文字ずつ・opacity常時1）・生成り縁取り（text-shadow 4方向）で写真面でも可読
 - LCP: 表紙写真に priority/fetchPriority=high
+
+## 追補8：本編トップを「生きているポスター」へ昇格（lab2 → /）
+
+段階再構成の第1弾。/lab2（HALF BLEED 表紙）を本編トップに昇格。
+- 構成: 絞り → 表紙(HALF BLEED・実写全高ブリード) → Concept（終わらない三連＋行動原理＋EXIF）→ シャッター・スクラブ → フィルムアドバンス（3本柱＋実価格＋導線）→ カラースラム CTA → 奥付・索引（bluehour・主要ページへのリンク）
+- 実装: `components/home/home-experience.tsx`＋`app/page.tsx`（pageSeo・isHero 優先の写真選定・select 最小化・ISR 3600）。旧 hero-section.tsx / snap-scroll.tsx は削除
+- ヘッダー: 旧「トップだけ透過」を廃止（HALF BLEED の写真面にナビが素で重なるため）。常に背面追従の色ガラス
+- /lab・/lab2・/lab3 は実験記録として温存（noindex）
