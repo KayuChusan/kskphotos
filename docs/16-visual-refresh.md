@@ -84,3 +84,12 @@ unicode-range は付けない（サブセット外の文字はグリフ単位で
 - **モーション体系「机の上が動く」**（スクロール駆動・reduced-motion/@supports ガード付き）:
   `.reveal-sweep`（断言の刷り出し・旧 develop-text 置換）/ `.type-line`（ターミナルのタイプ打ち・scroll-scrub）/ `.brush-on`（筆致の刷き込み）/ `.marquee`（パイプラインの無限送り）/ `.film-drift`（フィルムの微速ドリフト）/ ヒーローのレイヤー視差（framer useScroll・紙片ごとに速度差）。
 - **レスポンシブQAハーネス**: `public/dev-viewport.html`（390/768 を並列表示）。dev のみ `frame-ancestors 'self'`/`X-Frame-Options: SAMEORIGIN` で同一オリジン iframe を許可（本番は none/DENY のまま＝ハーネスは本番では機能しない・意図的）。
+
+## 追補4：/lab — 生きているポスター（実験場）
+
+制約（DESIGN.md 運用規律）を外した実験場として `/lab` を新設（noindex・サンドボックス）。広告ポスターのブリーフを「動くエディトリアル誌面」として翻訳した。
+
+- **コンセプト**: 生きているポスター — 絞りが開き、シャッターが落ち、フィルムが送られ、誌面が組み上がる。構図A（巨大タイポ×実写の衝突）＋E（色面）＋F（反復）をスクロールの時間軸で連結。
+- **モーション語彙**: アパーチャ・オープニング（clip-path circle・タイムアウト保険付き）／グリフマスク（SVG clipPath で巨大「写」の字に実写を流し込み・見当ズレの青アウトライン）／シャッター・スクラブ（useScroll でピント送り blur→シャッター幕→プリントが積まれる）／フィルムアドバンス（300vh ピン留め・縦→横送りスクラブ・3パネル色面）／カラースラム（電気青の色面×逆走アウトライン・マーキー×フィルムイエローのステッカーCTA）／フォーカスブラケットのカスタムカーソル（pointer:fine のみ・DOM直書きで再レンダー無し）。
+- **堅牢化原則の継承**: アニメ不発でも必ず見える（イントロは setTimeout 保険・文字 opacity 常時1・reduced-motion は静的レイアウトへフォールバック）。
+- 実装: `app/src/app/lab/page.tsx`（server・写真8枚取得・robots noindex）＋ `lab-experience.tsx`（client）。本編へ昇格する場合は DESIGN.md へ翻訳してから。
