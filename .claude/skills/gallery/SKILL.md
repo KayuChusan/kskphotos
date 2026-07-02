@@ -1,40 +1,42 @@
 ---
 name: gallery
-description: "ギャラリー機能 — 地図ビュー、EXIF自動抽出、写真管理。Triggers on: ギャラリー, 地図, マップ, EXIF, 写真アップロード, GPS, ビフォーアフター, 比較"
+description: "ギャラリー機能 — 地図ビュー、EXIF抽出、画像パイプライン、会員解錠。Triggers on: ギャラリー, 地図, マップ, EXIF, 写真アップロード, GPS, ビフォーアフター, 比較, 会員, 解錠, サムネイル"
 ---
 
 # ギャラリー機能
 
-写真ポートフォリオの3本柱: 地図ギャラリー + EXIF ダッシュボード + ビフォーアフター
+3本柱: 地図ギャラリー + EXIF ダッシュボード + ビフォーアフター。撮影機材: Sony α7R VI + RAW → Lightroom（EXIF 完全保持）。
 
 ## 地図ギャラリー
 
-- ライブラリ: Mapbox GL JS or Google Maps JavaScript API
-- データソース: Photo テーブルの latitude/longitude
-- GPS は EXIF から自動抽出。未埋め込みの場合はアップロード時に手動選択
-- クラスタリング対応（同エリアの写真をグループ化）
+- ライブラリ: **MapLibre GL JS**（Mapbox/Google Maps ではない）— `gallery/photo-map.tsx`
+- データ: Photo の latitude/longitude（EXIF GPS 自動抽出、`lib/exif.ts` / exifr）
 
-## EXIF 自動抽出
+## 画像パイプライン（`lib/photo-create.ts` → `lib/images.ts` → `lib/storage.ts`）
 
-- ライブラリ: `exifr` (Node.js)
-- 抽出タイミング: 写真アップロード API (`/api/photos`) 内で自動実行
-- 抽出フィールド: カメラ, レンズ, 焦点距離, F値, SS, ISO, GPS, 撮影日時, WB
-- 撮影機材: Sony α7R IV (ILCE-7RM4) + RAW → Lightroom 現像
+- sharp で WebP バリアント生成: 幅 `[400, 800, 1600, 2560]` + 16px blurDataUrl。**この配列は `lib/image-loader.ts`（next/image カスタムローダー）と必ず一致させる**
+- 高画素オリジナル（〜4096px）は **非公開バケット**（`GCS_ORIGINALS_BUCKET`）へ。公開バケットは allUsers 読取のため解錠ゲートにならない。配信は解錠後の署名 URL（TTL 5分）のみ
+- 保存先切替: `GCS_BUCKET_NAME` あり→GCS（本番）、なし→ローカル FS（開発）。URL はどちらも `/uploads/<file>`（本番はイメージ焼き込み or /uploads ルートが GCS へリダイレクト）
+- 注意: Cloud Run はアップロード非永続 — 本番アップは GCS 前提。EXIF 抽出はサーバーサイドのみ
+
+## 会員解錠（コレクション単位・本番稼働中）
+
+- `/u/[token]`（Route Handler）→ トークン検証 → 署名付き Cookie `ksk_unlock`（コレクションID+トークンID）→ リダイレクト
+- トークンは平文一度きり表示、DB は `tokenHash` のみ。失効はトークンID で既発行 Cookie も無効化（`unlock-server.ts`）
+- 表示制御は `lib/photo-visibility.ts`: 未解錠はモザイク（`locked-photo-tile`）+ 本画像 URL / EXIF を **RSC ペイロードから除去**。トップ・/dashboard・sitemap は会員写真を除外
+- 管理画面の失効/削除は `confirm()` ダイアログ → ブラウザ自動操作では押せない（手動確認が要る）
 
 ## EXIF ダッシュボード
 
-- 集計: `/api/dashboard` で SQL 集計 → Recharts で可視化
-- グラフ: レンズ使用率(Pie), F値分布(Bar), 撮影時間帯(Bar), 焦点距離(Histogram)
+- `/dashboard`（RSC）で prisma 直集計 → `dashboard/exif-charts.tsx`（Recharts）。専用 API はない
 
 ## ビフォーアフター
 
-- RAW現像前 (ストレート現像 JPEG) と最終仕上がりをスライダーで比較
-- 実装: CSS clip-path or Canvas API
-- 画像: Cloud Storage に before/ after/ のプレフィックスで保存
+- `gallery/compare-slider.tsx`: CSS `clip-path: inset()` 実装。/gallery/[id]/compare で使用
 
 ## ルール
 
-- MUST: EXIF 抽出はサーバーサイドで実行（exifr は Node.js 側）
-- MUST: アップロード画像は Cloud Storage に保存（ローカルファイルシステム不可）
-- SHOULD: 画像は WebP/AVIF に変換して配信（原本は JPEG のまま保持）
-- SHOULD: サムネイル生成は Cloud Functions or アップロード時に実行
+- MUST: EXIF 抽出・画像処理はサーバーサイド（exifr / sharp は Node 側）
+- MUST: 会員写真を扱う新規一覧・API は photo-visibility を必ず通す
+- MUST: VARIANT_WIDTHS を変えるなら image-loader.ts と同時に
+- SHOULD: 一覧のクエリは `select` で必要カラムのみ（originalUrl を出さない）
