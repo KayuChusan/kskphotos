@@ -16,6 +16,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { HomeContactForm } from "@/components/home/home-contact-form";
 import {
   motion,
   useScroll,
@@ -604,14 +605,14 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
   );
 }
 
-/* --------------- コンタクト — 次の一コマ（空のフレームが、あなたの一枚を待つ） --------------- */
+/* --------------- コンタクト — 受付用紙（そのまま送れる・実物のフォーム） --------------- */
 
 function ColorSlam() {
   return (
     <section data-header-dark className="slam relative overflow-hidden py-24">
       <div className="container mx-auto px-4">
         <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
-          {/* 用件 — 断言と導線 */}
+          {/* 用件 — 断言と補助導線 */}
           <div>
             <p className="eyebrow">
               <span className="rec-blink mr-2 inline-block" style={{ color: "var(--film)" }}>
@@ -626,67 +627,40 @@ function ColorSlam() {
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground-soft md:text-base">
               撮影・Web 制作・IT サポートのこと、なんでもどうぞ。
-              次の一枚は、あなたの現場かもしれません。
+              このままフォームから送れます。
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-6">
-              <span
-                className="flex size-24 shrink-0 flex-col items-center justify-center rounded-full border-2 text-center"
-                style={{ borderColor: "var(--film)" }}
-              >
-                <span className="text-[10px] leading-tight text-foreground-soft">
-                  ご相談・お見積り
-                </span>
-                <span className="statement-jp mt-0.5 text-xl">無料</span>
-              </span>
-              <Link
-                href="/contact"
-                className="statement-jp inline-flex min-h-14 items-center bg-[oklch(0.98_0.005_262)] px-10 text-xl shadow-xl transition-transform hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-                style={{ color: "oklch(0.25 0.05 262)" }}
-              >
-                相談する →
-              </Link>
-              <Link
-                href="/services"
-                className="inline-flex min-h-14 items-center border px-8 font-mono text-xs tracking-[0.14em] transition-colors hover:bg-white/10"
-              >
-                料金・メニュー →
-              </Link>
+            <div className="mt-10 space-y-3 text-sm">
+              <p className="text-foreground-soft">
+                メール派の方は{" "}
+                <a
+                  href="mailto:info@kskworks.jp"
+                  className="inline-flex min-h-11 items-center font-mono text-xs tracking-[0.1em] underline underline-offset-4 hover:opacity-80"
+                >
+                  info@kskworks.jp
+                </a>{" "}
+                へどうぞ。
+              </p>
+              <p>
+                <Link
+                  href="/services"
+                  className="inline-flex min-h-11 items-center font-mono text-xs tracking-[0.14em] underline underline-offset-8 transition-colors hover:opacity-80"
+                >
+                  先に料金を見る →
+                </Link>
+              </p>
             </div>
           </div>
 
-          {/* 次の一コマ — まだ空の銀塩プリント（物語の続きは、あなたの一枚） */}
+          {/* 受付用紙 — 実物のフォーム（/contact と同じ Server Action） */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative w-[19rem] max-w-full rotate-2 bg-white p-2 pb-9 shadow-2xl md:w-[22rem]">
-              <div className="relative flex aspect-[4/5] items-center justify-center border-2 border-dashed border-[oklch(0.75_0.02_262)] bg-[oklch(0.965_0.005_262)]">
-                {/* フォーカスブラケット — 被写体を待つファインダー */}
-                <span className="absolute left-3 top-3 h-6 w-6 border-l-2 border-t-2" style={{ borderColor: "var(--rec)" }} />
-                <span className="absolute right-3 top-3 h-6 w-6 border-r-2 border-t-2" style={{ borderColor: "var(--rec)" }} />
-                <span className="absolute bottom-3 left-3 h-6 w-6 border-b-2 border-l-2" style={{ borderColor: "var(--rec)" }} />
-                <span className="absolute bottom-3 right-3 h-6 w-6 border-b-2 border-r-2" style={{ borderColor: "var(--rec)" }} />
-                <div className="text-center">
-                  <p className="font-mono text-4xl font-bold tracking-tight text-[oklch(0.72_0.02_262)]">
-                    NO.002
-                  </p>
-                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-[oklch(0.6_0.02_262)]">
-                    YOUR SHOT — COMING SOON
-                  </p>
-                </div>
-              </div>
-              <span className="exif-text absolute bottom-3 left-3 text-[oklch(0.45_0.01_75)]">
-                NEXT FRAME — READY
-              </span>
-              <span className="tape absolute -right-3 -top-3 rotate-6 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em]">
-                RESERVED FOR YOU
-              </span>
-            </div>
+            <HomeContactForm />
           </div>
         </div>
       </div>
     </section>
   );
 }
-
 
 /* ------------------------- 概念 — 撮影で終わらない、という宣言 ------------------------- */
 
