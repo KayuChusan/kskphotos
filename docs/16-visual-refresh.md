@@ -110,3 +110,10 @@ unicode-range は付けない（サブセット外の文字はグリフ単位で
 - **COVER B — FULL MASK**: 「写したあとが、強い。」の文字すべてが写真の窓になる最大火力（SVG 2行 clipPath）。誌面情報は2行目右の余白へ。
 - **COVER C — HALF BLEED**: 右半分が実写の全高ブリード（パーフォレーション縁）。文字が写真に食い込み、生成りの縁取り（text-shadow 4方向）で両面の可読を担保。
 - 共通: 1文字ずつ組まれる KineticLine（whileInView・opacity常時1）・グリフ内視差・RSC select 最小化。採用案は /lab2 の表紙に差し替えて本編昇格へ。
+
+## 追補7：/lab2 表紙を HALF BLEED へ差し替え（/lab3 COVER C 採用）
+
+/lab3 の3案比較からユーザーが **COVER C — HALF BLEED** を採用。/lab2 の表紙（旧・「写」グリフマスク）を差し替えた。
+- 右半分＝実写の全高ブリード（パーフォレーション縁・RAW—ON SET・視差+スケール）
+- ステートメントは「写したあとが、」/「強い。」の句読点折り・KineticLine（1文字ずつ・opacity常時1）・生成り縁取り（text-shadow 4方向）で写真面でも可読
+- LCP: 表紙写真に priority/fetchPriority=high

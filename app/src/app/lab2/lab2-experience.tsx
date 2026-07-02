@@ -109,7 +109,56 @@ function ApertureIntro({ reduce }: { reduce: boolean }) {
   );
 }
 
-/* ------------------------- 表紙: グリフマスク × 縦組み ------------------------- */
+/* ------------- 表紙: HALF BLEED（/lab3 COVER C 採用・写真と文字の衝突） ------------- */
+
+/** 1文字ずつ組まれる横組みステートメント（改行は句読点で制御・opacity 常時1） */
+function KineticLine({
+  text,
+  className,
+  reduce,
+  delay = 0.3,
+}: {
+  text: string;
+  className?: string;
+  reduce: boolean;
+  delay?: number;
+}) {
+  return (
+    <motion.span
+      className={className}
+      style={{ display: "block" }}
+      initial={reduce ? undefined : "hidden"}
+      whileInView="show"
+      viewport={{ once: true, amount: 0.6 }}
+      variants={{
+        hidden: {},
+        show: { transition: { staggerChildren: 0.05, delayChildren: delay } },
+      }}
+    >
+      {text.split("").map((c, i) => (
+        <motion.span
+          key={i}
+          style={{ display: "inline-block" }}
+          variants={
+            reduce
+              ? {}
+              : {
+                  hidden: { opacity: 1, y: "0.35em", rotate: 4 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    rotate: 0,
+                    transition: { duration: 0.55, ease: EASE },
+                  },
+                }
+          }
+        >
+          {c}
+        </motion.span>
+      ))}
+    </motion.span>
+  );
+}
 
 function Cover({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -117,129 +166,84 @@ function Cover({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }) {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const glyphY = useTransform(scrollYProgress, [0, 1], [0, 14]);
+  const photoY = useTransform(scrollYProgress, [0, 1], ["0%", "6%"]);
   const stampY = useTransform(scrollYProgress, [0, 1], [0, -60]);
-
-  const chars = "写したあとが、強い。".split("");
+  const main = photos[0];
 
   return (
     <section
       ref={ref}
       className="relative flex min-h-[100svh] items-center overflow-hidden bg-background"
     >
-      {/* 巨大グリフ「写」— 字の中に実写が流れる */}
-      <div className="absolute -left-[8%] top-1/2 w-[78vmin] -translate-y-1/2 md:-left-[4%] md:w-[86vmin]">
-        <svg viewBox="0 0 100 100" className="block w-full">
-          <defs>
-            <clipPath id="lab2-glyph">
-              <text
-                x="50"
-                y="50"
-                textAnchor="middle"
-                dominantBaseline="central"
-                fontSize="88"
-                style={{ fontFamily: "'Statement JP', sans-serif", fontWeight: 900 }}
-              >
-                写
-              </text>
-            </clipPath>
-          </defs>
-          {photoUrl(photos[0]) && (
-            <motion.g style={reduce ? undefined : { y: glyphY }}>
-              <image
-                href={photoUrl(photos[0])}
-                x="-10"
-                y="-10"
-                width="120"
-                height="120"
-                preserveAspectRatio="xMidYMid slice"
-                clipPath="url(#lab2-glyph)"
-              />
-            </motion.g>
-          )}
-          {/* 見当ズレの複線（ブランド青）＋ 墨の主線 */}
-          <text
-            x="50.8"
-            y="50.6"
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize="88"
-            fill="none"
-            stroke="var(--brand-blue)"
-            strokeWidth="0.35"
-            style={{ fontFamily: "'Statement JP', sans-serif", fontWeight: 900 }}
-          >
-            写
-          </text>
-          <text
-            x="50"
-            y="50"
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize="88"
-            fill="none"
-            stroke="var(--ink)"
-            strokeWidth="0.5"
-            style={{ fontFamily: "'Statement JP', sans-serif", fontWeight: 900 }}
-          >
-            写
-          </text>
-        </svg>
-      </div>
+      {/* 右半分 — 実写の全高ブリード（写真家の顔が最も立つ） */}
+      {photoUrl(main) && (
+        <motion.div
+          className="absolute inset-y-0 right-0 w-[58%] md:w-[52%]"
+          style={reduce ? undefined : { y: photoY, scale: 1.08 }}
+        >
+          <Image
+            src={photoUrl(main)!}
+            alt=""
+            fill
+            className="object-cover"
+            sizes="55vw"
+            priority
+            fetchPriority="high"
+          />
+          {/* 写真端のフィルムパーフォレーション */}
+          <span
+            aria-hidden
+            className="absolute inset-y-0 left-0 w-3 bg-[oklch(0.13_0.01_75)]"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(to bottom, transparent 0 6px, oklch(0.9 0.005 85 / 0.9) 6px 13px, transparent 13px 19px)",
+            }}
+          />
+          <span className="exif-text absolute bottom-4 right-4 text-white/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+            <span className="text-[oklch(0.72_0.2_29)]">●</span> RAW — ON SET
+          </span>
+        </motion.div>
+      )}
 
-      {/* 縦組みステートメント（「強」はブランド青＝大字なので 3:1 域で可） */}
-      <motion.h1
-        className="statement-jp absolute right-[10%] top-1/2 -translate-y-1/2 text-[clamp(3rem,9vmin,5.5rem)] leading-[1.08] md:right-[16%]"
-        style={{ writingMode: "vertical-rl" }}
-        initial={reduce ? undefined : "hidden"}
-        animate="show"
-        variants={{
-          hidden: {},
-          show: { transition: { staggerChildren: 0.07, delayChildren: 1.5 } },
+      {/* ステートメント — 写真へ食い込む（生成りの縁取りで両面の可読を担保）。
+          改行は「写したあとが、」/「強い。」の句読点折り */}
+      <h1
+        className="statement-jp relative z-10 w-full px-5 md:px-10"
+        style={{
+          textShadow:
+            "0.04em 0 0 var(--background), -0.04em 0 0 var(--background), 0 0.04em 0 var(--background), 0 -0.04em 0 var(--background)",
         }}
       >
-        {chars.map((c, i) => (
-          <motion.span
-            key={i}
-            className={c === "強" ? "text-brand-blue" : undefined}
-            style={{ display: "inline-block" }}
-            variants={
-              reduce
-                ? {}
-                : {
-                    hidden: { opacity: 1, rotate: 8, y: -14 },
-                    show: {
-                      opacity: 1,
-                      rotate: 0,
-                      y: 0,
-                      transition: { duration: 0.5, ease: EASE },
-                    },
-                  }
-            }
-          >
-            {c}
-          </motion.span>
-        ))}
-      </motion.h1>
+        <KineticLine
+          text="写したあとが、"
+          reduce={reduce}
+          className="text-[clamp(3rem,11vw,10rem)] leading-[1.1]"
+        />
+        <KineticLine
+          text="強い。"
+          reduce={reduce}
+          delay={0.65}
+          className="text-[clamp(3.5rem,15vw,13rem)] leading-[1.05]"
+        />
+      </h1>
 
-      {/* 誌面クレジット（欧文 mono のみ・和文なし） */}
-      <div className="absolute left-5 top-24 font-mono text-[10px] uppercase leading-loose tracking-[0.3em] text-muted-foreground md:left-10">
+      {/* 誌面クレジット（欧文 mono のみ） */}
+      <div className="absolute bottom-10 left-5 z-10 font-mono text-[10px] uppercase leading-loose tracking-[0.3em] text-muted-foreground md:left-10">
         <p>
           <span className="rec-blink mr-2 inline-block text-rec">●</span>
-          LAB ISSUE 02 — PRODUCTION GRADE
+          LAB ISSUE 02 — SHOOT / BUILD / KEEP RUNNING
         </p>
-        <p>SHOOT / BUILD / KEEP RUNNING</p>
         <p>KSKWORKS.JP — 2026</p>
       </div>
 
       <motion.div
         style={reduce ? undefined : { y: stampY }}
-        className="tape absolute bottom-[14%] right-[6%] rotate-6 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em]"
+        className="tape absolute right-6 top-24 z-10 rotate-3 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] md:right-10"
       >
-        RULES APPLIED — STILL ALIVE
+        PRODUCTION GRADE — STILL ALIVE
       </motion.div>
 
-      <p className="absolute bottom-8 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+      <p className="absolute bottom-10 right-6 z-10 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground md:right-10">
         SCROLL TO SHOOT ↓
       </p>
     </section>
