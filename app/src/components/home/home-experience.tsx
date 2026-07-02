@@ -376,7 +376,7 @@ function ShutterScrub({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean 
   );
 }
 
-/* ------------------- フィルムアドバンス（3本柱＝トップの義務を内蔵） ------------------- */
+/* --------------- フィルムアドバンス — 一枚の写真の、その後（3本柱＋実価格） --------------- */
 
 function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -385,12 +385,14 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
     offset: ["start start", "end end"],
   });
   const x = useTransform(scrollYProgress, [0, 1], ["0vw", "-200vw"]);
-  // 横送りで暗いパネル（slam/bluehour）が主景になったらヘッダーへダーク信号を出す
-  // （SiteHeader は [data-header-dark] を監視しているため、属性を動的に付け外す）
   const [headerDark, setHeaderDark] = useState(false);
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     setHeaderDark(v > 0.2);
   });
+
+  // 物語の主役は「表紙で撮った、あの一枚」。3パネルで同じ写真が姿を変える
+  const story = photos[0];
+  const storyUrl = photoUrl(story);
 
   const panels = [
     {
@@ -398,77 +400,166 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
       surface: "bg-background",
       word: "撮る。",
       en: "01 — CAPTURE",
-      desc: "現場の空気ごと、高品質な写真で記録します。",
+      desc: "現場で、この一枚を撮る。空気ごと、高品質な写真で。",
       price: "¥14,000〜 / 1H",
       href: "/services",
       link: "料金・メニュー",
-      photo: photos[3] ?? photos[0],
     },
     {
       key: "tsukuru",
       surface: "slam",
       word: "つくる。",
       en: "02 — BUILD",
-      desc: "写真が働く Web を、設計から実装・公開まで。",
+      desc: "同じ一枚が、サイトの主役になる。設計から実装・公開まで。",
       price: "¥128,000〜",
       href: "/services",
       link: "料金・メニュー",
-      photo: photos[4] ?? photos[1],
     },
     {
       key: "sasaeru",
       surface: "bluehour",
       word: "ささえる。",
       en: "03 — KEEP RUNNING",
-      desc: "公開後も、止めない。運用・保守を継続サポート。",
+      desc: "公開したその一枚を、止めない。運用・保守を継続サポート。",
       price: "¥11,000〜 / 月額",
       href: "/contact",
       link: "相談する",
-      photo: photos[5] ?? photos[2],
     },
   ] as const;
 
-  const PanelBody = ({ p, i }: { p: (typeof panels)[number]; i: number }) => (
-    <>
-      {/* 巨大アウトライン番号 — 画面端で切る（装飾） */}
-      <span
-        aria-hidden
-        className="absolute -left-6 top-1/2 -translate-y-1/2 select-none font-mono text-[46vmin] font-bold leading-none opacity-20"
-        style={{ WebkitTextStroke: "2px var(--foreground)", color: "transparent" }}
-      >
-        {String(i + 1).padStart(2, "0")}
-      </span>
+  /** 01 — 現場の生写真（ブラケット＋EXIF＝撮られた瞬間） */
+  const RawShot = () =>
+    storyUrl ? (
+      <div className="relative h-[44vmin] w-[33vmin] -rotate-2 bg-white p-[0.8vmin] pb-[4vmin] shadow-xl">
+        <div className="relative h-full w-full overflow-hidden bg-muted">
+          <Image src={storyUrl} alt="" fill className="object-cover" sizes="33vmin" />
+          <span className="absolute left-2 top-2 h-5 w-5 border-l-2 border-t-2" style={{ borderColor: "var(--rec)" }} />
+          <span className="absolute bottom-2 right-2 h-5 w-5 border-b-2 border-r-2" style={{ borderColor: "var(--rec)" }} />
+          <span className="exif-text absolute bottom-2 left-2 text-white/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+            <span className="text-[oklch(0.72_0.2_29)]">●</span> RAW — ON SET
+          </span>
+        </div>
+        <span className="exif-text absolute bottom-[1.2vmin] left-[1vmin] text-[oklch(0.45_0.01_75)]">
+          NO.001 — SELECTED
+        </span>
+      </div>
+    ) : null;
 
-      {photoUrl(p.photo) && (
-        <div className="relative -mt-[8vmin] h-[42vmin] w-[31vmin] overflow-hidden shadow-xl">
-          <Image src={photoUrl(p.photo)!} alt="" fill className="object-cover" sizes="31vmin" />
+  /** 02 — 同じ一枚がサイトの主役に（ブラウザの中のヒーロー） */
+  const BuiltSite = () =>
+    storyUrl ? (
+      <div className="w-[52vmin] max-w-[86vw] border bg-card shadow-xl">
+        <div className="flex items-center gap-1.5 border-b px-3 py-2">
+          <span className="size-2 rounded-full bg-muted-foreground/30" />
+          <span className="size-2 rounded-full bg-muted-foreground/30" />
+          <span className="size-2 rounded-full bg-muted-foreground/30" />
+          <span className="exif-text ml-2 truncate text-muted-foreground">
+            kskworks.jp — YOUR SITE
+          </span>
+        </div>
+        <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+          <Image src={storyUrl} alt="" fill className="object-cover object-[50%_35%]" sizes="52vmin" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          {/* あの一枚の上に組まれる誌面（見出し・本文・CTA のスケルトン） */}
+          <div className="absolute inset-x-4 bottom-3">
+            <div className="h-[2.2vmin] w-1/2 rounded-full bg-white/90" />
+            <div className="mt-[0.8vmin] h-[1.4vmin] w-1/3 rounded-full bg-white/60" />
+            <div className="mt-[1.2vmin] h-[2.6vmin] w-[10vmin] rounded-sm bg-[oklch(0.84_0.16_85)]" />
+          </div>
+        </div>
+      </div>
+    ) : null;
+
+  /** 03 — その一枚が動きつづける（サイト稼働＋コンソール） */
+  const RunningSite = () => (
+    <div className="relative w-[52vmin] max-w-[86vw]">
+      {storyUrl && (
+        <div className="w-[70%] border bg-card shadow-xl">
+          <div className="flex items-center gap-1.5 border-b px-2.5 py-1.5">
+            <span className="size-1.5 rounded-full bg-muted-foreground/30" />
+            <span className="size-1.5 rounded-full bg-muted-foreground/30" />
+            <span className="exif-text ml-2 truncate text-muted-foreground">
+              kskworks.jp
+            </span>
+          </div>
+          <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+            <Image src={storyUrl} alt="" fill className="object-cover object-[50%_35%]" sizes="36vmin" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            <div className="absolute inset-x-3 bottom-2">
+              <div className="h-[1.6vmin] w-1/2 rounded-full bg-white/85" />
+            </div>
+          </div>
         </div>
       )}
-
-      <p className="statement-jp absolute top-[16%] text-[clamp(3.5rem,13vmin,8.5rem)]">
-        {p.word}
-      </p>
-
-      {/* トップページの義務 — 説明・実価格・導線（タッチ44px） */}
-      <div className="absolute bottom-[10%] left-1/2 w-[86vw] max-w-md -translate-x-1/2 text-center">
-        <p className="text-sm leading-relaxed text-foreground-soft">{p.desc}</p>
-        <p className="mt-2 font-mono text-2xl font-medium tabular-nums">{p.price}</p>
-        <Link
-          href={p.href}
-          className="mt-2 inline-flex min-h-11 items-center px-4 font-mono text-xs tracking-[0.14em] underline underline-offset-8 transition-colors hover:opacity-80"
-        >
-          {p.link} →
-        </Link>
-        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-          {p.en}
-        </p>
+      {/* 稼働コンソール — 公開後の心拍 */}
+      <div className="bluehour absolute -bottom-[6vmin] right-0 w-[62%] overflow-hidden rounded-md border shadow-xl">
+        <div className="flex items-center gap-1.5 border-b px-3 py-1.5">
+          <span className="size-1.5 rounded-full bg-muted-foreground/40" />
+          <span className="size-1.5 rounded-full bg-muted-foreground/40" />
+          <span className="exif-text ml-1.5 text-muted-foreground">ksk@works: ~</span>
+        </div>
+        <div className="space-y-1 px-3 py-2.5 font-mono text-[11px] leading-relaxed">
+          <p className="text-muted-foreground">
+            <span className="text-coolant">$</span> keep --running
+          </p>
+          <p className="text-foreground">
+            <span className="text-[oklch(0.8_0.17_150)]">●</span> active (running)
+            <span className="ml-1 inline-block w-1.5 animate-pulse bg-coolant">&nbsp;</span>
+          </p>
+          <p className="text-muted-foreground">uptime 100% — backup ok</p>
+        </div>
       </div>
-    </>
+    </div>
   );
+
+  const visuals = [RawShot, BuiltSite, RunningSite] as const;
+
+  const PanelBody = ({ p, i }: { p: (typeof panels)[number]; i: number }) => {
+    const Visual = visuals[i];
+    return (
+      <>
+        {/* 巨大アウトライン番号 — 画面端で切る（装飾） */}
+        <span
+          aria-hidden
+          className="absolute -left-6 top-1/2 -translate-y-1/2 select-none font-mono text-[46vmin] font-bold leading-none opacity-20"
+          style={{ WebkitTextStroke: "2px var(--foreground)", color: "transparent" }}
+        >
+          {String(i + 1).padStart(2, "0")}
+        </span>
+
+        <div className="-mt-[6vmin]">
+          <Visual />
+        </div>
+
+        <p className="statement-jp absolute top-[13%] text-[clamp(3rem,12vmin,8rem)]">
+          {p.word}
+        </p>
+
+        {/* トップページの義務 — 説明・実価格・導線（タッチ44px） */}
+        <div className="absolute bottom-[7%] left-1/2 w-[86vw] max-w-md -translate-x-1/2 text-center">
+          <p className="text-sm leading-relaxed text-foreground-soft">{p.desc}</p>
+          <p className="mt-2 font-mono text-2xl font-medium tabular-nums">{p.price}</p>
+          <Link
+            href={p.href}
+            className="mt-1 inline-flex min-h-11 items-center px-4 font-mono text-xs tracking-[0.14em] underline underline-offset-8 transition-colors hover:opacity-80"
+          >
+            {p.link} →
+          </Link>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+            {p.en}
+          </p>
+        </div>
+      </>
+    );
+  };
 
   if (reduce) {
     return (
       <section>
+        <div className="bg-background px-6 pt-16">
+          <p className="eyebrow">One Photo — Shoot to Run</p>
+          <p className="eyebrow-jp mt-1">一枚の写真が、サイトになり、動きつづけるまで。</p>
+        </div>
         {panels.map((p, i) => (
           <div
             key={p.key}
@@ -499,6 +590,12 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
           ))}
         </motion.div>
 
+        {/* 物語のラベル — この3面は「同じ一枚」の話 */}
+        <div className="pointer-events-none absolute left-6 top-20 md:left-10">
+          <p className="font-mono text-[10px] uppercase tracking-[0.3em] mix-blend-difference">
+            <span className="text-white">ONE PHOTO — SHOOT TO RUN</span>
+          </p>
+        </div>
         <div className="pointer-events-none absolute right-6 top-20 font-mono text-[10px] uppercase tracking-[0.3em] mix-blend-difference md:right-10">
           <span className="text-white">FILM ADVANCE →</span>
         </div>
@@ -507,60 +604,74 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
   );
 }
 
-/* ------------------------- カラースラム（色面×逆走マーキー） ------------------------- */
+/* ------------------------- コンタクト — 色面の締め（明快なCTA階層） ------------------------- */
 
 function ColorSlam() {
   return (
-    <section data-header-dark className="slam relative overflow-hidden py-28">
-      <div className="marquee" aria-hidden>
-        <div className="marquee-track" style={{ animationDuration: "16s" }}>
+    <section data-header-dark className="slam relative overflow-hidden py-24">
+      {/* 背景芸術 — アウトラインの流れ（1段だけ・低速） */}
+      <div className="marquee absolute inset-x-0 top-6 opacity-50" aria-hidden>
+        <div className="marquee-track" style={{ animationDuration: "36s" }}>
           {Array.from({ length: 8 }, (_, i) => (
             <span
               key={i}
-              className="statement-jp shrink-0 whitespace-nowrap text-7xl md:text-8xl"
-              style={{ WebkitTextStroke: "2px var(--foreground)", color: "transparent" }}
+              className="statement-jp shrink-0 whitespace-nowrap text-6xl md:text-7xl"
+              style={{ WebkitTextStroke: "1.5px var(--foreground)", color: "transparent" }}
             >
               写したあとが、強い。
             </span>
           ))}
         </div>
       </div>
-      <div className="marquee mt-4" aria-hidden>
-        <div
-          className="marquee-track"
-          style={{ animationDuration: "22s", animationDirection: "reverse" }}
-        >
-          {Array.from({ length: 10 }, (_, i) => (
-            <span
-              key={i}
-              className="shrink-0 whitespace-nowrap font-mono text-6xl font-bold uppercase tracking-tight md:text-7xl"
-              style={{ color: i % 3 === 0 ? "var(--film)" : "var(--foreground)" }}
-            >
-              KEEP RUNNING —
-            </span>
-          ))}
-        </div>
-      </div>
 
-      <div className="mt-16 flex justify-center">
-        <Link
-          href="/contact"
-          className="tape statement-jp -rotate-3 px-10 py-5 text-2xl shadow-xl transition-transform hover:rotate-0 hover:scale-105 focus-visible:rotate-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:text-3xl"
-        >
+      <div className="container relative mx-auto px-4 pt-24">
+        <p className="eyebrow">
+          <span className="rec-blink mr-2 inline-block" style={{ color: "var(--film)" }}>
+            ●
+          </span>
+          Contact
+        </p>
+        <h2 className="statement-jp mt-4 text-3xl md:text-5xl">
+          まずは、お気軽に
+          <br className="sm:hidden" />
           ご相談ください。
-        </Link>
+        </h2>
+        <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground-soft md:text-base">
+          撮影・Web 制作・IT サポートのこと、なんでもどうぞ。
+          次の一枚は、あなたの現場かもしれません。
+        </p>
+
+        <div className="mt-10 flex flex-wrap items-center gap-6">
+          {/* 無料の判子 */}
+          <span className="flex size-24 shrink-0 flex-col items-center justify-center rounded-full border-2 text-center" style={{ borderColor: "var(--film)" }}>
+            <span className="text-[10px] leading-tight text-foreground-soft">
+              ご相談・お見積り
+            </span>
+            <span className="statement-jp mt-0.5 text-xl">無料</span>
+          </span>
+          <Link
+            href="/contact"
+            className="statement-jp inline-flex min-h-14 items-center bg-[oklch(0.98_0.005_262)] px-10 text-xl shadow-xl transition-transform hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            style={{ color: "oklch(0.25 0.05 262)" }}
+          >
+            相談する →
+          </Link>
+          <Link
+            href="/services"
+            className="inline-flex min-h-14 items-center border px-8 font-mono text-xs tracking-[0.14em] transition-colors hover:bg-white/10"
+          >
+            料金・メニュー →
+          </Link>
+        </div>
+
+        <p className="mt-10 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+          SHOOT / BUILD / KEEP RUNNING — KSKWORKS.JP
+        </p>
       </div>
-      <p className="mt-6 text-center font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-        <span className="rec-blink mr-2 inline-block" style={{ color: "var(--film)" }}>
-          ●
-        </span>
-        FREE CONSULTATION — SHOOT / BUILD / RUN
-      </p>
     </section>
   );
 }
 
-/* ------------------------------- 奥付（コロフォン） ------------------------------- */
 
 /* ------------------------- 概念 — 撮影で終わらない、という宣言 ------------------------- */
 
