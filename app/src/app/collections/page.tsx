@@ -5,6 +5,7 @@ import { Link } from "next-view-transitions";
 import { Lock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { isMember } from "@/lib/unlock-server";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/collections" }),
@@ -39,8 +40,7 @@ export default async function CollectionsPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-10">
-        <p className="eyebrow">Series</p>
-        <h1 className="mt-2 font-heading text-5xl font-medium">コレクション</h1>
+        <PageTitle en="Series" title="コレクション" />
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
           撮影テーマごとにまとめた作品集。
         </p>

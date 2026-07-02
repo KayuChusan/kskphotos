@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Link } from "next-view-transitions";
 import { pageSeo } from "@/lib/seo";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/privacy" }),
@@ -14,10 +15,7 @@ const LAST_UPDATED = "2026年6月30日";
 export default function PrivacyPolicyPage() {
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
-      <p className="eyebrow">Legal</p>
-      <h1 className="mb-3 mt-2 font-heading text-5xl font-medium">
-        プライバシーポリシー
-      </h1>
+      <PageTitle en="Legal" title="プライバシーポリシー" className="mb-3" />
       <p className="mb-10 text-xs text-muted-foreground">
         最終改定日: {LAST_UPDATED}
       </p>

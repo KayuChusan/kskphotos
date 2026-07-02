@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { BookingFlow } from "@/components/home/booking-flow";
 import { BookingForm } from "./booking-form";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/booking" }),
@@ -28,9 +29,8 @@ export default async function BookingPage() {
   });
   return (
     <div className="container mx-auto max-w-2xl px-4 py-12">
-      <div className="mb-10 text-center">
-        <p className="eyebrow">Reservation</p>
-        <h1 className="mt-3 font-heading text-5xl font-medium">撮影のご依頼</h1>
+      <div className="mb-10">
+        <PageTitle en="Reservation" title="撮影のご依頼" />
         <p className="mt-3 text-sm text-muted-foreground">
           撮影のご相談・お見積りはこちらから。2営業日以内にご連絡いたします。
           <br className="hidden sm:block" />

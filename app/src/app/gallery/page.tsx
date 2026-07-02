@@ -5,6 +5,7 @@ import { maskForViewer } from "@/lib/photo-visibility";
 import { isMember } from "@/lib/unlock-server";
 import { PhotoGallery } from "@/components/gallery/photo-grid";
 import { JaText } from "@/components/ui/ja-text";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/gallery" }),
@@ -32,17 +33,8 @@ export default async function GalleryPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       {/* 扉 — トップのタイポグラフィに合わせた機能的なタイトル（コピーで盛らない） */}
-      <div className="relative mb-12 pt-6">
-        <span
-          aria-hidden
-          className="absolute left-0 top-0 size-5 border-l-2 border-t-2"
-          style={{ borderColor: "var(--rec)" }}
-        />
-        <p className="eyebrow">
-          <span className="rec-blink mr-2 inline-block text-rec">●</span>
-          Gallery
-        </p>
-        <h1 className="statement-jp mt-3 text-4xl md:text-5xl">ギャラリー</h1>
+      <div className="mb-12">
+        <PageTitle en="Gallery" title="ギャラリー" />
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <p className="max-w-xl text-sm leading-relaxed text-foreground-soft">
             <JaText>

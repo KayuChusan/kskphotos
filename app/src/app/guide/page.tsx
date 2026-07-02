@@ -26,6 +26,7 @@ import { JaText } from "@/components/ui/ja-text";
 import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/guide" }),
@@ -303,8 +304,7 @@ export default function GuidePage() {
     <div className="container mx-auto max-w-3xl px-4 py-12">
       {/* Header */}
       <div className="mb-10">
-        <p className="eyebrow">Guide</p>
-        <h1 className="mt-2 font-heading text-5xl font-medium">ご利用案内</h1>
+        <PageTitle en="Guide" title="ご利用案内" />
         <p className="mt-4 max-w-2xl text-sm leading-loose text-muted-foreground md:text-base md:leading-loose">
           <JaText>
             <strong className="text-foreground">写真撮影・Web 制作・IT サポート</strong>

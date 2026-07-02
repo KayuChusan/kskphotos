@@ -16,6 +16,7 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { JaText } from "@/components/ui/ja-text";
 import { cn } from "@/lib/utils";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = {
   ...pageSeo({ path: "/works" }),
@@ -120,9 +121,8 @@ export default async function WorksPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="mb-14 text-center">
-        <p className="eyebrow">Selected Works</p>
-        <h1 className="mt-3 font-heading text-5xl font-medium">撮影実績</h1>
+      <div className="mb-14">
+        <PageTitle en="Selected Works" title="撮影実績" />
         <p className="mt-3 text-sm text-muted-foreground">
           政治・選挙写真からファミリーフォトまで、ジャンル別にご覧いただけます。
         </p>
