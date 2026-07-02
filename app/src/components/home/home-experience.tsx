@@ -4,7 +4,7 @@
  * HOME — 生きているポスター（/lab → /lab2 → 本編昇格）
  *
  * コンセプト「写したあとが、強い。」を、絞り→表紙(HALF BLEED)→概念→
- * シャッター→フィルム送り(3本柱+実価格)→色面CTA→奥付、の一冊として構成:
+ * シャッター→フィルム送り(3本柱+実価格)→色面CTA(次の一コマ)、の一冊として構成:
  *  - 色は @theme トークン参照（生 oklch 直書きは装飾の一部のみ）。
  *    青の見せ場は .slam / .bluehour の局所トークン再定義パターン（AA 実測済み）
  *  - 和文は 12px 以上・等幅に載せない（mono は欧文/数字のみ）
@@ -604,69 +604,84 @@ function FilmAdvance({ photos, reduce }: { photos: LabPhoto[]; reduce: boolean }
   );
 }
 
-/* ------------------------- コンタクト — 色面の締め（明快なCTA階層） ------------------------- */
+/* --------------- コンタクト — 次の一コマ（空のフレームが、あなたの一枚を待つ） --------------- */
 
 function ColorSlam() {
   return (
     <section data-header-dark className="slam relative overflow-hidden py-24">
-      {/* 背景芸術 — アウトラインの流れ（1段だけ・低速） */}
-      <div className="marquee absolute inset-x-0 top-6 opacity-50" aria-hidden>
-        <div className="marquee-track" style={{ animationDuration: "36s" }}>
-          {Array.from({ length: 8 }, (_, i) => (
-            <span
-              key={i}
-              className="statement-jp shrink-0 whitespace-nowrap text-6xl md:text-7xl"
-              style={{ WebkitTextStroke: "1.5px var(--foreground)", color: "transparent" }}
-            >
-              写したあとが、強い。
-            </span>
-          ))}
+      <div className="container mx-auto px-4">
+        <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
+          {/* 用件 — 断言と導線 */}
+          <div>
+            <p className="eyebrow">
+              <span className="rec-blink mr-2 inline-block" style={{ color: "var(--film)" }}>
+                ●
+              </span>
+              Contact
+            </p>
+            <h2 className="statement-jp mt-4 text-3xl md:text-5xl">
+              まずは、お気軽に
+              <br className="sm:hidden" />
+              ご相談ください。
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground-soft md:text-base">
+              撮影・Web 制作・IT サポートのこと、なんでもどうぞ。
+              次の一枚は、あなたの現場かもしれません。
+            </p>
+
+            <div className="mt-10 flex flex-wrap items-center gap-6">
+              <span
+                className="flex size-24 shrink-0 flex-col items-center justify-center rounded-full border-2 text-center"
+                style={{ borderColor: "var(--film)" }}
+              >
+                <span className="text-[10px] leading-tight text-foreground-soft">
+                  ご相談・お見積り
+                </span>
+                <span className="statement-jp mt-0.5 text-xl">無料</span>
+              </span>
+              <Link
+                href="/contact"
+                className="statement-jp inline-flex min-h-14 items-center bg-[oklch(0.98_0.005_262)] px-10 text-xl shadow-xl transition-transform hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                style={{ color: "oklch(0.25 0.05 262)" }}
+              >
+                相談する →
+              </Link>
+              <Link
+                href="/services"
+                className="inline-flex min-h-14 items-center border px-8 font-mono text-xs tracking-[0.14em] transition-colors hover:bg-white/10"
+              >
+                料金・メニュー →
+              </Link>
+            </div>
+          </div>
+
+          {/* 次の一コマ — まだ空の銀塩プリント（物語の続きは、あなたの一枚） */}
+          <div className="flex justify-center lg:justify-end">
+            <div className="relative w-[19rem] max-w-full rotate-2 bg-white p-2 pb-9 shadow-2xl md:w-[22rem]">
+              <div className="relative flex aspect-[4/5] items-center justify-center border-2 border-dashed border-[oklch(0.75_0.02_262)] bg-[oklch(0.965_0.005_262)]">
+                {/* フォーカスブラケット — 被写体を待つファインダー */}
+                <span className="absolute left-3 top-3 h-6 w-6 border-l-2 border-t-2" style={{ borderColor: "var(--rec)" }} />
+                <span className="absolute right-3 top-3 h-6 w-6 border-r-2 border-t-2" style={{ borderColor: "var(--rec)" }} />
+                <span className="absolute bottom-3 left-3 h-6 w-6 border-b-2 border-l-2" style={{ borderColor: "var(--rec)" }} />
+                <span className="absolute bottom-3 right-3 h-6 w-6 border-b-2 border-r-2" style={{ borderColor: "var(--rec)" }} />
+                <div className="text-center">
+                  <p className="font-mono text-4xl font-bold tracking-tight text-[oklch(0.72_0.02_262)]">
+                    NO.002
+                  </p>
+                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-[oklch(0.6_0.02_262)]">
+                    YOUR SHOT — COMING SOON
+                  </p>
+                </div>
+              </div>
+              <span className="exif-text absolute bottom-3 left-3 text-[oklch(0.45_0.01_75)]">
+                NEXT FRAME — READY
+              </span>
+              <span className="tape absolute -right-3 -top-3 rotate-6 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em]">
+                RESERVED FOR YOU
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div className="container relative mx-auto px-4 pt-24">
-        <p className="eyebrow">
-          <span className="rec-blink mr-2 inline-block" style={{ color: "var(--film)" }}>
-            ●
-          </span>
-          Contact
-        </p>
-        <h2 className="statement-jp mt-4 text-3xl md:text-5xl">
-          まずは、お気軽に
-          <br className="sm:hidden" />
-          ご相談ください。
-        </h2>
-        <p className="mt-4 max-w-xl text-sm leading-relaxed text-foreground-soft md:text-base">
-          撮影・Web 制作・IT サポートのこと、なんでもどうぞ。
-          次の一枚は、あなたの現場かもしれません。
-        </p>
-
-        <div className="mt-10 flex flex-wrap items-center gap-6">
-          {/* 無料の判子 */}
-          <span className="flex size-24 shrink-0 flex-col items-center justify-center rounded-full border-2 text-center" style={{ borderColor: "var(--film)" }}>
-            <span className="text-[10px] leading-tight text-foreground-soft">
-              ご相談・お見積り
-            </span>
-            <span className="statement-jp mt-0.5 text-xl">無料</span>
-          </span>
-          <Link
-            href="/contact"
-            className="statement-jp inline-flex min-h-14 items-center bg-[oklch(0.98_0.005_262)] px-10 text-xl shadow-xl transition-transform hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-            style={{ color: "oklch(0.25 0.05 262)" }}
-          >
-            相談する →
-          </Link>
-          <Link
-            href="/services"
-            className="inline-flex min-h-14 items-center border px-8 font-mono text-xs tracking-[0.14em] transition-colors hover:bg-white/10"
-          >
-            料金・メニュー →
-          </Link>
-        </div>
-
-        <p className="mt-10 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-          SHOOT / BUILD / KEEP RUNNING — KSKWORKS.JP
-        </p>
       </div>
     </section>
   );
@@ -720,54 +735,6 @@ function Concept() {
   );
 }
 
-/* ------------------------------- 奥付（索引） ------------------------------- */
-
-function Colophon() {
-  const rows = [
-    ["CONCEPT", "写したあとが、強い。"],
-    ["PHOTO", "実写・実案件（Sony α7R VI / RAW → Lightroom）"],
-    ["TYPE", "Statement JP / Geist Mono"],
-    ["BUILD", "NEXT.JS 16 — GCP CLOUD RUN"],
-    ["OFFICE", "KSK Works — 神奈川（全国出張対応）"],
-  ];
-  const nav = [
-    ["/gallery", "ギャラリー"],
-    ["/services", "料金・メニュー"],
-    ["/guide", "ご利用案内"],
-    ["/works", "制作実績"],
-    ["/contact", "相談する"],
-  ];
-  return (
-    <section data-header-dark className="bluehour px-6 py-24 md:px-10">
-      <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-        INDEX
-      </p>
-      <p className="eyebrow-jp mt-1">奥付・索引</p>
-      <dl className="mt-8 max-w-2xl space-y-3">
-        {rows.map(([k, v]) => (
-          <div key={k} className="flex items-baseline gap-6 border-b pb-3">
-            <dt className="w-28 shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              {k}
-            </dt>
-            <dd className="text-sm">{v}</dd>
-          </div>
-        ))}
-      </dl>
-      <div className="mt-10 flex flex-wrap gap-x-8 gap-y-2 font-mono text-xs tracking-[0.14em]">
-        {nav.map(([href, label]) => (
-          <Link
-            key={href}
-            href={href}
-            className="inline-flex min-h-11 items-center underline underline-offset-8 transition-colors hover:text-foreground"
-          >
-            {label} →
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 /* ---------------------------------- 本体 ---------------------------------- */
 
 export function HomeExperience({ photos }: { photos: LabPhoto[] }) {
@@ -782,7 +749,6 @@ export function HomeExperience({ photos }: { photos: LabPhoto[] }) {
       <ShutterScrub photos={photos} reduce={reduce} />
       <FilmAdvance photos={photos} reduce={reduce} />
       <ColorSlam />
-      <Colophon />
     </div>
   );
 }
