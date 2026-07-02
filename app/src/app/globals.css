@@ -671,6 +671,25 @@
     position: relative;
   }
 
+  /* SLAM — 電気青の見せ場面（/lab2 のカラースラム・パネル）。.bluehour と同じ
+     局所トークン再定義パターン。白文字は背景 oklch(0.5 0.22 262) 上で約4.8:1（AA）。
+     大面積の青は「見せ場」1〜2枚に限定し、本文長文は載せない */
+  .slam {
+    --background: oklch(0.5 0.22 262);
+    --foreground: oklch(0.98 0.005 262);
+    --foreground-soft: oklch(0.95 0.008 262);
+    --muted-foreground: oklch(0.93 0.012 262);
+    --border: oklch(1 0 0 / 0.3);
+    --ink: oklch(0.98 0.005 262);
+    /* 青面上の信号・差し色はフィルムイエローへ転調（赤は青上で沈む） */
+    --rec: oklch(0.84 0.16 85);
+    --rec-strong: oklch(0.88 0.14 85);
+    --film: oklch(0.84 0.16 85);
+    --ring: oklch(0.98 0.005 262);
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
   /* DAWN — 薄明の寒色ライト面。写真(暖クリーム)とWeb/IT(濃紺)の橋渡し用の中間トーン。
      明るい面のまま“寒色側”へ寄せ、前景は暖色ライトの黒文字を維持（AA安全）。
      ＝「つくる（撮影×Web の合わせ技）」セクション専用。暖→寒→濃紺の温度推移を作る */
