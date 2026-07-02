@@ -20,7 +20,8 @@ export function SiteHeader() {
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   // ヘッダー直下のセクションが暗い面(data-header-dark)か。暗い面では白ロゴ・濃紺ヘッダーへ追従。
-  const [overDark, setOverDark] = useState(isHome);
+  // 初期値は false（トップのヒーローは明るい生成り面。初回描画で白ロゴが生成りに載る事故を防ぐ）。
+  const [overDark, setOverDark] = useState(false);
   // ヘッダー直下が薄明面(data-header-dawn = 03 つくる)か。寒色ライトのヘッダーへ。
   const [overDawn, setOverDawn] = useState(false);
   // モバイルメニュー(Sheet)の開閉。リンクをタップしたら閉じる。
